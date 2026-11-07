@@ -497,6 +497,9 @@
     root.classList.add("frog-fly");
     frogBtn.style.transformOrigin = "50% 100%";
     let state = "home", raf = 0, jump = null;
+    const flySrc = frogBtn.dataset.flySrc || "";   // on the lily pad he flies as a head; the pad stays
+    let restSrc = bigToad?.getAttribute("src") || "";
+    if (flySrc) new Image().src = flySrc;
     const W = () => home.offsetWidth, H = () => home.offsetHeight;
     const lerp = (a, b, t) => a + (b - a) * t;
     const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -516,6 +519,7 @@
       root.classList.remove("frog-docked");
       const start = performance.now(), D = 760;
       if (up) { splash(); Sound.play("whoosh"); } else Sound.play("whoosh");
+      if (flySrc) { if (up) { restSrc = bigToad.getAttribute("src"); bigToad.src = flySrc; } root.classList.add("frog-away"); }
       jump = (now) => {
         const t = Math.min(1, (now - start) / D);
         const h = home.getBoundingClientRect(), s = slot.getBoundingClientRect();
@@ -530,7 +534,7 @@
         if (t < 1) { raf = requestAnimationFrame(jump); return; }
         jump = null;
         if (up) { state = "docked"; root.classList.add("frog-docked"); wiggle(slot); blink(slot); Sound.play("land"); }
-        else { state = "home"; atHome(); splash(); Sound.play("splash"); wiggle(bigToad); }
+        else { state = "home"; atHome(); splash(); Sound.play("splash"); wiggle(bigToad); if (flySrc) { bigToad.src = restSrc; root.classList.remove("frog-away"); } }
         check();
       };
       raf = requestAnimationFrame(jump);
@@ -560,7 +564,7 @@
 
   // ---------- the tongue ----------
   // where Klyop's mouth is on his head picture (klyop-head / klyop-peek), as parts of its width and height
-  const mouthOf = (el) => { const r = el.getBoundingClientRect(); return [r.left + r.width * 0.57, r.top + r.height * 0.7]; };
+  const mouthOf = (el) => { const r = el.getBoundingClientRect(), m = (el.dataset.mouth || "0.57,0.7").split(",").map(Number); return [r.left + r.width * m[0], r.top + r.height * m[1]]; };
   const tongue = (from, to, done) => {
     const [mx, my] = from, [fx, fy] = to;
     const len = Math.hypot(fx - mx, fy - my), ang = Math.atan2(fy - my, fx - mx);

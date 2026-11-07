@@ -178,8 +178,14 @@ function zoom(info, { alt, caption, group, small = false, eager = false, cls = "
 
 // Klyop, the toad mascot (approved by the owner on 07.11.2026; pictures in public/brand, see README): his head is small
 // in the header and peeks out of the pond on the home page; site.js makes him jump from one to the other.
-const FROG = `<img class="toad frog" src="/brand/klyop-head.webp" width="128" height="95" alt="" decoding="async">`;
-const FROG_BIG = `<button type="button" class="frog-btn"><img class="toad frog frog-big" src="/brand/klyop-peek.webp" width="400" height="297" alt="" decoding="async"><span class="frog-say" aria-live="polite"></span></button>`;
+// The mascot chat (mascot/USAGE.md) may add new pictures; each one is used only once it is in public/brand.
+const hasPic = (rel) => existsSync(join(pub, rel));
+const ON_LILY = hasPic("brand/klyop/lily.webp");   // owner: Klyop lounging on a lily pad in the pond, then he jumps to the header
+// data-mouth: where his mouth is on the picture (parts of width and height), the tongue starts there
+const FROG = `<img class="toad frog" src="/brand/klyop-head.webp" width="128" height="95" alt="" decoding="async" data-mouth="0.57,0.7">`;
+const FROG_BIG = ON_LILY
+  ? `<button type="button" class="frog-btn on-lily" data-fly-src="/brand/klyop-head.webp"><img class="toad frog frog-big" src="/brand/klyop/lily.webp" width="611" height="608" alt="" decoding="async" data-mouth="0.40,0.21"><span class="frog-say" aria-live="polite"></span></button>`
+  : `<button type="button" class="frog-btn"><img class="toad frog frog-big" src="/brand/klyop-peek.webp" width="400" height="297" alt="" decoding="async" data-mouth="0.57,0.7"><span class="frog-say" aria-live="polite"></span></button>`;
 
 // ---------- blog posts: content/posts/YYYY-MM-DD-slug.<lang>.md ----------
 
@@ -276,7 +282,8 @@ const ICON_FX = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="tr
 // browser) wins, otherwise the first of the browser's languages that the site has. No location lookup, no cookies.
 // ---------- Swamp Radio: the player at the bottom of every page ----------
 // Klyop's head nods to the music in the player (the class k-head takes the beat, see style.css).
-const KLYOP = `<img class="k-head" src="/brand/klyop-head.webp" width="128" height="95" alt="" decoding="async">`;
+// Swamp Radio sits bottom right, so his head there looks left, into the page (when the mascot chat's picture is in place)
+const KLYOP = `<img class="k-head" src="/brand/${hasPic("brand/klyop-head-left.webp") ? "klyop-head-left" : "klyop-head"}.webp" width="128" height="95" alt="" decoding="async">`;
 const trackTitle = (m, lang) => (typeof m.title === "string" ? m.title : tr(m.title, lang));
 const tracksFor = (lang) =>
   (site.music ?? []).map((m) => ({ id: m.id, src: `/${m.file}`, title: trackTitle(m, lang), project: m.project, credit: m.credit ?? m.project, seconds: m.seconds, tint: site.musicProjects?.[m.project] ?? "#262B30" }));
@@ -410,7 +417,7 @@ ${site.languages.filter((l) => l !== lang).map((l) => `<li><a href="${paths[l]}"
 <div class="prints" aria-hidden="true"></div>
 ${radio(lang)}
 <script type="application/json" id="tracks">${JSON.stringify(tracksFor(lang)).replace(/</g, "\\u003c")}</script>
-<script src="/site.js" defer></script>${page === "page-swamp" ? `\n<script src="/swamp.js" defer></script>` : ""}
+<script src="/site.js" defer></script>${page === "page-swamp" ? `\n<script src="/swamp.js" defer></script>` : ""}${page === "page-creative" ? `\n<script src="/pet.js" defer></script>` : ""}
 </body>
 </html>
 `;
@@ -585,7 +592,7 @@ ${total ? `<p class="count"><span class="count-num">${fmt(lang, total)}</span><s
 ${WAVE}
 ${PAD("pad-1")}${PAD("pad-2")}${PAD("pad-3")}
 ${RIPPLES}
-<span class="frog-home" aria-hidden="true"></span>
+<span class="frog-home${ON_LILY ? " on-lily" : ""}" aria-hidden="true">${ON_LILY ? PAD("home-pad") : ""}</span>
 ${FROG_BIG}
 <p class="fly-score" aria-live="polite" data-score="${esc(t.fliesScore)}">${esc(t.fliesHint)}</p>
 <a class="pond-play" href="${playUrl(lang)}">${esc(t.pondPlay)}</a>
@@ -635,8 +642,14 @@ function catRow(lang, p) {
 
 const bandOf = (lang, p, i) => `<div class="band water" style="--tint: ${esc(p.tint ?? "var(--water)")}"><div class="wrap">${spread(lang, p, i)}</div></div>`;
 
-function pageHead(lang, title, lede) {
-  return `<div class="wrap page-head"><h1>${esc(title)}</h1><p class="lede">${esc(lede)}</p></div>`;
+// Klyop in the outfit that fits the place (public/brand/klyop/*.webp, stickers for the plain poses).
+const KLYOP_SECTION = { mods: "klyop/rimworld", games: "klyop/streamer", packs: "klyop/miner", support: "stickers/wave", blog: hasPic("brand/klyop/desk.webp") ? "klyop/desk" : "stickers/smug" };
+const KLYOP_PROJECT = { "toi-late": "night-shift", scrapweld: "welder", kattila: "chemist", "peak-scouts": "climber", "belt-lantern": "lantern", "kfsos-lite": "miner", "kfsos-minecraft": "miner" };
+const klyopFor = (p) => KLYOP_PROJECT[p.id] ?? (tr(p.game, "en").startsWith("RimWorld") ? "rimworld" : null);
+const klyopImg = (rel, cls) => `<img class="${cls}" src="/brand/${rel}.webp" alt="" aria-hidden="true" loading="lazy" decoding="async">`;
+
+function pageHead(lang, title, lede, pose = null) {
+  return `<div class="wrap page-head${pose ? " has-klyop" : ""}"><h1>${esc(title)}</h1><p class="lede">${esc(lede)}</p>${pose ? klyopImg(pose, "head-klyop") : ""}</div>`;
 }
 
 function sectionPage(lang, key) {
@@ -646,7 +659,7 @@ function sectionPage(lang, key) {
     const mods = projects.filter((p) => p.kind === "mod");
     const families = [...new Set(mods.map(familyOf))];
     const count = (f) => mods.filter((p) => familyOf(p) === f).length;
-    body = `${pageHead(lang, t.navMods, t.modsLead)}
+    body = `${pageHead(lang, t.navMods, t.modsLead, KLYOP_SECTION.mods)}
 <nav class="wrap subtabs" aria-label="${esc(t.modsByGame)}"><a href="#mods-all" class="subtab" data-fam="" aria-current="true">${esc(t.modsAll)} <span class="num">${mods.length}</span></a>${families
   .map((f) => `<a href="#fam-${esc(f.toLowerCase())}" class="subtab" data-fam="${esc(f.toLowerCase())}">${esc(f)} <span class="num">${count(f)}</span></a>`)
   .join("")}</nav>
@@ -659,13 +672,13 @@ ${families
     const games = projects.filter((p) => p.kind === "game");
     const active = games.filter((p) => p.status !== "onhold");
     const held = games.filter((p) => p.status === "onhold");
-    body = `${pageHead(lang, t.navGames, t.gamesLead)}
+    body = `${pageHead(lang, t.navGames, t.gamesLead, KLYOP_SECTION.games)}
 ${active.map((p, i) => bandOf(lang, p, i + 1)).join("\n")}
 ${held.length ? `<section class="wrap cat held" aria-labelledby="held-h"><h2 id="held-h">${esc(t.onHold)}</h2><p class="held-note">${esc(t.onHoldNote)}</p><ol class="crows">${held.map((p) => catRow(lang, p)).join("\n")}</ol></section>` : ""}`;
   }
   if (key === "packs") {
     const packs = projects.filter((p) => p.kind === "modpack");
-    body = `${pageHead(lang, t.navPacks, t.packsLead)}
+    body = `${pageHead(lang, t.navPacks, t.packsLead, KLYOP_SECTION.packs)}
 ${packs.map((p, i) => bandOf(lang, p, i + 1)).join("\n")}`;
   }
   return layout({
@@ -685,6 +698,22 @@ const STICKERS = JSON.parse(readFileSync(join(pub, "brand", "stickers", "names.j
 const STICKER_ORDER = ["smug", "wave", "fixed", "shocked", "stop", "broken", "hug", "vibe", "beat", "rock", "fly"].filter((k) => STICKERS[k]);
 const QUOTE = { en: ["“", "”"], uk: ["«", "»"], ru: ["«", "»"] };
 
+// Klyop at home (src/pet.js): he walks, reacts to taps, changes outfits and repeats what you type. Texts: content/pet.json.
+const PET = existsSync(join(root, "content", "pet.json")) ? JSON.parse(readFileSync(join(root, "content", "pet.json"), "utf8")) : null;
+function petStage(lang) {
+  const t = site.strings[lang];
+  const P = PET?.[lang] ?? PET?.en;
+  if (!P) return `<img class="klyop-big" src="/brand/klyop-full.webp" width="560" height="1185" alt="${esc(t.toadAlt)}">`;
+  const b = (k) => `<button type="button" class="pet-btn" data-pet="${k}">${esc(P[k])}</button>`;
+  return `<div class="pet" role="group" aria-label="${esc(P.label)}">
+<div class="pet-floor"><div class="pet-body"><p class="pet-say" aria-live="polite"></p><span class="pet-flip"><img class="pet-img" src="/brand/klyop-full.webp" width="560" height="1185" alt="${esc(t.toadAlt)}" draggable="false"></span></div></div>
+<p class="pet-hint">${esc(P.hint)}</p>
+<div class="pet-ctrl">${b("tea")}${b("fly")}${b("walk")}${b("outfit")}</div>
+<form class="pet-talk"><input type="text" maxlength="140" placeholder="${esc(P.placeholder)}" aria-label="${esc(P.placeholder)}"><button type="submit" class="pet-btn">${esc(P.send)}</button></form>
+<script type="application/json" id="pet-text">${JSON.stringify(P.say).replace(/</g, "\\u003c")}</script>
+</div>`;
+}
+
 function creativePage(lang) {
   const t = site.strings[lang];
   const tracks = tracksFor(lang);
@@ -698,7 +727,7 @@ function creativePage(lang) {
   const body = `${pageHead(lang, t.navCreative, t.creativeLead)}
 <section class="wrap klyop-sheet" aria-labelledby="klyop-h">
 <div class="klyop-hero">
-<img class="klyop-big" src="/brand/klyop-full.webp" width="560" height="1185" alt="${esc(t.toadAlt)}">
+${petStage(lang)}
 <div class="klyop-about">
 <h2 id="klyop-h">${esc(t.klyopName)}</h2>
 <p class="klyop-say">${q[0]}${esc(t.klyopPhrase)}${q[1]}</p>
@@ -742,6 +771,7 @@ ${list.map(({ m, i }) => `<li class="track"><button type="button" class="play" d
     title: `${t.navCreative}: VibeSwamp`,
     description: t.creativeLead,
     current: "creative",
+    page: "page-creative",
     image: "brand/klyop-avatar-512.png",
     body,
     jsonld: { "@context": "https://schema.org", "@type": "CollectionPage", name: t.navCreative, url: `${site.baseUrl}${sectionUrl(lang, "creative")}`, inLanguage: lang },
@@ -775,7 +805,7 @@ function playPage(lang) {
 function supportPage(lang) {
   const t = site.strings[lang];
   const discord = site.discord ? `<a href="${esc(site.discord)}">Discord</a>` : "Discord";
-  const body = `${pageHead(lang, t.navSupport, t.supportLead)}
+  const body = `${pageHead(lang, t.navSupport, t.supportLead, KLYOP_SECTION.support)}
 <div class="wrap support">
 <section aria-labelledby="bug-h"><h2 id="bug-h">${esc(t.bugTitle)}</h2><p>${esc(t.bugText)}</p><p class="mono-path">${esc(t.bugLogPath)}</p><p>${discord}</p></section>
 <section aria-labelledby="idea-h"><h2 id="idea-h">${esc(t.ideaTitle)}</h2><p>${esc(t.ideaText)}</p></section>
@@ -927,7 +957,7 @@ ${p.status === "onhold" ? `<p class="hold-note">${esc(t.onHoldNote)}</p>` : ""}
 </div>
 </div>
 </section>
-${(tr(p.details, lang) || []).length ? `<div class="wrap project-body"><div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div></div>` : ""}
+${(tr(p.details, lang) || []).length ? `<div class="wrap project-body"><div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}</div>` : ""}
 ${(tr(p.plans, lang) || []).length ? `<section class="wrap plans" aria-labelledby="plans-h">
 <h2 id="plans-h"><span class="wire" aria-hidden="true"></span>${esc(t.plans)}</h2>
 <ul class="plan-list">${tr(p.plans, lang).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
@@ -973,10 +1003,11 @@ ${postList(lang, related, { showProjects: false })}
 function blogPage(lang) {
   const t = site.strings[lang];
   const list = postsIn(lang);
-  const body = `<div class="wrap page-head">
+  const body = `<div class="wrap page-head has-klyop">
 <h1>${esc(t.blog)}</h1>
 <p class="lede">${esc(t.blogLead)}</p>
 <p class="sec-links"><a href="${feedUrl(lang)}">${esc(t.feed)}</a></p>
+${klyopImg(KLYOP_SECTION.blog, "head-klyop")}
 </div>
 <div class="wrap blog-page">
 ${postList(lang, list)}
@@ -1137,6 +1168,7 @@ await cp(pub, dist, { recursive: true });
 await cp(join(root, "src", "style.css"), join(dist, "style.css"));
 await cp(join(root, "src", "site.js"), join(dist, "site.js"));
 if (existsSync(join(root, "src", "swamp.js"))) await cp(join(root, "src", "swamp.js"), join(dist, "swamp.js"));
+if (existsSync(join(root, "src", "pet.js"))) await cp(join(root, "src", "pet.js"), join(dist, "pet.js"));
 
 const pages = [];
 const write = async (path, html) => {

@@ -1,0 +1,35 @@
+{
+  "ru": {
+    "label": "Клёп дома: нажмите на него",
+    "hint": "Нажмите на голову или на Клёпа, дважды для прыжка. Если долго не играть, он уснёт.",
+    "tea": "Чай", "fly": "Муха", "walk": "Погулять", "outfit": "Переодеть",
+    "placeholder": "Напишите, Клёп повторит", "send": "Сказать",
+    "say": {
+      "yawn": "Ааа-ах…", "woke": "Ну чего будишь?", "tickle": ["Хи-хи!", "Щекотно!", "Ква-ха-ха!"],
+      "hello": "Привет!", "jump": "Оп!", "tea": "Ща, чайку…", "fly": "Муха моя!",
+      "outfits": ["Обычный я", "Колонист с окраины", "Шахтёр KFSOS", "Ночная смена", "Сварщик SCRAPWELD", "Химик из Kattila", "Альпинист PEAK", "С фонарём в Darkwater", "Стример на Twitch"]
+    }
+  },
+  "uk": {
+    "label": "Кльоп удома: натисніть на нього",
+    "hint": "Натисніть на голову або на Кльопа, двічі для стрибка. Якщо довго не грати, він засне.",
+    "tea": "Чай", "fly": "Муха", "walk": "Погуляти", "outfit": "Перевдягти",
+    "placeholder": "Напишіть, Кльоп повторить", "send": "Сказати",
+    "say": {
+      "yawn": "Ааа-ах…", "woke": "Ну чого будиш?", "tickle": ["Хі-хі!", "Лоскотно!", "Ква-ха-ха!"],
+      "hello": "Привіт!", "jump": "Оп!", "tea": "Зараз, чайку…", "fly": "Муха моя!",
+      "outfits": ["Звичайний я", "Колоніст з околиці", "Шахтар KFSOS", "Нічна зміна", "Зварник SCRAPWELD", "Хімік із Kattila", "Альпініст PEAK", "З ліхтарем у Darkwater", "Стример на Twitch"]
+    }
+  },
+  "en": {
+    "label": "Klyop at home: tap him",
+    "hint": "Tap his head or his body, double tap to jump. Leave him alone for a while and he falls asleep.",
+    "tea": "Tea", "fly": "Fly", "walk": "Walk", "outfit": "Dress up",
+    "placeholder": "Type something, Klyop repeats it", "send": "Say",
+    "say": {
+      "yawn": "Aaah…", "woke": "Why wake me up?", "tickle": ["Hee-hee!", "That tickles!", "Kwa-ha-ha!"],
+      "hello": "Hi!", "jump": "Hop!", "tea": "Hold on, tea first…", "fly": "That fly is mine!",
+      "outfits": ["Just me", "Frontier colonist", "KFSOS miner", "Night shift", "SCRAPWELD welder", "Kattila chemist", "PEAK climber", "With a lantern in Darkwater", "Twitch streamer"]
+    }
+  }
+}
