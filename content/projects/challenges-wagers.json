@@ -1,0 +1,79 @@
+{
+  "id": "challenges-wagers",
+  "order": 5,
+  "name": "Challenges & Wagers",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": "0.1.1",
+  "workshopId": "3834851829",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3834851829"
+    }
+  ],
+  "summary": {
+    "en": "Bet the storyteller on a rule for your colony and win a trophy: no guns, no trading, nobody dies, herbs only and more.",
+    "uk": "Укладіть парі з оповідачем на правило для колонії й виграйте трофей: без зброї, без торгівлі, ніхто не гине, лише трави та інше.",
+    "ru": "Заключите пари с рассказчиком на правило для колонии и выиграйте трофей: без оружия, без торговли, никто не умирает, только травы и другое."
+  },
+  "details": {
+    "en": [
+      "Before the first day ends, bet on rules and keep them for a year. Their weights add up to a rank: bronze, silver or gold. Break a rule, and the wager burns with one quiet line saying why.",
+      "Every trophy carries a seal: one save or reloads, dev or god mode, how many mods. Nothing is forbidden, it is written down. There is a trophy shelf in the main menu, a run card with a code for chat or stream, 35 achievements and a week's set that is the same for everyone.",
+      "No popups: an earned achievement is one line in the corner. Safe to add to a running game; wagers are for new colonies. With Ancient Restoration and Seamless World it has achievements and wagers of its own. English, Russian and Ukrainian. Works alongside Vanilla Achievements Expanded."
+    ],
+    "uk": [
+      "Поки не скінчився перший день, укладіть парі на правила й тримайтеся їх рік. Їхня вага складається в ранг: бронза, срібло або золото. Порушите правило, і парі згорить з одним тихим рядком, чому.",
+      "На кожному трофеї є печатка: одне збереження чи перезавантаження, режим розробника чи бога, скільки модів. Нічого не заборонено, усе записано. У головному меню є полиця трофеїв, є картка забігу з кодом для чату чи стріму, 35 досягнень і набір тижня, однаковий для всіх.",
+      "Без вікон, що вискакують: здобуте досягнення це один рядок у кутку. Можна додати в гру, що вже йде; парі для нових колоній. Разом з Ancient Restoration і Seamless World є свої досягнення й парі. Англійська, російська та українська. Працює разом із Vanilla Achievements Expanded."
+    ],
+    "ru": [
+      "Пока не кончился первый день, заключите пари на правила и держитесь их год. Их вес складывается в ранг: бронза, серебро или золото. Нарушите правило, и пари сгорит с одной тихой строкой, почему.",
+      "На каждом трофее печать: одно сохранение или перезагрузки, режим разработчика или бога, сколько модов. Ничего не запрещено, всё записано. В главном меню есть полка трофеев, есть карточка забега с кодом для чата или стрима, 35 достижений и набор недели, одинаковый для всех.",
+      "Без всплывающих окон: полученное достижение это одна строка в углу. Можно добавить в уже идущую игру; пари для новых колоний. Вместе с Ancient Restoration и Seamless World есть свои достижения и пари. Английский, русский и украинский. Работает вместе с Vanilla Achievements Expanded."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/challenges-wagers/header.jpg",
+      "caption": {
+        "en": "A colonist shakes hands with the storyteller on the wager “A year without medicine”.",
+        "uk": "Колоніст тисне руку оповідачеві на парі «Рік без медицини».",
+        "ru": "Колонист жмёт руку рассказчику на пари «Год без медицины»."
+      }
+    },
+    {
+      "file": "assets/challenges-wagers/set-wagers.jpg",
+      "caption": {
+        "en": "The storyteller's wagers: pick rules for the year before the first day ends.",
+        "uk": "Парі з оповідачем: оберіть правила на рік, поки не скінчився перший день.",
+        "ru": "Пари с рассказчиком: выберите правила на год, пока не кончился первый день."
+      }
+    },
+    {
+      "file": "assets/challenges-wagers/challenges-tab.jpg",
+      "caption": {
+        "en": "The Challenges tab: wagers in play, the week's set and the achievements.",
+        "uk": "Вкладка випробувань: чинні парі, набір тижня й досягнення.",
+        "ru": "Вкладка испытаний: действующие пари, набор недели и достижения."
+      }
+    },
+    {
+      "file": "assets/challenges-wagers/trophy-shelf.jpg",
+      "caption": {
+        "en": "The trophy shelf in the main menu, with every colony on your profile.",
+        "uk": "Полиця трофеїв у головному меню з усіма колоніями вашого профілю.",
+        "ru": "Полка трофеев в главном меню со всеми колониями вашего профиля."
+      }
+    }
+  ],
+  "image": "assets/challenges-wagers/set-wagers.jpg"
+}

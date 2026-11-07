@@ -1,0 +1,58 @@
+{
+  "id": "kfsos-minecraft",
+  "order": 10,
+  "name": "KFSOS Lights and Wearables",
+  "kind": "mod",
+  "game": {
+    "en": "Minecraft 1.20.1, Forge",
+    "uk": "Minecraft 1.20.1, Forge",
+    "ru": "Minecraft 1.20.1, Forge"
+  },
+  "status": "preparing",
+  "page": true,
+  "platforms": [
+    {
+      "name": "Modrinth",
+      "url": null
+    }
+  ],
+  "summary": {
+    "en": "Two mods from my survival modpack: rechargeable lights for the hand, the head and the gun, and worn items that give effects through simple data rules.",
+    "uk": "Два моди з моєї збірки на виживання: ліхтарі з підзарядкою в руку, на голову й на зброю та одяг, що дає ефекти за простими правилами в даних.",
+    "ru": "Два мода из моей сборки на выживание: фонари с подзарядкой в руку, на голову и на оружие и одежда, которая даёт эффекты по простым правилам в данных."
+  },
+  "details": {
+    "en": [
+      "KFSOS Lights: rechargeable lights for the hand, the head and the gun. They work with shaders. Curios and TACZ are optional.",
+      "KFSOS Wearables: everything you wear gives an effect. Simple rules in data turn worn things into small bonuses and light, for armour, the clothes layer and Curios, with caps so nothing gets out of hand. The tooltip shows what an item gives.",
+      "Both come from KFSOS, my survival modpack for Minecraft 1.20.1 on Forge."
+    ],
+    "uk": [
+      "KFSOS Lights: ліхтарі з підзарядкою в руку, на голову й на зброю. Працюють із шейдерами. Curios і TACZ не обов'язкові.",
+      "KFSOS Wearables: усе, що ви носите, дає ефект. Прості правила в даних перетворюють одяг на невеликі бонуси й світло для броні, шару одягу й Curios, з обмеженнями, щоб нічого не вийшло з-під контролю. Підказка показує, що дає річ.",
+      "Обидва з KFSOS, моєї збірки на виживання для Minecraft 1.20.1 на Forge."
+    ],
+    "ru": [
+      "KFSOS Lights: фонари с подзарядкой в руку, на голову и на оружие. Работают с шейдерами. Curios и TACZ не обязательны.",
+      "KFSOS Wearables: всё, что вы носите, даёт эффект. Простые правила в данных превращают одежду в небольшие бонусы и свет для брони, слоя одежды и Curios, с ограничениями, чтобы ничего не вышло из-под контроля. Подсказка показывает, что даёт вещь.",
+      "Оба из KFSOS, моей сборки на выживание для Minecraft 1.20.1 на Forge."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Both mods build and pass their automatic tests.",
+      "Next: check them in the game: lights in the hand and on the head, aiming with a gun light, light through walls and doors, and playing together.",
+      "Then: release on Modrinth. There is no date yet."
+    ],
+    "uk": [
+      "Обидва моди збираються й проходять автоматичні тести.",
+      "Далі перевірка в грі: ліхтар у руці й на голові, прицілювання з ліхтарем на зброї, світло крізь стіни й двері, гра разом.",
+      "Потім вихід на Modrinth. Дати поки немає."
+    ],
+    "ru": [
+      "Оба мода собираются и проходят автоматические тесты.",
+      "Дальше проверка в игре: фонарь в руке и на голове, прицеливание с фонарём на оружии, свет сквозь стены и двери, игра вместе.",
+      "Потом выход на Modrinth. Даты пока нет."
+    ]
+  }
+}

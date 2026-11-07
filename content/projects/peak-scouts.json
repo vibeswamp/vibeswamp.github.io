@@ -1,0 +1,65 @@
+{
+  "id": "peak-scouts",
+  "order": 11,
+  "name": {
+    "en": "Scout mods for PEAK",
+    "uk": "Моди скаутів для PEAK",
+    "ru": "Моды скаутов для PEAK"
+  },
+  "kind": "mod",
+  "game": {
+    "en": "PEAK",
+    "uk": "PEAK",
+    "ru": "PEAK"
+  },
+  "status": "preparing",
+  "page": true,
+  "platforms": [
+    {
+      "name": "Thunderstore",
+      "url": null
+    }
+  ],
+  "summary": {
+    "en": "Three mods that share one scout passport: an item journal that fills in as you find things, paper-doll gear made from vanilla cosmetics, and badges that start as rumours.",
+    "uk": "Три моди зі спільним паспортом скаута: журнал предметів, що заповнюється знахідками, спорядження на ляльці з ванільної косметики і значки, які спершу ходять чутками.",
+    "ru": "Три мода с общим паспортом скаута: журнал предметов, который заполняется находками, снаряжение на кукле из ванильной косметики и значки, которые сначала ходят слухами."
+  },
+  "details": {
+    "en": [
+      "Scout Compendium keeps an item journal right in the game. Cards open up as you see, hold, witness and use items, and the progress is saved. Only you need it, other players do not.",
+      "Scout Outfitter dresses your scout on a paper doll using only the game's own cosmetics: six slots, five sets, a wardrobe at the campfire and trading with the G key. Everyone in the lobby needs it.",
+      "Scout Merits gives badges that start as rumours before they become known and earned. Titles show over names, and the lobby shares three scout assignments per run.",
+      "All three open in one shared passport window."
+    ],
+    "uk": [
+      "Scout Compendium веде журнал предметів просто в грі. Картки відкриваються, коли ви бачите, тримаєте, спостерігаєте й використовуєте предмети, і прогрес зберігається. Потрібен лише вам, іншим гравцям ні.",
+      "Scout Outfitter одягає скаута на ляльці лише з косметики самої гри: шість слотів, п'ять комплектів, шафа біля багаття й обмін на клавішу G. Потрібен усім у лобі.",
+      "Scout Merits дає значки, які спершу ходять чутками, а потім стають відомими й заробленими. Над іменами з'являються звання, а лобі ділить на забіг три скаутські завдання.",
+      "Усі три відкриваються в одному спільному вікні паспорта."
+    ],
+    "ru": [
+      "Scout Compendium ведёт журнал предметов прямо в игре. Карточки открываются, когда вы видите, держите, наблюдаете и используете предметы, и прогресс сохраняется. Нужен только вам, другим игрокам нет.",
+      "Scout Outfitter одевает скаута на кукле только из косметики самой игры: шесть слотов, пять комплектов, шкаф у костра и обмен на клавишу G. Нужен всем в лобби.",
+      "Scout Merits даёт значки, которые сначала ходят слухами, а потом становятся известными и заработанными. Над именами появляются звания, а лобби делит на забег три скаутских задания.",
+      "Все три открываются в одном общем окне паспорта."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Packages for Thunderstore are built: Compendium 0.1.2, Outfitter 0.1.2 and Merits 0.2.0.",
+      "Before release: play Outfitter with friends in a real co-op lobby and check that every cosmetic and the boots look right.",
+      "Then: release on Thunderstore. There is no date yet."
+    ],
+    "uk": [
+      "Пакети для Thunderstore зібрані: Compendium 0.1.2, Outfitter 0.1.2 і Merits 0.2.0.",
+      "Перед виходом: зіграти з Outfitter з друзями в справжньому кооперативному лобі й перевірити, що вся косметика й чоботи виглядають правильно.",
+      "Потім вихід на Thunderstore. Дати поки немає."
+    ],
+    "ru": [
+      "Пакеты для Thunderstore собраны: Compendium 0.1.2, Outfitter 0.1.2 и Merits 0.2.0.",
+      "Перед выходом: сыграть с Outfitter с друзьями в настоящем кооперативном лобби и проверить, что вся косметика и ботинки выглядят правильно.",
+      "Потом выход на Thunderstore. Даты пока нет."
+    ]
+  }
+}

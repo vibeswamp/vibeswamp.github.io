@@ -1,0 +1,71 @@
+{
+  "id": "told-twice",
+  "order": 6,
+  "name": "Told Twice",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": "0.2.0",
+  "workshopId": "3831032552",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3831032552"
+    }
+  ],
+  "summary": {
+    "en": "Your colony's history, told twice: your annals, and the version of the enemy, who gets everything wrong.",
+    "uk": "Історія вашої колонії, розказана двічі: ваш літопис і версія ворога, який усе плутає.",
+    "ru": "История вашей колонии, рассказанная дважды: ваша летопись и версия врага, который всё путает."
+  },
+  "details": {
+    "en": [
+      "The mod keeps the colony's annals as you play: who came, who died and how, which raid broke against the walls, what the new statue shows. Colonists earn nicknames by what they do.",
+      "The faction that has hurt you most tells the same years its own way. A tribe sings, pirates boast, everyone else files a report. Names come out wrong, and the numbers always favour them.",
+      "There is a Chronicle tab with both versions and a strip of years, a desk where the annals become a real book, and an export to a web page. No AI and no internet: the text comes from hand-written templates. Works with old saves. English, Russian and Ukrainian."
+    ],
+    "uk": [
+      "Мод веде літопис колонії, поки ви граєте: хто прийшов, хто загинув і як, який наліт розбився об стіни, що зображує нова статуя. Колоністи отримують прізвиська за свої справи.",
+      "Фракція, що найбільше вам зашкодила, розповідає ті самі роки по-своєму. Плем'я співає, пірати хизуються, решта пише рапорт. Імена виходять перекрученими, а числа завжди на їхню користь.",
+      "Є вкладка «Хроніка» з обома версіями й смугою років, стіл, де літопис стає справжньою книгою, і збереження у вебсторінку. Без ШІ й без інтернету: текст складається з написаних вручну шаблонів. Працює зі старими збереженнями. Англійська, російська та українська."
+    ],
+    "ru": [
+      "Мод ведёт летопись колонии, пока вы играете: кто пришёл, кто погиб и как, какой налёт разбился о стены, что изображает новая статуя. Колонисты получают прозвища за свои дела.",
+      "Фракция, которая навредила вам больше всех, рассказывает те же годы по-своему. Племя поёт, пираты хвастаются, остальные пишут рапорт. Имена выходят перевранными, а числа всегда в их пользу.",
+      "Есть вкладка «Хроника» с обеими версиями и полосой лет, стол, где летопись становится настоящей книгой, и сохранение в веб-страницу. Без ИИ и без интернета: текст собирается из написанных вручную шаблонов. Работает со старыми сохранениями. Английский, русский и украинский."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/told-twice/two-voices.jpg",
+      "caption": {
+        "en": "One raid, told twice: your chronicle and the raiders' version.",
+        "uk": "Один наліт, розказаний двічі: ваш літопис і версія нападників.",
+        "ru": "Один налёт, рассказанный дважды: ваша летопись и версия налётчиков."
+      }
+    },
+    {
+      "file": "assets/told-twice/victory.jpg",
+      "caption": {
+        "en": "The raiders run, and their leaflet already calls it a heroic victory.",
+        "uk": "Нападники тікають, а їхня листівка вже називає це героїчною перемогою.",
+        "ru": "Налётчики бегут, а их листовка уже называет это героической победой."
+      }
+    },
+    {
+      "file": "assets/told-twice/chronicle-colony.jpg",
+      "caption": {
+        "en": "The first year in the colony's annals.",
+        "uk": "Перший рік у літописі колонії.",
+        "ru": "Первый год в летописи колонии."
+      }
+    }
+  ],
+  "image": "assets/told-twice/two-voices.jpg"
+}

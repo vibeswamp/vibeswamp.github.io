@@ -1,0 +1,71 @@
+{
+  "id": "ancient-obsession",
+  "order": 8,
+  "name": "Ancient Obsession",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": "0.6.0",
+  "workshopId": "3831185119",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3831185119"
+    }
+  ],
+  "summary": {
+    "en": "A colonist falls for a heap of ancient junk. Bring the parts, and it becomes a legend.",
+    "uk": "Колоніст прикипає до купи стародавнього брухту. Принесіть деталі, і вона стане легендою.",
+    "ru": "Колонист прикипает к куче древнего хлама. Принесите детали, и она станет легендой."
+  },
+  "details": {
+    "en": [
+      "Now and then a skilled colonist gets stuck on one ancient wreck. They drop their work, ask for particular parts and wait by it.",
+      "Bring everything within 7 days, and they restore it alone into a named legendary machine: same purpose, never breaks down, takes half damage, with its story engraved. If the parts never come, they break down, and a colonist with good Social can try to talk them out of it.",
+      "It is built from the same source as the obsession inside Ancient Restoration 0.6, so both get the same updates. If both are on, this mod runs and Ancient Restoration keeps its copy off. An obsession needs at least 3 free adult colonists, with the full chance from 5. 10 languages."
+    ],
+    "uk": [
+      "Час від часу вправний колоніст прикипає до одного стародавнього уламка. Він кидає роботу, просить певні деталі й чекає біля нього.",
+      "Принесіть усе за 7 днів, і він сам відновить уламок у легендарну машину з ім'ям: те саме призначення, ніколи не ламається, отримує вдвічі менше шкоди, а її історія вигравірувана. Якщо деталі так і не прийдуть, колоніст зірветься, а товариш із добрим умінням спілкуватися може спробувати його відмовити.",
+      "Мод збирається з того самого коду, що й одержимість усередині Ancient Restoration 0.6, тож оновлення в них спільні. Якщо ввімкнено обидва, працює цей мод, а Ancient Restoration вимикає свою копію. Для одержимості потрібно щонайменше 3 вільні дорослі колоністи, повний шанс від 5. 10 мов."
+    ],
+    "ru": [
+      "Время от времени умелый колонист прикипает к одному древнему обломку. Он бросает работу, просит определённые детали и ждёт возле него.",
+      "Принесите всё за 7 дней, и он в одиночку восстановит обломок в легендарную машину с именем: то же назначение, никогда не ломается, получает вдвое меньше урона, а её история выгравирована. Если детали так и не придут, колонист сорвётся, а товарищ с хорошим общением может попробовать его отговорить.",
+      "Мод собирается из того же кода, что и одержимость внутри Ancient Restoration 0.6, так что обновления у них общие. Если включены оба, работает этот мод, а Ancient Restoration выключает свою копию. Для одержимости нужно не меньше 3 свободных взрослых колонистов, полный шанс с 5. 10 языков."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/ancient-obsession/legend-ingame.jpg",
+      "caption": {
+        "en": "A legendary mini-turret after an obsession, with its own name and story.",
+        "uk": "Легендарна міні-турель після одержимості, з власним ім'ям та історією.",
+        "ru": "Легендарная мини-турель после одержимости, со своим именем и историей."
+      }
+    },
+    {
+      "file": "assets/ancient-obsession/scene.png",
+      "caption": {
+        "en": "A colonist on their knees before a heap of ancient junk.",
+        "uk": "Колоніст на колінах перед купою стародавнього брухту.",
+        "ru": "Колонист на коленях перед кучей древнего хлама."
+      }
+    },
+    {
+      "file": "assets/ancient-obsession/story.jpg",
+      "caption": {
+        "en": "How it goes: a colonist gets stuck on a wreck, asks for parts and turns it into a legend.",
+        "uk": "Як це буває: колоніст прикипає до уламка, просить деталі й робить із нього легенду.",
+        "ru": "Как это бывает: колонист прикипает к обломку, просит детали и делает из него легенду."
+      }
+    }
+  ],
+  "image": "assets/ancient-obsession/legend-ingame.jpg"
+}

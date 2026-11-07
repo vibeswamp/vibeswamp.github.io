@@ -1,0 +1,10 @@
+dist/
+shots/
+node_modules/
+open-site-log.txt
+add-shots-log.txt
+*.tmp
+discord/.env
+discord/setup-log.txt
+.env
+.export-site

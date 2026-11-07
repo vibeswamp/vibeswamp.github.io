@@ -1,0 +1,75 @@
+{
+  "id": "ancestral-ruins",
+  "order": 7,
+  "name": "Ancestral Ruins",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": {
+    "en": "0.1.0, beta",
+    "uk": "0.1.0, бета",
+    "ru": "0.1.0, бета"
+  },
+  "workshopId": "3831032590",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3831032590"
+    }
+  ],
+  "summary": {
+    "en": "Your old colonies come back as ruins in your next worlds: find your own walls, graves and gear.",
+    "uk": "Ваші старі колонії повертаються руїнами у ваші наступні світи: знайдіть власні стіни, могили й речі.",
+    "ru": "Ваши старые колонии возвращаются руинами в ваши следующие миры: найдите свои стены, могилы и вещи."
+  },
+  "details": {
+    "en": [
+      "A colony is recorded when you leave it, when everyone has died, or when you press the button on your settlement on the world map. Records stay on your computer: nothing is sent or downloaded.",
+      "The ruins hold walls, doors, floors and roofs aged 50 to 300 years, broken devices, graves of your old colonists with their names and stories, and sculptures with their old titles.",
+      "Early beta: save often and keep backups."
+    ],
+    "uk": [
+      "Колонія записується, коли ви її покидаєте, коли всі загинули або коли ви натискаєте кнопку на своєму поселенні на мапі світу. Записи лишаються на вашому комп'ютері: нічого не надсилається й не завантажується.",
+      "У руїнах стіни, двері, підлоги й дахи віком від 50 до 300 років, зламані пристрої, могили ваших старих колоністів з іменами й історіями та скульптури зі старими назвами.",
+      "Рання бета: зберігайтеся частіше й тримайте резервні копії."
+    ],
+    "ru": [
+      "Колония записывается, когда вы её покидаете, когда все погибли или когда вы нажимаете кнопку на своём поселении на карте мира. Записи остаются на вашем компьютере: ничего не отправляется и не скачивается.",
+      "В руинах стены, двери, полы и крыши возрастом от 50 до 300 лет, сломанные устройства, могилы ваших старых колонистов с именами и историями и скульптуры со старыми названиями.",
+      "Ранняя бета: сохраняйтесь чаще и держите резервные копии."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/ancestral-ruins/own-ruin.jpg",
+      "caption": {
+        "en": "The ruins of an old colony in a new world, its solar panels still standing.",
+        "uk": "Руїни старої колонії в новому світі, сонячні панелі ще стоять.",
+        "ru": "Руины старой колонии в новом мире, солнечные панели ещё стоят."
+      }
+    },
+    {
+      "file": "assets/ancestral-ruins/grave.jpg",
+      "caption": {
+        "en": "A grave from the old colony, with the name and the date of death.",
+        "uk": "Могила зі старої колонії з ім'ям і датою смерті.",
+        "ru": "Могила из старой колонии с именем и датой смерти."
+      }
+    },
+    {
+      "file": "assets/ancestral-ruins/world-map.jpg",
+      "caption": {
+        "en": "On the world map: the ruins of the colony and how long ago it lived.",
+        "uk": "На мапі світу: руїни колонії і скільки років тому вона жила.",
+        "ru": "На карте мира: руины колонии и сколько лет назад она жила."
+      }
+    }
+  ],
+  "image": "assets/ancestral-ruins/own-ruin.jpg"
+}

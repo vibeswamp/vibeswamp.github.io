@@ -1,0 +1,70 @@
+{
+  "id": "voxelheim",
+  "order": 16,
+  "name": "Chronicles of Voxelheim",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A third-person fantasy adventure in a half-frozen voxel world: a ragged wanderer with a rusty sword, an empty stomach and a long road.",
+    "uk": "Фентезійна пригода від третьої особи в напівзамерзлому воксельному світі: обідраний мандрівник з іржавим мечем, порожнім шлунком і довгою дорогою.",
+    "ru": "Фэнтезийное приключение от третьего лица в полузамёрзшем воксельном мире: оборванный странник с ржавым мечом, пустым желудком и долгой дорогой."
+  },
+  "details": {
+    "en": [
+      "You walk, fight, eat or starve, learn moves from beasts, a swordsman or found pages, and return to the tavern. The first part leads through Goldwood to the tavern, an altar of an ancient oak and a fight with a Titan.",
+      "The first loop through Goldwood works, with a new interface and a small side story. A demo for other players still needs work."
+    ],
+    "uk": [
+      "Ви йдете, б'єтеся, їсте або голодуєте, вчите прийоми у звірів, мечника чи зі знайдених сторінок і повертаєтеся до таверни. Перша частина веде крізь Золотолісся до таверни, вівтаря стародавнього дуба й бою з Титаном.",
+      "Перше коло через Золотолісся працює, є новий інтерфейс і невелика побічна історія. Демо для інших гравців ще потребує роботи."
+    ],
+    "ru": [
+      "Вы идёте, сражаетесь, едите или голодаете, учите приёмы у зверей, мечника или из найденных страниц и возвращаетесь в таверну. Первая часть ведёт через Золотолесье к таверне, алтарю древнего дуба и бою с Титаном.",
+      "Первый круг через Золотолесье работает, есть новый интерфейс и небольшая побочная история. Демо для других игроков ещё требует работы."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/voxelheim/goldwood.jpg",
+      "caption": {
+        "en": "On the path through Goldwood to the tavern.",
+        "uk": "На стежці крізь Золотолісся до таверни.",
+        "ru": "На тропе через Золотолесье к таверне."
+      }
+    },
+    {
+      "file": "assets/voxelheim/night-boar.jpg",
+      "caption": {
+        "en": "A night fight with a mountain boar in the rain.",
+        "uk": "Нічний бій з гірським вепром під дощем.",
+        "ru": "Ночной бой с горным вепрем под дождём."
+      }
+    }
+  ],
+  "image": "assets/voxelheim/goldwood.jpg",
+  "titlecard": {
+    "style": "vox",
+    "over": {
+      "en": "Goldwood",
+      "uk": "Золотолісся",
+      "ru": "Золотолесье"
+    },
+    "lines": [
+      "Chronicles of Voxelheim"
+    ],
+    "rule": true,
+    "tag": {
+      "en": "A ragged wanderer with a rusty sword, an empty stomach and a long road.",
+      "uk": "Обідраний мандрівник з іржавим мечем, порожнім шлунком і довгою дорогою.",
+      "ru": "Оборванный странник с ржавым мечом, пустым желудком и долгой дорогой."
+    },
+    "bg": "assets/voxelheim/goldwood.jpg"
+  }
+}

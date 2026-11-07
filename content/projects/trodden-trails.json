@@ -1,0 +1,88 @@
+{
+  "id": "trodden-trails",
+  "order": 3,
+  "name": "Trodden Trails",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": {
+    "en": "0.3.0",
+    "uk": "0.3.0",
+    "ru": "0.3.0"
+  },
+  "workshopId": "3834878122",
+  "image": "assets/trodden-trails/keyart-en.jpg",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3834878122"
+    }
+  ],
+  "summary": {
+    "en": "Caravans that keep using one route wear a trail into the world map, and the next trip is faster. Nobody built it. You just walked a lot.",
+    "uk": "Якщо каравани знову й знову ходять одним шляхом, на мапі світу лишається стежка, і наступний похід швидший. Її ніхто не будував. Ви просто багато ходили.",
+    "ru": "Если караваны снова и снова ходят одним путём, на карте мира остаётся тропа, и следующий поход быстрее. Её никто не строил. Вы просто много ходили."
+  },
+  "details": {
+    "en": [
+      "About three trips make a thin dusty trail that is 10% faster, about seven a well-trodden one that is 20% faster. A trail nobody uses grows back over a few weeks.",
+      "A trail is always weaker than a road and never appears where the world already has one. Raiders, traders and visitors wear the way they come by, so the map slowly shows where they come from.",
+      "In the colony, grass lies down where people walk often, then a footpath and a trodden trail form. In the rain bare soil turns to slow mud, and busy rough stone slowly wears smooth. Fields, floors, water and buildings are left alone.",
+      "Everything is drawn over the ground, so the mod can be added to a running save and removed. It needs Harmony. Do not use it together with Desire Paths (Continued), or turn off colony trails in this mod's settings."
+    ],
+    "uk": [
+      "Приблизно три походи протоптують тонку курну стежку, швидшу на 10%, приблизно сім добре протоптану, швидшу на 20%. Стежка, якою не ходять, заростає за кілька тижнів.",
+      "Стежка завжди слабша за дорогу й не з'являється там, де дорога вже є. Нападники, торговці й гості протоптують шлях, яким приходять, тож на мапі поступово видно, звідки вони ходять.",
+      "У колонії трава лягає там, де часто ходять, потім з'являються стежина й протоптана стежка. У дощ гола земля розбивається в повільну багнюку, а людний грубий камінь поступово стирається до гладкого. Поля, підлоги, вода й будівлі лишаються як є.",
+      "Усе малюється поверх землі, тож мод можна додати до збереження й прибрати. Потрібен Harmony. Не використовуйте разом із Desire Paths (Continued) або вимкніть стежки в колонії в налаштуваннях цього мода."
+    ],
+    "ru": [
+      "Примерно три похода протаптывают тонкую пыльную тропу, быстрее на 10%, примерно семь хорошо натоптанную, быстрее на 20%. Тропа, по которой не ходят, зарастает за несколько недель.",
+      "Тропа всегда слабее дороги и не появляется там, где дорога уже есть. Налётчики, торговцы и гости натаптывают путь, которым приходят, так что на карте понемногу видно, откуда они ходят.",
+      "В колонии трава ложится там, где часто ходят, потом появляются тропинка и натоптанная тропа. В дождь голая земля разбивается в вязкую грязь, а людный грубый камень понемногу стирается до гладкого. Поля, полы, вода и постройки остаются как есть.",
+      "Всё рисуется поверх земли, так что мод можно добавить в сохранение и убрать. Нужен Harmony. Не используйте вместе с Desire Paths (Continued) или выключите тропы в колонии в настройках этого мода."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/trodden-trails/keyart-en.jpg",
+      "caption": {
+        "en": "The same caravan route before, in the small picture, and after: a trail worn into the world map.",
+        "uk": "Той самий маршрут каравану до, на маленькій картинці, і після: стежка, протоптана на мапі світу. На табличці: «Дорогу ніхто не будував. Ми просто багато ходили».",
+        "ru": "Тот же маршрут каравана до, на маленькой картинке, и после: тропа, натоптанная на карте мира. На табличке: «Дорогу никто не строил. Мы просто много ходили»."
+      }
+    },
+    {
+      "file": "assets/trodden-trails/world-before.jpg",
+      "caption": {
+        "en": "The world map before: no trail yet.",
+        "uk": "Мапа світу до: стежки ще немає.",
+        "ru": "Карта мира до: тропы ещё нет."
+      }
+    },
+    {
+      "file": "assets/trodden-trails/world-after.jpg",
+      "caption": {
+        "en": "The same map after many caravan trips: a pale trail runs where they went.",
+        "uk": "Та сама мапа після багатьох походів: світла стежка там, де ходили каравани.",
+        "ru": "Та же карта после многих походов: светлая тропа там, где ходили караваны."
+      }
+    },
+    {
+      "file": "assets/trodden-trails/colony-rain.jpg",
+      "caption": {
+        "en": "In the colony: a trodden trail and mud where people walk in the rain.",
+        "uk": "У колонії: протоптана стежка й багнюка там, де ходять у дощ.",
+        "ru": "В колонии: натоптанная тропа и грязь там, где ходят в дождь."
+      }
+    }
+  ],
+  "featured": true,
+  "tint": "#2C2E1A"
+}

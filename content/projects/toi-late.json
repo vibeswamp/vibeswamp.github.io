@@ -1,0 +1,108 @@
+{
+  "id": "toi-late",
+  "order": 12,
+  "name": "Toi-Late",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "inprogress",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "Not a toilet management sim, but a sim of what the toilet gives back. A night-shift horror roguelite: flush for loot, keep your sanity, get out alive.",
+    "uk": "Не симулятор власника туалету, а симулятор того, що унітаз віддає натомість. Хорор-рогалик нічної зміни: змивай заради луту, тримай розум, виходь живим.",
+    "ru": "Не симулятор владельца туалета, а симулятор того, что унитаз отдаёт взамен. Хоррор-рогалик ночной смены: смывай ради лута, держи рассудок, выходи живым."
+  },
+  "details": {
+    "en": [
+      "A night shift in a toilet room. A forecast hints at what the toilet may give back, you flush or skip, take the loot, craft and build, and then hold out through the night against rats.",
+      "It mixes survival, a lottery and an RPG, with tough bosses and a little progress kept between runs.",
+      "Playable now: a three-day opening of 30 to 60 minutes that ends at a door at 03:17, with a toilet that talks, settings and saves. For now the game is in Russian only.",
+      "It is a graybox prototype, so a lot of the art is temporary."
+    ],
+    "uk": [
+      "Нічна зміна в туалетній кімнаті. Прогноз підказує, що може віддати унітаз, ви змиваєте або пропускаєте, забираєте лут, майструєте й будуєте, а вночі відбиваєтеся від щурів.",
+      "Тут змішані виживання, лотерея й RPG, з важкими босами й невеликим прогресом, що лишається між забігами.",
+      "Уже можна зіграти: триденний початок на 30–60 хвилин, що закінчується біля дверей о 03:17, з унітазом, який розмовляє, налаштуваннями й збереженнями. Поки гра лише російською.",
+      "Це сірий прототип: багато що в графіці тимчасове."
+    ],
+    "ru": [
+      "Ночная смена в туалетной комнате. Прогноз подсказывает, что может отдать унитаз, вы смываете или пропускаете, забираете лут, мастерите и строите, а ночью отбиваетесь от крыс.",
+      "Здесь смешаны выживание, лотерея и RPG, с тяжёлыми боссами и небольшим прогрессом, который остаётся между забегами.",
+      "Уже можно сыграть: трёхдневное начало на 30–60 минут, которое заканчивается у двери в 03:17, с говорящим унитазом, настройками и сохранениями. Пока игра только на русском.",
+      "Это серый прототип: многое в графике временное."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Next: I play the opening myself from start to finish.",
+      "Before anyone else plays: remove the test corridor door and the developer panel, and add English, gamepad support and key remapping.",
+      "Then: a closed playtest on itch.io. Steam comes later. There are no dates."
+    ],
+    "uk": [
+      "Далі я сам проходжу початок від першої до останньої хвилини.",
+      "Перш ніж грати дадуть комусь іще: прибрати двері тестового коридору й панель розробника, додати англійську, геймпад і зміну клавіш.",
+      "Потім закритий плейтест на itch.io. Steam пізніше. Дат немає."
+    ],
+    "ru": [
+      "Дальше я сам прохожу начало от первой до последней минуты.",
+      "Прежде чем играть дадут кому-то ещё: убрать дверь тестового коридора и панель разработчика, добавить английский, геймпад и смену клавиш.",
+      "Потом закрытый плейтест на itch.io. Steam позже. Дат нет."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/toi-late/day1-forecast.jpg",
+      "caption": {
+        "en": "Day one. The forecast hints at what the next flush may bring, and the toilet has an opinion about it.",
+        "uk": "День перший. Прогноз підказує, що може дати наступний змив, а в унітаза про це своя думка.",
+        "ru": "День первый. Прогноз подсказывает, что может дать следующий смыв, а у унитаза на этот счёт своё мнение."
+      }
+    },
+    {
+      "file": "assets/toi-late/night3-rats.jpg",
+      "caption": {
+        "en": "Night three: hold out against the rats until morning. The only weapon so far is a wooden spear.",
+        "uk": "Ніч третя: протриматися проти щурів до ранку. Зі зброї поки лише дерев'яний спис.",
+        "ru": "Ночь третья: продержаться против крыс до утра. Из оружия пока только деревянное копьё."
+      }
+    },
+    {
+      "file": "assets/toi-late/day2-room.jpg",
+      "caption": {
+        "en": "Day two: the room is bigger now, and the workbench is next.",
+        "uk": "День другий: кімната вже більша, далі верстак.",
+        "ru": "День второй: комната уже больше, дальше верстак."
+      }
+    },
+    {
+      "file": "assets/toi-late/room-wide.jpg",
+      "caption": {
+        "en": "The whole room. It is a graybox prototype, so a lot of the art is temporary.",
+        "uk": "Уся кімната. Це сірий прототип: багато що в графіці тимчасове.",
+        "ru": "Вся комната. Это серый прототип: многое в графике временное."
+      }
+    }
+  ],
+  "image": "assets/toi-late/day1-forecast.jpg",
+  "tint": "#222A26",
+  "titlecard": {
+    "style": "toi",
+    "over": "Служебный вход / объект 01",
+    "lines": [
+      "ПОСЛЕДНИЙ",
+      "СМЫВ"
+    ],
+    "rule": true,
+    "sub": "Toi-Late",
+    "tag": {
+      "en": "A night-shift horror roguelite: flush for loot, keep your sanity, get out alive.",
+      "uk": "Хорор-рогалик нічної зміни: змивай заради луту, тримай розум, виходь живим.",
+      "ru": "Хоррор-рогалик ночной смены: смывай ради лута, держи рассудок, выходи живым."
+    },
+    "bg": "assets/toi-late/room-wide.jpg"
+  }
+}

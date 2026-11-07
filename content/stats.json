@@ -1,0 +1,68 @@
+{
+  "fetchedAt": "2026-11-07",
+  "items": {
+    "ancient-restoration": {
+      "subscriptions": 237,
+      "lifetimeSubscriptions": 291,
+      "favorited": 37,
+      "views": 1203,
+      "created": "2026-10-18",
+      "updated": "2026-11-06"
+    },
+    "seamless-world": {
+      "subscriptions": 201,
+      "lifetimeSubscriptions": 267,
+      "favorited": 84,
+      "views": 1430,
+      "created": "2026-10-19",
+      "updated": "2026-10-31"
+    },
+    "trodden-trails": {
+      "subscriptions": 34,
+      "lifetimeSubscriptions": 36,
+      "favorited": 4,
+      "views": 130,
+      "created": "2026-11-06",
+      "updated": "2026-11-06"
+    },
+    "belt-lantern": {
+      "downloads": 822,
+      "versions": 4,
+      "created": "2026-04-03",
+      "updated": "2026-04-03",
+      "counted": "2026-11-07"
+    },
+    "ancestral-ruins": {
+      "subscriptions": 3,
+      "lifetimeSubscriptions": 3,
+      "favorited": 1,
+      "views": 38,
+      "created": "2026-10-31",
+      "updated": "2026-11-06"
+    },
+    "ancient-obsession": {
+      "subscriptions": 3,
+      "lifetimeSubscriptions": 3,
+      "favorited": 0,
+      "views": 46,
+      "created": "2026-10-31",
+      "updated": "2026-11-07"
+    },
+    "challenges-wagers": {
+      "subscriptions": 2,
+      "lifetimeSubscriptions": 2,
+      "favorited": 1,
+      "views": 68,
+      "created": "2026-11-06",
+      "updated": "2026-11-07"
+    },
+    "told-twice": {
+      "subscriptions": 5,
+      "lifetimeSubscriptions": 5,
+      "favorited": 1,
+      "views": 36,
+      "created": "2026-10-31",
+      "updated": "2026-11-07"
+    }
+  }
+}

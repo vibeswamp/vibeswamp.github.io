@@ -1,0 +1,66 @@
+{
+  "id": "kattila",
+  "order": 15,
+  "name": "Kattila",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A 3D chemical sandbox: a world of destructible voxels where powder pours, liquids flow, things burn and react, and you die of your own cleverness.",
+    "uk": "3D-пісочниця хімії: світ із руйнівних вокселів, де порошок сиплеться, рідини течуть, усе горить і реагує, а ви гинете від власної кмітливості.",
+    "ru": "3D-песочница химии: мир из разрушаемых вокселей, где порошок сыплется, жидкости текут, всё горит и реагирует, а вы погибаете от собственной сообразительности."
+  },
+  "details": {
+    "en": [
+      "Third-person view. The world runs on its own cellular automaton: powder, liquids, fire and 34 reactions, with materials described in data files. You throw and spill flasks, and creatures react to the chemistry too.",
+      "A technical first stage is done and passes its automatic checks. The next idea is a 3D arena against other players, and later a big world of self-taught mages and bosses."
+    ],
+    "uk": [
+      "Вигляд від третьої особи. Світ живе на власному клітинному автоматі: порошок, рідини, вогонь і 34 реакції, а матеріали описані у файлах даних. Ви кидаєте й розливаєте колби, і на хімію реагують навіть тварини.",
+      "Технічний перший етап готовий і проходить автоматичні перевірки. Далі в задумі 3D-арена проти інших гравців, а згодом великий світ магів-самоуків і босів."
+    ],
+    "ru": [
+      "Вид от третьего лица. Мир живёт на собственном клеточном автомате: порошок, жидкости, огонь и 34 реакции, а материалы описаны в файлах данных. Вы бросаете и разливаете колбы, и на химию реагируют даже звери.",
+      "Технический первый этап готов и проходит автоматические проверки. Дальше в задумке 3D-арена против других игроков, а позже большой мир магов-самоучек и боссов."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/kattila/meadow.jpg",
+      "caption": {
+        "en": "The meadow at the start, with the cave ahead.",
+        "uk": "Луг на старті, попереду печера.",
+        "ru": "Луг на старте, впереди пещера."
+      }
+    },
+    {
+      "file": "assets/kattila/rainstorm.jpg",
+      "caption": {
+        "en": "A rainstorm on the earlier blocky terrain.",
+        "uk": "Злива на ранішій кубічній місцевості.",
+        "ru": "Ливень на более ранней кубической местности."
+      }
+    }
+  ],
+  "image": "assets/kattila/meadow.jpg",
+  "titlecard": {
+    "style": "kattila",
+    "lines": [
+      "KATTILA"
+    ],
+    "rule": true,
+    "sub": "Chemical sandbox roguelike",
+    "tag": {
+      "en": "Powder pours, liquids flow, everything burns and reacts, and you die of your own cleverness.",
+      "uk": "Порошок сиплеться, рідини течуть, усе горить і реагує, а ви гинете від власної кмітливості.",
+      "ru": "Порошок сыплется, жидкости текут, всё горит и реагирует, а вы погибаете от собственной сообразительности."
+    },
+    "bg": "assets/kattila/meadow.jpg"
+  }
+}

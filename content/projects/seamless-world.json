@@ -1,0 +1,117 @@
+{
+  "id": "seamless-world",
+  "order": 1,
+  "name": "Seamless World",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": {
+    "en": "0.8.0, beta",
+    "uk": "0.8.0, бета",
+    "ru": "0.8.0, бета"
+  },
+  "workshopId": "3823099600",
+  "image": "assets/seamless-world/01.jpg",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3823099600"
+    }
+  ],
+  "summary": {
+    "en": "The edge of the map is no longer the end of the world. The six neighbouring tiles become real maps around your colony, and your colonists walk there to hunt, gather or chase traders.",
+    "uk": "Край карти більше не кінець світу. Шість сусідніх ділянок стають справжніми картами навколо колонії, і колоністи ходять туди полювати, збирати чи наздоганяти торговців.",
+    "ru": "Край карты больше не конец света. Шесть соседних клеток становятся настоящими картами вокруг колонии, и колонисты ходят туда охотиться, собирать или догонять торговцев."
+  },
+  "details": {
+    "en": [
+      "You see the neighbouring maps right beyond the edge. Right-click past the edge with colonists selected, and they cross over and walk on to that spot.",
+      "Raiders follow your people across the border, and traders walk on next door. Zones with none of your people are frozen and cost nothing, so the game does not slow down.",
+      "It is a beta: save often and keep backups."
+    ],
+    "uk": [
+      "Сусідні карти видно одразу за краєм. Клацніть правою кнопкою за краєм, коли вибрано колоністів, і вони перейдуть і дійдуть до цього місця.",
+      "Рейдери йдуть за вашими людьми через кордон, торговці проходять до сусідів. Зони, де немає ваших людей, заморожені й нічого не коштують, тож гра не гальмує.",
+      "Це бета: зберігайтеся частіше й тримайте резервні копії."
+    ],
+    "ru": [
+      "Соседние карты видно сразу за краем. Щёлкните правой кнопкой за краем, когда выбраны колонисты, и они перейдут и дойдут до этого места.",
+      "Рейдеры идут за вашими людьми через границу, торговцы уходят к соседям. Зоны, где нет ваших людей, заморожены и ничего не стоят, поэтому игра не тормозит.",
+      "Это бета: сохраняйтесь чаще и держите резервные копии."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/seamless-world/01.jpg",
+      "caption": {
+        "en": "Above the line is the neighbour's real map, not a picture. The panel on the left shows the six neighbouring tiles.",
+        "uk": "Над лінією справжня карта сусіда, а не картинка. Панель ліворуч показує шість сусідніх ділянок.",
+        "ru": "Над линией настоящая карта соседа, а не картинка. Панель слева показывает шесть соседних клеток."
+      }
+    },
+    {
+      "file": "assets/seamless-world/03.jpg",
+      "caption": {
+        "en": "Select a colonist and move the mouse to the edge: the stretch lights up, and the label says where it leads.",
+        "uk": "Виберіть колоніста й наведіть мишу на край: ділянка краю підсвічується, а підпис каже, куди вона веде.",
+        "ru": "Выберите колониста и наведите мышь на край: участок края подсвечивается, а подпись говорит, куда он ведёт."
+      }
+    },
+    {
+      "file": "assets/seamless-world/04.jpg",
+      "caption": {
+        "en": "Crossing as a group: colonists wait for each other at the border and step over together.",
+        "uk": "Перехід групою: колоністи чекають одне одного на кордоні й переходять разом.",
+        "ru": "Переход группой: колонисты ждут друг друга на границе и переходят вместе."
+      }
+    },
+    {
+      "file": "assets/seamless-world/s05-vehicle.jpg",
+      "caption": {
+        "en": "A vehicle crossing into the neighbouring zone, with the Vehicle Framework mod.",
+        "uk": "Транспорт переїжджає в сусідню зону, з модом Vehicle Framework.",
+        "ru": "Транспорт переезжает в соседнюю зону, с модом Vehicle Framework."
+      }
+    },
+    {
+      "file": "assets/seamless-world/02.jpg",
+      "caption": {
+        "en": "Where you can go and where not: the ocean on the right cannot be walked into and is shown darker.",
+        "uk": "Куди можна піти, а куди ні: океан праворуч непрохідний і показаний темнішим.",
+        "ru": "Куда можно пойти, а куда нет: океан справа непроходим и показан темнее."
+      }
+    },
+    {
+      "file": "assets/seamless-world/05.jpg",
+      "caption": {
+        "en": "Call a colonist from another zone by clicking their portrait.",
+        "uk": "Покликати колоніста з іншої зони можна кліком по його портрету.",
+        "ru": "Позвать колониста из другой зоны можно щелчком по его портрету."
+      }
+    },
+    {
+      "file": "assets/seamless-world/06.jpg",
+      "caption": {
+        "en": "Neighbour zones on the world map. An empty zone is forgotten after a day, unless you keep it.",
+        "uk": "Сусідні зони на карті світу. Порожня зона забувається за добу, якщо її не залишити.",
+        "ru": "Соседние зоны на карте мира. Пустая зона забывается через сутки, если её не оставить."
+      }
+    },
+    {
+      "file": "assets/seamless-world/07.jpg",
+      "caption": {
+        "en": "Mod settings: any part can be turned off, and you choose how far you see beyond the edge.",
+        "uk": "Налаштування мода: будь-яку частину можна вимкнути, а дальність огляду за краєм обрати самому.",
+        "ru": "Настройки мода: любую часть можно выключить, а дальность обзора за краем выбрать самому."
+      }
+    }
+  ],
+  "featured": true,
+  "tint": "#1E3236"
+}

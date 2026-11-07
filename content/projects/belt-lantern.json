@@ -1,0 +1,52 @@
+{
+  "id": "belt-lantern",
+  "order": 90,
+  "name": "Belt Lantern",
+  "kind": "mod",
+  "game": {
+    "en": "Darkwater",
+    "uk": "Darkwater",
+    "ru": "Darkwater"
+  },
+  "status": "released",
+  "version": {
+    "en": "1.2.1",
+    "uk": "1.2.1",
+    "ru": "1.2.1"
+  },
+  "thunderstore": {
+    "community": "darkwater",
+    "namespace": "EGYS1N",
+    "name": "Belt_Lantern"
+  },
+  "page": true,
+  "platforms": [
+    {
+      "name": "Thunderstore",
+      "url": "https://thunderstore.io/c/darkwater/p/EGYS1N/Belt_Lantern/"
+    }
+  ],
+  "summary": {
+    "en": "A belt slot for the gas lantern in Darkwater, so both hands stay free. The lantern lights everything around you and works in multiplayer.",
+    "uk": "Слот на поясі для газового ліхтаря в Darkwater, тож обидві руки вільні. Ліхтар світить навколо вас і працює в мультиплеєрі.",
+    "ru": "Слот на поясе для газового фонаря в Darkwater, так что обе руки свободны. Фонарь светит вокруг вас и работает в мультиплеере."
+  },
+  "details": {
+    "en": [
+      "V moves the lantern from your hand to the belt and back, L turns it on and off. The light shines in all directions with a slight flicker of the flame, and an icon on the inventory bar shows whether it is on.",
+      "Other players see your belt light too. If you die, the lantern drops to the ground, and your teammates can pick it up.",
+      "Darkwater is a co-op game about a submarine. The mod needs BepInExPack 5.4.2305. Brightness and colour of the light can be changed in a small window in the game, Alt+V."
+    ],
+    "uk": [
+      "V переносить ліхтар із руки на пояс і назад, L вмикає й вимикає його. Світло йде на всі боки з легким мерехтінням полум'я, а значок на панелі інвентарю показує, чи ліхтар увімкнений.",
+      "Інші гравці теж бачать ваш ліхтар на поясі. Якщо ви загинете, ліхтар упаде на землю, і товариші зможуть його підібрати.",
+      "Darkwater: кооперативна гра про підводний човен. Для мода потрібен BepInExPack 5.4.2305. Яскравість і колір світла можна змінити в маленькому вікні просто в грі, Alt+V."
+    ],
+    "ru": [
+      "V переносит фонарь из руки на пояс и обратно, L включает и выключает его. Свет идёт во все стороны с лёгким мерцанием пламени, а значок на панели инвентаря показывает, включён ли фонарь.",
+      "Другие игроки тоже видят ваш фонарь на поясе. Если вы погибнете, фонарь упадёт на землю, и товарищи смогут его подобрать.",
+      "Darkwater: кооперативная игра про подводную лодку. Для мода нужен BepInExPack 5.4.2305. Яркость и цвет света можно поменять в маленьком окне прямо в игре, Alt+V."
+    ]
+  },
+  "group": "other"
+}

@@ -1,0 +1,103 @@
+{
+  "id": "scrapweld",
+  "order": 13,
+  "name": "SCRAPWELD: Vermin to Apex",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Unreal Engine 5",
+    "uk": "Власна гра, Unreal Engine 5",
+    "ru": "Собственная игра, Unreal Engine 5"
+  },
+  "status": "inprogress",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A cyborg tears parts out of enemies in a fight, bolts them onto its own body and changes how the next raid plays.",
+    "uk": "Кіборг видирає деталі з ворогів у бою, прикручує їх на своє тіло й так змінює наступний рейд.",
+    "ru": "Киборг вырывает детали из врагов в бою, прикручивает их на своё тело и так меняет следующий рейд."
+  },
+  "details": {
+    "en": [
+      "Act I is playable on Windows: new game and continue, body repair, fights with aimed cuts, taking parts from enemies and fitting them, getting out with the loot, and a saved ending of the act.",
+      "Work in progress: the hero is still a stand-in model, and some screens are test versions."
+    ],
+    "uk": [
+      "Перший акт уже грається на Windows: нова гра й продовження, ремонт тіла, бої з прицільними ударами, деталі з ворогів і їх встановлення, вихід зі здобиччю і збережений фінал акту.",
+      "Робота триває: герой поки тимчасова модель, а деякі екрани тестові."
+    ],
+    "ru": [
+      "Первый акт уже играется на Windows: новая игра и продолжение, ремонт тела, бои с прицельными ударами, детали из врагов и их установка, выход с добычей и сохранённый финал акта.",
+      "Работа идёт: герой пока временная модель, а некоторые экраны тестовые."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Next: Act I from the moment the hero wakes up to the fight with the boss Varg, on Windows with keyboard and mouse.",
+      "Decided on 6 November: Act I begins with the first scrap prostheses, the town plan is set, and the game should hold a steady 60 frames per second.",
+      "There is no release date: the game is made without a fixed deadline."
+    ],
+    "uk": [
+      "Далі весь перший акт: від пробудження героя до бою з босом Варгом, на Windows з клавіатурою й мишею.",
+      "Вирішено 6 листопада: перший акт починається з перших протезів із брухту, план міста затверджено, а гра має тримати рівні 60 кадрів на секунду.",
+      "Дати виходу немає: гра робиться без жорсткого терміну."
+    ],
+    "ru": [
+      "Дальше весь первый акт: от пробуждения героя до боя с боссом Варгом, на Windows с клавиатурой и мышью.",
+      "Решено 6 ноября: первый акт начинается с первых протезов из лома, план города утверждён, а игра должна держать ровные 60 кадров в секунду.",
+      "Даты выхода нет: игра делается без жёсткого срока."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/scrapweld/arena-rokot.jpg",
+      "caption": {
+        "en": "The arena: the hero against the mutant Rokot. The hero is still a stand-in model.",
+        "uk": "Арена: герой проти мутанта Рокота. Герой поки тимчасова модель.",
+        "ru": "Арена: герой против мутанта Рокота. Герой пока временная модель."
+      }
+    },
+    {
+      "file": "assets/scrapweld/slipway.jpg",
+      "caption": {
+        "en": "The slipway: scrap parts go onto the body, and the table shows what changes. A test screen with every part unlocked.",
+        "uk": "Стапель: деталі з брухту ставляться на тіло, а таблиця показує, що змінюється. Тестовий екран, де відкриті всі деталі.",
+        "ru": "Стапель: детали из лома ставятся на тело, а таблица показывает, что меняется. Тестовый экран, где открыты все детали."
+      }
+    },
+    {
+      "file": "assets/scrapweld/prologue-fight.jpg",
+      "caption": {
+        "en": "A fight with Rokot in the prologue. A yellow flash on the enemy means it is time to dash away.",
+        "uk": "Бій з Рокотом у пролозі. Жовтий спалах на ворогові означає, що час відскакувати.",
+        "ru": "Бой с Рокотом в прологе. Жёлтая вспышка на враге значит, что пора уходить рывком."
+      }
+    },
+    {
+      "file": "assets/scrapweld/boiler-door.jpg",
+      "caption": {
+        "en": "A piece of the Act I world: a rusty door to the boiler room.",
+        "uk": "Шматок світу першого акту: іржаві двері котельні.",
+        "ru": "Кусочек мира первого акта: ржавая дверь котельной."
+      }
+    }
+  ],
+  "image": "assets/scrapweld/arena-rokot.jpg",
+  "tint": "#30231C",
+  "titlecard": {
+    "style": "scrap",
+    "lines": [
+      "SCRAPWELD"
+    ],
+    "sub": {
+      "en": "Vermin to Apex · Act I",
+      "uk": "Vermin to Apex · Акт I",
+      "ru": "Vermin to Apex · Акт I"
+    },
+    "tag": {
+      "en": "Tear parts out of enemies, bolt them onto yourself, change the next raid.",
+      "uk": "Видирай деталі з ворогів, прикручуй їх на себе, змінюй наступний рейд.",
+      "ru": "Вырывай детали из врагов, прикручивай их на себя, меняй следующий рейд."
+    },
+    "bg": "assets/scrapweld/arena-rokot.jpg"
+  }
+}

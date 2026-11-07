@@ -1,0 +1,61 @@
+{
+  "id": "kfsos-lite",
+  "order": 9,
+  "name": "KFSOS Lite",
+  "kind": "modpack",
+  "game": {
+    "en": "Minecraft 1.20.1, Forge",
+    "uk": "Minecraft 1.20.1, Forge",
+    "ru": "Minecraft 1.20.1, Forge"
+  },
+  "status": "inprogress",
+  "spotlight": true,
+  "tint": "#262B30",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "The main KFSOS modpack for Minecraft: survival among the ruins, a PDA with its own Network, dangerous expeditions, medicine, weapons, a shelter to build up and layered crafting.",
+    "uk": "Головна збірка KFSOS для Minecraft: виживання серед руїн, КПК «Мережі», небезпечні вилазки, медицина, зброя, розвиток притулку й багатоступеневе ремесло.",
+    "ru": "Основная сборка KFSOS для Minecraft: выживание среди руин, КПК «Сети», опасные вылазки, медицина, оружие, развитие убежища и многоступенчатое ремесло."
+  },
+  "details": {
+    "en": [
+      "Survival in a world after a catastrophe: ruined cities, zombies, wounds and medicine, weapons, a shelter and layered crafting. The story is led by Chronos. It starts with water, a dressing, a radio panel and the first cargo at a radio tower; then the road leads to the city and to expeditions.",
+      "A PDA opens the Network: signals, operations, district intelligence, supplies and a squad. Recovered materials go into the workshop, the equipment and implants.",
+      "294 mods, 315 with bundled libraries, and 12 of them are our own: the campaign and the PDA, the authored map, weather, rechargeable lights, combat with stuns and shield parries, creatures and bosses, worn gear with effects, illustrated guides, video and music on the loading screen, and fixes for speed and compatibility. Among the big third-party mods are TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat and First Aid. Minecraft 1.20.1, Forge 47.4.23."
+    ],
+    "uk": [
+      "Виживання у світі після катастрофи: зруйновані міста, зомбі, поранення й медицина, зброя, притулок і багатоступеневе ремесло. Історію веде Хронос. Усе починається з води, перев'язки, радіопанелі й першого вантажу біля радіовежі, а далі дорога веде до міста й на вилазки.",
+      "КПК відкриває «Мережу»: сигнали, операції, відомості про райони, постачання й загін. Знайдені матеріали йдуть у майстерню, спорядження й імпланти.",
+      "294 моди, а з вкладеними бібліотеками 315, і 12 із них наші: кампанія та КПК, авторська мапа, погода, фонарі з підзарядкою, бій з оглушенням і парируванням щитом, істоти й боси, одяг з ефектами, ілюстровані довідки, відео й музика на екрані завантаження та виправлення швидкодії й сумісності. Серед великих сторонніх модів TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat і First Aid. Minecraft 1.20.1, Forge 47.4.23."
+    ],
+    "ru": [
+      "Выживание в мире после катастрофы: разрушенные города, зомби, ранения и медицина, оружие, убежище и многоступенчатое ремесло. Историю ведёт Хронос. Всё начинается с воды, перевязки, радиопанели и первого груза у радиовышки, а дальше дорога ведёт к городу и на вылазки.",
+      "КПК открывает «Сеть»: сигналы, операции, сведения о районах, снабжение и отряд. Найденные материалы идут в мастерскую, снаряжение и импланты.",
+      "294 мода, а с вложенными библиотеками 315, и 12 из них наши: кампания и КПК, авторская карта, погода, фонари с подзарядкой, бой с оглушением и парированием щитом, существа и боссы, одежда с эффектами, иллюстрированные справки, видео и музыка на экране загрузки и исправления скорости и совместимости. Среди крупных сторонних модов TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat и First Aid. Minecraft 1.20.1, Forge 47.4.23."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Next: checking the story in the game chapter by chapter.",
+      "The PDA interface and the menus in one style.",
+      "Cars and wrecks on the roads, and big hordes without frame drops.",
+      "Screenshots and video for this page are being prepared.",
+      "There is no release date or platform yet."
+    ],
+    "uk": [
+      "Далі перевірка сюжету в грі глава за главою.",
+      "Інтерфейс КПК і меню в одному стилі.",
+      "Машини й остови на дорогах і великі орди без просідання кадрів.",
+      "Скриншоти й відео для цієї сторінки готуються.",
+      "Дати й майданчика виходу поки немає."
+    ],
+    "ru": [
+      "Дальше проверка сюжета в игре глава за главой.",
+      "Интерфейс КПК и меню в одном стиле.",
+      "Машины и остовы на дорогах и большие орды без просадки кадров.",
+      "Скриншоты и видео для этой страницы готовятся.",
+      "Даты и площадки выхода пока нет."
+    ]
+  }
+}

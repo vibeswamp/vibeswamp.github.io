@@ -1,0 +1,106 @@
+{
+  "id": "ancient-restoration",
+  "order": 2,
+  "name": "Ancient Restoration",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": {
+    "en": "0.6.1",
+    "uk": "0.6.1",
+    "ru": "0.6.1"
+  },
+  "workshopId": "3822574440",
+  "image": "assets/ancient-restoration/07-keyart.jpg",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3822574440"
+    }
+  ],
+  "summary": {
+    "en": "Found an ancient turret in the ruins? Repair it where it stands instead of scrapping it for steel: first as working ancient gear, later as its modern counterpart.",
+    "uk": "Знайшли в руїнах стародавню турель? Відремонтуйте її на місці, а не розбирайте на сталь: спершу до робочої стародавньої, згодом до сучасної.",
+    "ru": "Нашли в руинах древнюю турель? Почините её на месте, а не разбирайте на сталь: сначала до рабочей древней, потом до современной."
+  },
+  "details": {
+    "en": [
+      "Rusted turrets, dead generators, vault doors, lamps, crates and furniture can be brought back. Each stage looks different, so a quick patch-up and a proper repair are easy to tell apart.",
+      "A restored piece works a little worse than a new one, but you get it earlier and cheaper. 146 options for 135 kinds of ancient objects, eight languages."
+    ],
+    "uk": [
+      "Іржаві турелі, мертві генератори, двері сховищ, лампи, ящики й меблі можна повернути до життя. Кожна стадія виглядає по-своєму, тож швидку латку легко відрізнити від справжнього ремонту.",
+      "Відремонтована річ працює трохи гірше за нову, зате дістається раніше й дешевше. 146 варіантів для 135 видів стародавніх об'єктів, вісім мов."
+    ],
+    "ru": [
+      "Ржавые турели, мёртвые генераторы, двери хранилищ, лампы, ящики и мебель можно вернуть к жизни. Каждая стадия выглядит по-своему, так что быструю латку легко отличить от настоящего ремонта.",
+      "Восстановленная вещь работает чуть хуже новой, зато достаётся раньше и дешевле. 146 вариантов для 135 видов древних объектов, восемь языков."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/ancient-restoration/07-keyart.jpg",
+      "caption": {
+        "en": "An ancient turret in five stages: wreck, rusty, refurbished, standard and modern.",
+        "uk": "Стародавня турель у п'яти стадіях: уламок, іржава, перебрана, звичайна і сучасна.",
+        "ru": "Древняя турель в пяти стадиях: обломок, ржавая, перебранная, обычная и современная."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/13-i-vanilla.jpg",
+      "caption": {
+        "en": "Base game: an ancient bed, generator and electric stove as a wreck, restored and modernized.",
+        "uk": "Основна гра: стародавні ліжко, генератор і електроплита як уламок, після ремонту і після модернізації.",
+        "ru": "Основная игра: древние кровать, генератор и электроплита как обломок, после ремонта и после модернизации."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/10-i-turrets.jpg",
+      "caption": {
+        "en": "Two turret lines, the ancient guard turret and the broken autocannon, from wreck to modern.",
+        "uk": "Дві лінійки турелей, стародавня охоронна турель і зламана автогармата, від уламка до сучасної.",
+        "ru": "Две линейки турелей, древняя охранная турель и сломанная автопушка, от обломка до современной."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/11-i-overhauls-a.jpg",
+      "caption": {
+        "en": "Repairs that keep the ancient body: a vault lamp, a chemfuel generator and a pipeline junction.",
+        "uk": "Ремонт, після якого лишається стародавній корпус: лампа сховища, генератор на хімпаливі й вузол трубопроводу.",
+        "ru": "Ремонт, после которого остаётся древний корпус: лампа хранилища, хемотопливный генератор и узел трубопровода."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/14-i-mods.jpg",
+      "caption": {
+        "en": "With other authors' mods: a vault terminal, an IV stand, a fridge and a toilet.",
+        "uk": "З модами інших авторів: термінал сховища, крапельниця, холодильник і унітаз.",
+        "ru": "С модами других авторов: терминал хранилища, капельница, холодильник и унитаз."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/15-i-gizmos.jpg",
+      "caption": {
+        "en": "Select a wreck and order a quick or a proper repair.",
+        "uk": "Виберіть уламок і замовте швидкий або якісний ремонт.",
+        "ru": "Выберите обломок и закажите быстрый или качественный ремонт."
+      }
+    },
+    {
+      "file": "assets/ancient-restoration/16-i-bench.jpg",
+      "caption": {
+        "en": "An ancient toilet, sink and cracked bathtub, and the repair bench below.",
+        "uk": "Стародавні унітаз, раковина й тріснута ванна, а внизу ремонтний стіл.",
+        "ru": "Древние унитаз, раковина и треснувшая ванна, а внизу ремонтный стол."
+      }
+    }
+  ],
+  "featured": true,
+  "tint": "#3B2215"
+}

@@ -1,0 +1,33 @@
+{
+  "id": "oval-pool",
+  "order": 14,
+  "name": "Oval Pool: Freedom 250",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A satire in the form of a pool manager: keep the presidential residence pool, and the servers under it, alive through a seven-day crisis.",
+    "uk": "Сатира у вигляді менеджера басейну: протримати басейн президентської резиденції й сервери під ним сім днів кризи.",
+    "ru": "Сатира в виде менеджера бассейна: продержать бассейн президентской резиденции и серверы под ним семь дней кризиса."
+  },
+  "details": {
+    "en": [
+      "Top-down view. You walk the residence, scoop dirt and parasites out of the pool with a net, run the pump and the server room, and do daily jobs from guard duty to press conferences. Each job has a choice: really fix the problem, or fake it and risk being caught on camera.",
+      "The map, the zones, eight activities and saves are made, and automatic checks pass. A proper look at the graphics and a real playthrough have not happened yet."
+    ],
+    "uk": [
+      "Вигляд згори. Ви ходите резиденцією, вичерпуєте сачком бруд і паразитів із басейну, ведете насос і серверну й виконуєте щоденні справи від охорони до пресконференцій. У кожній справі є вибір: справді полагодити або вдати й ризикнути потрапити на камеру.",
+      "Мапа, зони, вісім занять і збереження вже зроблені, автоматичні перевірки проходять. Справжньої перевірки графіки й живого проходження ще не було."
+    ],
+    "ru": [
+      "Вид сверху. Вы ходите по резиденции, вычерпываете сачком грязь и паразитов из бассейна, ведёте насос и серверную и делаете ежедневные дела от охраны до пресс-конференций. В каждом деле есть выбор: правда починить или сделать вид и рискнуть попасть на камеру.",
+      "Карта, зоны, восемь занятий и сохранения уже сделаны, автоматические проверки проходят. Настоящей проверки графики и живого прохождения ещё не было."
+    ]
+  }
+}
