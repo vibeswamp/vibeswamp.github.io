@@ -2,26 +2,26 @@
   "fetchedAt": "2026-11-08",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 243,
-      "lifetimeSubscriptions": 299,
+      "subscriptions": 247,
+      "lifetimeSubscriptions": 303,
       "favorited": 36,
-      "views": 1238,
+      "views": 1253,
       "created": "2026-10-18",
       "updated": "2026-11-08"
     },
     "seamless-world": {
-      "subscriptions": 202,
-      "lifetimeSubscriptions": 270,
+      "subscriptions": 204,
+      "lifetimeSubscriptions": 272,
       "favorited": 86,
-      "views": 1442,
+      "views": 1451,
       "created": "2026-10-19",
       "updated": "2026-11-08"
     },
     "trodden-trails": {
       "subscriptions": 49,
       "lifetimeSubscriptions": 53,
-      "favorited": 6,
-      "views": 167,
+      "favorited": 7,
+      "views": 171,
       "created": "2026-11-06",
       "updated": "2026-11-06"
     },
@@ -36,7 +36,7 @@
       "subscriptions": 5,
       "lifetimeSubscriptions": 5,
       "favorited": 2,
-      "views": 48,
+      "views": 50,
       "created": "2026-10-31",
       "updated": "2026-11-06"
     },
@@ -44,23 +44,23 @@
       "subscriptions": 3,
       "lifetimeSubscriptions": 3,
       "favorited": 0,
-      "views": 63,
+      "views": 65,
       "created": "2026-10-31",
       "updated": "2026-11-08"
     },
     "challenges-wagers": {
-      "subscriptions": 2,
-      "lifetimeSubscriptions": 3,
+      "subscriptions": 3,
+      "lifetimeSubscriptions": 4,
       "favorited": 1,
-      "views": 81,
+      "views": 83,
       "created": "2026-11-06",
-      "updated": "2026-11-07"
+      "updated": "2026-11-08"
     },
     "told-twice": {
       "subscriptions": 5,
       "lifetimeSubscriptions": 6,
       "favorited": 1,
-      "views": 41,
+      "views": 44,
       "created": "2026-10-31",
       "updated": "2026-11-07"
     }

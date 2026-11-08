@@ -234,7 +234,7 @@ function inline(s) {
     m = [m[0], ...m.slice(2), m[1]];   // keep the old group numbers below; m[6] is the escaped sign
     if (m[6] !== undefined) out += esc(m[6]);
     else if (m[1] !== undefined) out += `<a href="${esc(linkTarget(m[2]))}">${inline(m[1])}</a>`;
-    else if (m[3] !== undefined) out += `<strong>${esc(m[3])}</strong>`;
+    else if (m[3] !== undefined) out += `<strong>${inline(m[3])}</strong>`;   // a link may sit inside bold text
     else if (m[4] !== undefined) out += `<em>${esc(m[4])}</em>`;
     else out += `<code>${esc(m[5])}</code>`;
     last = re.lastIndex;
@@ -252,7 +252,9 @@ function markdown(src, group) {
       if (lines.length === 1 && (m = lines[0].match(/^(#{2,4})\s+(.+)$/))) return `<h${m[1].length}>${inline(m[2])}</h${m[1].length}>`;
       if (lines.length === 1 && (m = lines[0].match(/^!\[([^\]]*)\]\(([^)\s]+)\)$/))) {
         const info = picture(m[2]);
-        return `<figure>${zoom(info, { alt: m[1], caption: m[1], group })}${m[1] ? `<figcaption>${esc(m[1])}</figcaption>` : ""}</figure>`;
+        // a small picture (an icon, a card) keeps its own size instead of stretching to the column
+        const small = info.w && info.w < 480;
+        return `<figure${small ? ' class="fig-small"' : ""}>${zoom(info, { alt: m[1], caption: m[1], group })}${m[1] ? `<figcaption>${esc(m[1])}</figcaption>` : ""}</figure>`;
       }
       if (lines.every((l) => /^\s*[-*]\s+/.test(l))) return `<ul>${lines.map((l) => `<li>${inline(l.replace(/^\s*[-*]\s+/, ""))}</li>`).join("")}</ul>`;
       if (lines.every((l) => /^\s*\d+[.)]\s+/.test(l))) return `<ol>${lines.map((l) => `<li>${inline(l.replace(/^\s*\d+[.)]\s+/, ""))}</li>`).join("")}</ol>`;

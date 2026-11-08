@@ -1493,3 +1493,7 @@ body {
 .short figcaption span { display: block; }
 .short-credit { margin-top: 6px; font-size: 13px; }
 .short-legal { margin-top: 6px; font-size: 12px; line-height: 1.4; opacity: 0.85; }
+
+/* 08.11.2026: small pictures in posts (an icon, a card) keep their own size (build.mjs markdown, figure.fig-small) */
+.fig-small .zoom { display: inline-block; max-width: 100%; }
+.fig-small .zoom img { width: auto; max-width: 100%; }
