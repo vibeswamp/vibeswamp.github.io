@@ -10,9 +10,9 @@
   },
   "status": "released",
   "version": {
-    "en": "0.6.1",
-    "uk": "0.6.1",
-    "ru": "0.6.1"
+    "en": "0.6.2",
+    "uk": "0.6.2",
+    "ru": "0.6.2"
   },
   "workshopId": "3822574440",
   "image": "assets/ancient-restoration/07-keyart.jpg",
@@ -102,5 +102,31 @@
     }
   ],
   "featured": true,
-  "tint": "#3B2215"
+  "tint": "#3B2215",
+  "short": {
+    "file": "assets/ancient-restoration/short-ru.mp4",
+    "poster": "assets/ancient-restoration/short-poster.webp",
+    "lang": "ru",
+    "caption": {
+      "en": "A 35-second video on what the mod does. The video is in Russian.",
+      "uk": "Ролик на 35 секунд про те, що робить мод. Відео російською.",
+      "ru": "Ролик на 35 секунд о том, что делает мод."
+    },
+    "label": {
+      "en": "Ancient Restoration video",
+      "uk": "Відео про Ancient Restoration",
+      "ru": "Ролик про Ancient Restoration"
+    },
+    "voice": "owner",
+    "credits": {
+      "en": "Klyop is drawn by a neural network; the music, “Chronos Breach Overture”, was made in Suno.",
+      "uk": "Кльопа намальовано нейромережею, музику «Chronos Breach Overture» зроблено в Suno.",
+      "ru": "Клёп нарисован нейросетью, музыка «Chronos Breach Overture» сделана в Suno."
+    },
+    "voiceSuno": {
+      "en": "The voice is from Suno too.",
+      "uk": "Голос теж із Suno.",
+      "ru": "Голос тоже из Suno."
+    }
+  }
 }

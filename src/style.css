@@ -1483,3 +1483,13 @@ body {
 @media (max-width: 600px) {
   .pond-play { bottom: calc(var(--s3) + 44px); }
 }
+
+/* ---------- 08.11.2026: a vertical short beside a mod's description (build.mjs shortVideo) ---------- */
+.short { flex: none; width: 270px; margin: var(--s2) 0 0; }
+.short-video { display: block; width: 100%; height: auto; aspect-ratio: 9 / 16; border-radius: 10px; background: #1C2416; box-shadow: 0 12px 26px rgba(0, 0, 0, 0.28); }
+.short figcaption { margin-top: var(--s2); font-size: 14px; line-height: 1.45; color: var(--ink-2); }
+@media (max-width: 900px) { .short { width: 230px; } }
+@media (max-width: 600px) { .short { width: min(100%, 300px); align-self: center; } }
+.short figcaption span { display: block; }
+.short-credit { margin-top: 6px; font-size: 13px; }
+.short-legal { margin-top: 6px; font-size: 12px; line-height: 1.4; opacity: 0.85; }

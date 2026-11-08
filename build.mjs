@@ -957,6 +957,20 @@ ${postList(lang, recent)}
   });
 }
 
+// A vertical short (9:16) beside the mod's description: no autoplay, nothing loads until play (owner, 08.11.2026:
+// «видос можно выложить на сайт»). The file comes from the social chat's shorts; replacing the voice is one file.
+// Under it: who made what (Klyop by a neural network, music in Suno, and the voice too when "voice" is "suno"), and the
+// Ludeon notice, since the footage is RimWorld.
+function shortVideo(lang, p) {
+  const t = site.strings[lang];
+  const v = p.short;
+  const credit = [tr(v.credits, lang), v.voice === "suno" ? tr(v.voiceSuno, lang) : ""].filter(Boolean).join(" ");
+  return `<figure class="short">
+<video class="short-video" controls preload="none" playsinline poster="/${esc(v.poster)}" width="720" height="1280" lang="${esc(v.lang ?? "ru")}" aria-label="${esc(tr(v.label, lang) ?? "")}"><source src="/${esc(v.file)}" type="video/mp4"></video>
+<figcaption>${tr(v.caption, lang) ? `<span class="short-cap">${esc(tr(v.caption, lang))}</span>` : ""}${credit ? `<span class="short-credit">${esc(credit)}</span>` : ""}${p.ludeon && t.disclaimer ? `<span class="short-legal" lang="en">${esc(t.disclaimer)}</span>` : ""}</figcaption>
+</figure>`;
+}
+
 function projectPage(lang, p) {
   const t = site.strings[lang];
   const s = stats.items[p.id];
@@ -991,7 +1005,7 @@ ${p.status === "onhold" ? `<p class="hold-note">${esc(t.onHoldNote)}</p>` : ""}
 </div>
 </div>
 </section>
-${(tr(p.details, lang) || []).length ? `<div class="wrap project-body"><div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}</div>` : ""}
+${(tr(p.details, lang) || []).length ? `<div class="wrap project-body"><div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${p.short ? shortVideo(lang, p) : klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}</div>` : ""}
 ${(tr(p.plans, lang) || []).length ? `<section class="wrap plans" aria-labelledby="plans-h">
 <h2 id="plans-h"><span class="wire" aria-hidden="true"></span>${esc(t.plans)}</h2>
 <ul class="plan-list">${tr(p.plans, lang).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
