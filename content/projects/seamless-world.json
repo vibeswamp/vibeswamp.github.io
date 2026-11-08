@@ -10,9 +10,9 @@
   },
   "status": "released",
   "version": {
-    "en": "0.8.0, beta",
-    "uk": "0.8.0, бета",
-    "ru": "0.8.0, бета"
+    "en": "0.9.0, beta",
+    "uk": "0.9.0, бета",
+    "ru": "0.9.0, бета"
   },
   "workshopId": "3823099600",
   "image": "assets/seamless-world/01.jpg",
@@ -33,16 +33,19 @@
     "en": [
       "You see the neighbouring maps right beyond the edge. Right-click past the edge with colonists selected, and they cross over and walk on to that spot.",
       "Raiders follow your people across the border, and traders walk on next door. Zones with none of your people are frozen and cost nothing, so the game does not slow down.",
+      "Optional fog: you see a neighbor zone only near a colonist, a vehicle or a watchtower, and where you have been stays under a light haze.",
       "It is a beta: save often and keep backups."
     ],
     "uk": [
       "Сусідні карти видно одразу за краєм. Клацніть правою кнопкою за краєм, коли вибрано колоністів, і вони перейдуть і дійдуть до цього місця.",
       "Рейдери йдуть за вашими людьми через кордон, торговці проходять до сусідів. Зони, де немає ваших людей, заморожені й нічого не коштують, тож гра не гальмує.",
+      "За бажанням вмикається туман: сусідню зону видно лише поруч із колоністом, машиною або сторожовою вежею, а де ви вже були, лишається під легким серпанком.",
       "Це бета: зберігайтеся частіше й тримайте резервні копії."
     ],
     "ru": [
       "Соседние карты видно сразу за краем. Щёлкните правой кнопкой за краем, когда выбраны колонисты, и они перейдут и дойдут до этого места.",
       "Рейдеры идут за вашими людьми через границу, торговцы уходят к соседям. Зоны, где нет ваших людей, заморожены и ничего не стоят, поэтому игра не тормозит.",
+      "По желанию включается туман: соседнюю зону видно только рядом с колонистом, машиной или сторожевой вышкой, а где вы уже были, остаётся под лёгкой дымкой.",
       "Это бета: сохраняйтесь чаще и держите резервные копии."
     ]
   },
