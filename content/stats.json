@@ -1,16 +1,16 @@
 {
-  "fetchedAt": "2026-11-07",
+  "fetchedAt": "2026-11-08",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 237,
-      "lifetimeSubscriptions": 292,
+      "subscriptions": 238,
+      "lifetimeSubscriptions": 293,
       "favorited": 36,
-      "views": 1206,
+      "views": 1210,
       "created": "2026-10-18",
       "updated": "2026-11-06"
     },
     "seamless-world": {
-      "subscriptions": 201,
+      "subscriptions": 200,
       "lifetimeSubscriptions": 267,
       "favorited": 84,
       "views": 1432,
@@ -18,10 +18,10 @@
       "updated": "2026-10-31"
     },
     "trodden-trails": {
-      "subscriptions": 36,
-      "lifetimeSubscriptions": 38,
-      "favorited": 4,
-      "views": 132,
+      "subscriptions": 39,
+      "lifetimeSubscriptions": 42,
+      "favorited": 5,
+      "views": 140,
       "created": "2026-11-06",
       "updated": "2026-11-06"
     },
@@ -30,13 +30,13 @@
       "versions": 4,
       "created": "2026-04-03",
       "updated": "2026-04-03",
-      "counted": "2026-11-07"
+      "counted": "2026-11-08"
     },
     "ancestral-ruins": {
       "subscriptions": 3,
       "lifetimeSubscriptions": 3,
       "favorited": 1,
-      "views": 39,
+      "views": 40,
       "created": "2026-10-31",
       "updated": "2026-11-06"
     },
@@ -44,7 +44,7 @@
       "subscriptions": 3,
       "lifetimeSubscriptions": 3,
       "favorited": 0,
-      "views": 46,
+      "views": 47,
       "created": "2026-10-31",
       "updated": "2026-11-07"
     },
@@ -52,7 +52,7 @@
       "subscriptions": 2,
       "lifetimeSubscriptions": 2,
       "favorited": 1,
-      "views": 70,
+      "views": 74,
       "created": "2026-11-06",
       "updated": "2026-11-07"
     },

@@ -276,6 +276,7 @@ function markdown(src, group) {
 // ---------- page frame ----------
 
 const ICON_MUSIC = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="17" r="2.5" fill="currentColor"/><circle cx="16.5" cy="15" r="2.5" fill="currentColor"/></svg>`;
+const ICON_THEME = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path class="i-moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="currentColor"/><g class="i-sun" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>`;
 const ICON_FX = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="wave1" d="M16 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="wave2" d="M18.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 // Picks the language once, before the page is drawn: a language the visitor chose on the site (remembered in the
@@ -336,7 +337,7 @@ ${c.sub ? `<p class="tc-sub">${esc(trOr(c.sub, lang))}</p>` : ""}${!small && c.t
 }
 
 function langPick(lang, paths) {
-  return `<script>document.documentElement.classList.add("js");(function(){try{var a=${JSON.stringify(paths)},k="vibeswamp-lang",s=localStorage.getItem(k),w=a[s]?s:"";
+  return `<script>document.documentElement.classList.add("js");(function(){try{var t=localStorage.getItem("vibeswamp-theme");if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}})();(function(){try{var a=${JSON.stringify(paths)},k="vibeswamp-lang",s=localStorage.getItem(k),w=a[s]?s:"";
 if(!w){var n=navigator.languages||[navigator.language||""];for(var i=0;i<n.length&&!w;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(a[c])w=c;}}
 if(w&&w!=="${lang}")location.replace(a[w]+location.hash);}catch(e){}})();</script>`;
 }
@@ -361,7 +362,8 @@ ${langPick(lang, paths)}
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${esc(title)}</title>
 <meta name="description" content="${esc(description)}">
-<meta name="theme-color" content="#F4F6F0">
+<meta name="theme-color" content="#F4F6F0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10160E" media="(prefers-color-scheme: dark)">
 <link rel="canonical" href="${site.baseUrl}${path}">
 ${site.languages.map((l) => `<link rel="alternate" hreflang="${l}" href="${site.baseUrl}${paths[l]}">`).join("\n")}
 <link rel="alternate" hreflang="x-default" href="${site.baseUrl}${paths.en}">
@@ -391,6 +393,7 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(
 <span class="sound" role="group" aria-label="${esc(t.soundLabel)}">
 <button type="button" class="snd snd-music" aria-pressed="false" aria-label="${esc(t.musicLabel)}" title="${esc(t.musicLabel)}">${ICON_MUSIC}</button>
 <button type="button" class="snd snd-fx" aria-pressed="false" aria-label="${esc(t.fxLabel)}" title="${esc(t.fxLabel)}">${ICON_FX}</button>
+<button type="button" class="snd snd-theme" aria-pressed="false" aria-label="${esc(t.themeLabel)}" title="${esc(t.themeLabel)}" data-night="${esc(t.themeNight)}" data-day="${esc(t.themeDay)}">${ICON_THEME}</button>
 </span>
 <nav>
 ${nav.map(([key, href, label]) => `<a href="${href}"${key === current ? ` aria-current="page"` : ""}>${esc(label)}</a>`).join("\n")}
@@ -444,6 +447,33 @@ function platformButtons(lang, p) {
     .join("");
 }
 
+// The KFSOS Lite PDA: the pack's own interface themes (TabletTheme.java), the six sections of its description, the
+// Chronos radio lines and the loading-screen tips (content/projects/kfsos-lite.json "terminal"). src/site.js runs it.
+const KF_THEMES = ["rust", "glass", "neon", "classic"];
+function kfPanel(lang, p, { page = false } = {}) {
+  const t = site.strings[lang];
+  const k = p.terminal;
+  const names = { rust: t.kfRust, glass: t.kfGlass, neon: t.kfNeon, classic: t.kfClassic };
+  const secs = k.sections.map((s) => ({ n: tr(s.name, lang), x: tr(s.text, lang) }));
+  const data = { radio: k.radio.map((r) => tr(r, lang)), tips: k.tips.map((r) => tr(r, lang)), secs };
+  return `<div class="shot kf" data-kf="neon">
+<div class="kf-case">
+<div class="kf-bar"><span class="kf-led" aria-hidden="true"></span><span class="kf-title">${esc(nameOf(p, lang))}</span><span class="kf-sub">${esc(t.kfTitle)}</span>
+<div class="kf-themes" role="group" aria-label="${esc(t.kfThemes)}"><span class="kf-thname" aria-hidden="true">${esc(names.neon)}</span>${KF_THEMES.map((th) => `<button type="button" class="kf-th kf-th-${th}" data-kf-theme="${th}" aria-pressed="${th === "neon"}" aria-label="${esc(names[th])}" title="${esc(names[th])}"><span class="kf-sw" aria-hidden="true"></span></button>`).join("")}</div></div>
+<div class="kf-screen">
+<p class="kf-pitch">${esc(tr(k.pitch, lang))}</p>
+<ol class="kf-secs">${secs.map((s, i) => `<li><button type="button" class="kf-sec" data-i="${i}" aria-pressed="${i === 0}"><span class="kf-n num">${String(i + 1).padStart(2, "0")}</span> ${esc(s.n)}</button></li>`).join("")}</ol>
+<p class="kf-sec-text">${esc(secs[0].x)}</p>
+<div class="kf-radio"><span class="kf-on">${esc(t.kfOnAir)}</span><p class="kf-line">${esc(data.radio[0])}</p></div>
+<p class="kf-tip"><span class="kf-tip-h">${esc(t.kfTip)}:</span> <span class="kf-tip-t">${esc(data.tips[0])}</span></p>
+</div>
+<div class="kf-menu">${page ? "" : `<a class="kf-btn" href="${projectUrl(lang, p.id)}">${esc(t.kfEnter)}</a>`}<button type="button" class="kf-btn kf-next">${esc(t.kfNext)}</button></div>
+</div>
+<p class="kf-note">${esc(t.kfNote)}</p>
+<script type="application/json" class="kf-data">${JSON.stringify(data).replace(/</g, "\\u003c")}</script>
+</div>`;
+}
+
 function spread(lang, p, i) {
   const t = site.strings[lang];
   const href = p.page ? projectUrl(lang, p.id) : null;
@@ -458,7 +488,9 @@ function spread(lang, p, i) {
     .slice(0, 4)
     .map((g) => `<li>${zoom(g.info, { alt: captionOf(lang, p, g), caption: captionText(lang, g), group: p.id, small: true })}</li>`)
     .join("")}</ul>` : "");
-  const figure = p.titlecard && !video
+  const figure = p.terminal
+    ? kfPanel(lang, p)
+    : p.titlecard && !video
     ? `<div class="shot shot-title">${titlecard(lang, p, { eager: i === 0 })}${strip(gal)}</div>`
     : video || !main
     ? video
@@ -473,7 +505,7 @@ ${rest.length ? `<ul class="strip">${rest
   const more = href
     ? `<a class="more" href="${href}">${esc(p.kind === "modpack" ? t.aboutPack : p.kind === "game" ? t.aboutGame : t.aboutMod)}</a>${gal.length > 1 ? `<span class="soft">${gal.length} ${esc(plural(lang, gal.length, "pictures"))}</span>` : ""}`
     : "";
-  return `<article class="spread${main || video || p.titlecard ? "" : " solo"}" data-reveal>
+  return `<article class="spread${main || video || p.titlecard || p.terminal ? "" : " solo"}" data-reveal>
 ${figure}
 <div class="spread-text">
 <p class="kicker">${esc(tr(p.game, lang))}</p>
@@ -862,8 +894,20 @@ function indexPage(lang) {
   const recent = postsIn(lang).slice(0, 3);
   const featured = released.filter((p) => p.featured || !released.some((x) => x.featured));
   const others = released.filter((p) => !featured.includes(p));
+  // the main project, closest to release, goes right under the section doors (owner, 07.11: KFSOS Lite)
+  const spotHtml = spot
+    .map(
+      (p) => `<section class="band water spot" style="--tint: ${esc(p.tint ?? "var(--water)")}" aria-labelledby="spot-${p.id}">
+<div class="wrap">
+<h2 id="spot-${p.id}" class="water-h">${esc(t.spotlight)}</h2>
+${spread(lang, p, 1)}
+</div>
+</section>`
+    )
+    .join("\n");
   const body = `${hero(lang, total)}
 ${doors(lang)}
+${spotHtml}
 ${reel(lang)}
 <section id="projects" aria-labelledby="released-h">
 ${featured
@@ -877,16 +921,6 @@ ${spread(lang, p, i)}
   )
   .join("\n")}
 </section>
-${spot
-  .map(
-    (p) => `<section class="band water spot" style="--tint: ${esc(p.tint ?? "var(--water)")}" aria-labelledby="spot-${p.id}">
-<div class="wrap">
-<h2 id="spot-${p.id}" class="water-h">${esc(t.spotlight)}</h2>
-${spread(lang, p, 1)}
-</div>
-</section>`
-  )
-  .join("\n")}
 ${recent.length ? `<section id="blog" class="blog-teaser wrap" aria-labelledby="blog-h">
 <div class="sec-head"><h2 id="blog-h">${esc(t.blog)}</h2><p class="sec-links"><a href="${blogUrl(lang)}">${esc(t.allPosts)}</a><a href="${feedUrl(lang)}">${esc(t.feed)}</a></p></div>
 ${postList(lang, recent)}
@@ -941,8 +975,8 @@ function projectPage(lang, p) {
   const body = `<section class="water water-top">
 <div class="wrap">
 <p class="crumb"><a href="${homeUrl(lang)}#projects">${esc(t.allProjects)}</a></p>
-<div class="spread${main || p.titlecard ? "" : " solo"}">
-${p.titlecard ? `<div class="shot shot-title">${titlecard(lang, p, { eager: true })}</div>` : main ? `<figure class="shot">
+<div class="spread${main || p.titlecard || p.terminal ? "" : " solo"}">
+${p.terminal ? kfPanel(lang, p, { page: true }) : p.titlecard ? `<div class="shot shot-title">${titlecard(lang, p, { eager: true })}</div>` : main ? `<figure class="shot">
 ${zoom(main.info, { alt: captionOf(lang, p, main), caption: captionText(lang, main), group: p.id, eager: true, cls: "zoom-main" })}
 ${figcaption(lang, main)}
 </figure>` : ""}

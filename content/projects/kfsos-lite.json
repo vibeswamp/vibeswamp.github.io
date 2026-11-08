@@ -57,5 +57,165 @@
       "Скриншоты и видео для этой страницы готовятся.",
       "Даты и площадки выхода пока нет."
     ]
+  },
+  "terminal": {
+    "pitch": {
+      "en": "First, water. Then, a signal.",
+      "uk": "Спершу — вода. Потім — сигнал.",
+      "ru": "Сначала — вода. Потом — сигнал."
+    },
+    "sections": [
+      {
+        "name": {
+          "en": "First signal",
+          "uk": "Перший сигнал",
+          "ru": "Первый сигнал"
+        },
+        "text": {
+          "en": "Water, a dressing, a radio panel and real cargo. The opening gives the things you find a purpose.",
+          "uk": "Вода, перев'язка, радіопанель і справжній вантаж. Перші хвилини дають сенс кожній знайденій речі.",
+          "ru": "Вода, перевязка, радиопанель и настоящий груз. Первые минуты задают смысл каждому найденному предмету."
+        }
+      },
+      {
+        "name": {
+          "en": "Your weapons",
+          "uk": "Своя зброя",
+          "ru": "Своё оружие"
+        },
+        "text": {
+          "en": "Improvised TACZ weapons, ammunition and gunmetal. Salvaged metal becomes part of your equipment.",
+          "uk": "Саморобна зброя на TACZ, набої й збройовий сплав. Знайдений метал стає частиною спорядження.",
+          "ru": "Самодельное оружие на TACZ, боеприпасы и оружейный сплав. Найденный металл становится частью снаряжения."
+        }
+      },
+      {
+        "name": {
+          "en": "Shelter",
+          "uk": "Притулок",
+          "ru": "Убежище"
+        },
+        "text": {
+          "en": "Thirst, temperature, wounds and threats after dark. Plan the trip and bring back what will help you survive.",
+          "uk": "Спрага, температура, рани й нічні загрози. Плануй вилазку й повертайся з тим, що допоможе протриматися.",
+          "ru": "Жажда, температура, раны и ночные угрозы. Планируй вылазку и возвращайся с тем, что поможет продержаться."
+        }
+      },
+      {
+        "name": {
+          "en": "Network and PDA",
+          "uk": "Мережа і КПК",
+          "ru": "Сеть и КПК"
+        },
+        "text": {
+          "en": "Radio signals, operations, regional intelligence, supplies and squads give you new reasons to leave the shelter. Develop your PDA from a makeshift device into a hardened model.",
+          "uk": "Радіосигнали, операції, відомості про райони, постачання й загін дають нові причини виходити з притулку. Розвивай КПК від саморобного приладу до захищеної моделі.",
+          "ru": "Радиосигналы, операции, сведения о районах, снабжение и отряд дают новые причины выходить из убежища. Развивай КПК от кустарного прибора до защищённой модели."
+        }
+      },
+      {
+        "name": {
+          "en": "Electronics and workshops",
+          "uk": "Електроніка й майстерні",
+          "ru": "Электроника и мастерские"
+        },
+        "text": {
+          "en": "Progress from field repairs to precision electronics and sterile assembly. Immersive Engineering, KartLab and PneumaticCraft contribute to devices, equipment modules and implants.",
+          "uk": "Від польового ремонту до точної електроніки й стерильного складання. Immersive Engineering, KartLab і PneumaticCraft беруть участь у виробництві пристроїв, модулів спорядження й імплантів.",
+          "ru": "От полевого ремонта до точной электроники и стерильной сборки. Immersive Engineering, KartLab и PneumaticCraft участвуют в производстве устройств, модулей снаряжения и имплантов."
+        }
+      },
+      {
+        "name": {
+          "en": "Authored atmosphere",
+          "uk": "Авторська атмосфера",
+          "ru": "Авторская атмосфера"
+        },
+        "text": {
+          "en": "Video menus, music, a comic, the field terminal, lighting and Spooklementary Soft. Lite keeps the recognisable KFSOS identity.",
+          "uk": "Відеоменю, музика, комікс, польовий термінал, світло й Spooklementary Soft. Lite зберігає впізнаваний вигляд KFSOS.",
+          "ru": "Видеоменю, музыка, комикс, полевой терминал, свет и Spooklementary Soft. У Lite остаётся узнаваемый облик KFSOS."
+        }
+      }
+    ],
+    "radio": [
+      {
+        "en": "[CHRN] Light failing. Close the threshold. Night is an exam.",
+        "uk": "[CHRN] Світло сідає. Зачини поріг. Ніч — це іспит.",
+        "ru": "[CHRN] Свет садится. Закрой порог. Ночь — экзамен."
+      },
+      {
+        "en": "[CHRN] Dawn. Count water, limbs, and the door. The block is still yours.",
+        "uk": "[CHRN] Світанок. Порахуй воду, кінцівки й двері. Квартал досі твій.",
+        "ru": "[CHRN] Рассвет. Посчитай воду, конечности и дверь. Квартал всё ещё твой."
+      },
+      {
+        "en": "[CHRN] Bench is live. Twelve rounds are a loan. Noise writes your name.",
+        "uk": "[CHRN] Верстат живий. Дванадцять набоїв — позика. Шум пише ім'я.",
+        "ru": "[CHRN] Верстак жив. Двенадцать патронов — заём. Шум пишет имя."
+      },
+      {
+        "en": "[CHRN] Put it on the limb. Head and ribs are the ones that end the shift.",
+        "uk": "[CHRN] Клади на кінцівку. Голова й ребра закінчують зміну.",
+        "ru": "[CHRN] Клади на конечность. Голова и рёбра заканчивают смену."
+      },
+      {
+        "en": "Come in. If you can hear me, you are not alone any more. Find a dry place, close the entrance and save your water. Everything else starts in the morning.",
+        "uk": "Прийом. Якщо чуєш мене, ти вже не сам. Знайди сухе місце, зачини вхід і збережи воду. Усе інше почнемо вранці.",
+        "ru": "Приём. Если слышишь меня — ты уже не один. Найди сухое место, закрой вход и сохрани воду. Всё остальное начнём утром."
+      },
+      {
+        "en": "A light in the window is not a fortress yet. Check the doors, the water and the way out. Then you can put the kettle on.",
+        "uk": "Світло у вікні — ще не фортеця. Перевір двері, запас води й шлях відходу. Потім можна ставити чайник.",
+        "ru": "Свет в окне — это ещё не крепость. Проверь двери, запас воды и путь отхода. Потом можно поставить чайник."
+      },
+      {
+        "en": "Radio: a triple drop over the sector. No catch.",
+        "uk": "Радіо: потрійне скидання над сектором. Без підступу.",
+        "ru": "Радио: тройной сброс над сектором. Без подвоха."
+      },
+      {
+        "en": "The air has gone dead. Silence on the band is worse than noise.",
+        "uk": "Ефір замовк. Тиша в діапазоні гірша за шум.",
+        "ru": "Эфир умолк. Тишина в диапазоне хуже шума."
+      },
+      {
+        "en": "Radio: the air is calmer than usual. For a while.",
+        "uk": "Радіо: ефір спокійніший, ніж зазвичай. Ненадовго.",
+        "ru": "Радио: эфир спокойнее обычного. Ненадолго."
+      }
+    ],
+    "tips": [
+      {
+        "en": "Medicine does not replace water and a dressing.",
+        "uk": "Ліки не замінюють воду й перев'язку.",
+        "ru": "Лекарство не заменяет воду и перевязку."
+      },
+      {
+        "en": "After making noise, keep yourself a way out.",
+        "uk": "Після шуму залиш собі шлях відходу.",
+        "ru": "После шума оставь себе путь отхода."
+      },
+      {
+        "en": "Fuel and repairs come before the trip.",
+        "uk": "Пальне й ремонт потрібні до вилазки.",
+        "ru": "Топливо и ремонт нужны до вылазки."
+      },
+      {
+        "en": "Team research survives death.",
+        "uk": "Дослідження команди зберігаються після смерті.",
+        "ru": "Исследования команды сохраняются после смерти."
+      },
+      {
+        "en": "The first sample opens knowledge to the whole team.",
+        "uk": "Перший зразок відкриває знання всій команді.",
+        "ru": "Первый образец открывает знания всей команде."
+      },
+      {
+        "en": "Radio logs are kept after you rejoin.",
+        "uk": "Записи радіо зберігаються після перезаходу.",
+        "ru": "Записи радио сохраняются после перезахода."
+      }
+    ]
   }
 }

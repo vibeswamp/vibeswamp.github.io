@@ -335,12 +335,95 @@
   })();
   window.VibeSwamp = { get playing() { return Radio.playing; }, sound: (name) => Sound.play(name) };
 
+  // ---------- night and day: the choice is remembered, otherwise the device decides ----------
+  const themeBtn = document.querySelector(".snd-theme");
+  if (themeBtn) {
+    const showTheme = () => themeBtn.setAttribute("aria-pressed", root.dataset.theme === "dark" ? "true" : "false");
+    showTheme();
+    // the KFSOS radio comments on it: dusk and dawn lines from the pack
+    let toast = null, toastTimer = 0;
+    const radioSays = (text) => {
+      if (!text) return;
+      if (!toast) { toast = document.createElement("p"); toast.className = "chrn-toast"; toast.setAttribute("role", "status"); body.appendChild(toast); }
+      toast.textContent = text;
+      toast.classList.add("on");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("on"), 3600);
+    };
+    themeBtn.addEventListener("click", () => {
+      root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+      store.set("vibeswamp-theme", root.dataset.theme);
+      showTheme();
+      Sound.play("tick");
+      radioSays(root.dataset.theme === "dark" ? themeBtn.dataset.night : themeBtn.dataset.day);
+    });
+  }
+
+  // ---------- KFSOS Lite PDA: the pack's own interface themes, sections, Chronos radio and loading-screen tips ----------
+  for (const kf of document.querySelectorAll(".kf")) {
+    let data = {};
+    try { data = JSON.parse(kf.querySelector(".kf-data")?.textContent || "{}"); } catch (e) {}
+    const radio = data.radio || [], tips = data.tips || [], secs = data.secs || [];
+    const thName = kf.querySelector(".kf-thname");
+    const setTheme = (th, save) => {
+      const b = kf.querySelector(`.kf-th[data-kf-theme="${th}"]`);
+      if (!b) return;
+      kf.dataset.kf = th;
+      for (const x of kf.querySelectorAll(".kf-th")) x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      if (thName) thName.textContent = b.getAttribute("aria-label");
+      if (save) store.set("vibeswamp-kfsos-ui", th);
+    };
+    setTheme(store.get("vibeswamp-kfsos-ui") || "neon", false);
+    for (const b of kf.querySelectorAll(".kf-th")) b.addEventListener("click", () => { setTheme(b.dataset.kfTheme, true); Sound.play("tick"); });
+
+    const secText = kf.querySelector(".kf-sec-text");
+    for (const b of kf.querySelectorAll(".kf-sec")) b.addEventListener("click", () => {
+      for (const x of kf.querySelectorAll(".kf-sec")) x.setAttribute("aria-pressed", x === b ? "true" : "false");
+      if (secText && secs[+b.dataset.i]) secText.textContent = secs[+b.dataset.i].x;
+      Sound.play("tick");
+    });
+
+    // the radio types its line like a terminal; a new line every 14 s while the panel is on screen
+    const line = kf.querySelector(".kf-line"), tip = kf.querySelector(".kf-tip-t");
+    let ri = 0, typing = 0, seen = false;
+    const type = (text) => {
+      clearInterval(typing);
+      if (calm.matches) { line.textContent = text; return; }
+      let n = 0;
+      line.textContent = "";
+      typing = setInterval(() => { n += 2; line.textContent = text.slice(0, n); if (n >= text.length) clearInterval(typing); }, 26);
+    };
+    const next = (step = 1) => {
+      if (!radio.length || !line) return;
+      ri = (ri + step + radio.length) % radio.length;
+      type(radio[ri]);
+      if (tip && tips.length) tip.textContent = tips[Math.floor(Math.random() * tips.length)];
+    };
+    kf.querySelector(".kf-next")?.addEventListener("click", () => { next(); Sound.play("tick"); });
+    if ("IntersectionObserver" in window) new IntersectionObserver((e) => { seen = e[0].isIntersecting; }).observe(kf);
+    ri = Math.floor(Math.random() * radio.length) - 1;
+    next();
+    if (!calm.matches) setInterval(() => { if (seen && !document.hidden) next(); }, 14000);
+  }
+
   const fxBtn = document.querySelector(".snd-fx");
   if (fxBtn) {
     fxBtn.setAttribute("aria-pressed", Sound.on ? "true" : "false");
     fxBtn.addEventListener("click", () => { Sound.set(!Sound.on); fxBtn.setAttribute("aria-pressed", Sound.on ? "true" : "false"); });
   }
   for (const a of document.querySelectorAll(".top nav a")) a.addEventListener("click", () => Sound.play("tick"));
+
+  // ---------- strips that scroll sideways on phones (menu, section doors, tabs): a soft fade at the edge shows there is more ----------
+  for (const el of document.querySelectorAll(".top nav, .doors .door-list, .subtabs")) {
+    const upd = () => {
+      const more = el.scrollWidth - el.clientWidth > 4;
+      el.classList.toggle("fade-r", more && el.scrollLeft + el.clientWidth < el.scrollWidth - 4);
+      el.classList.toggle("fade-l", more && el.scrollLeft > 4);
+    };
+    el.addEventListener("scroll", upd, { passive: true });
+    addEventListener("resize", upd);
+    upd();
+  }
 
   // ---------- looping videos play only while on screen ----------
   const videos = [...document.querySelectorAll("video.loop")];
