@@ -1,0 +1,87 @@
+{
+  "id": "shelf-life",
+  "order": 4,
+  "name": "Shelf Life",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "released",
+  "version": "0.5.0",
+  "workshopId": "3836139316",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3836139316"
+    }
+  ],
+  "summary": {
+    "en": "Upgradeable storage for big modpacks: improve a shelf where it stands, up to 30 stacks per cell, and cover it with a tarp that shows one icon instead of the goods.",
+    "uk": "Полиці на виріст для великих збірок: покращуйте полицю на місці, до 30 стосів на клітинку, і накривайте брезентом, під яким видно один значок замість речей.",
+    "ru": "Полки на вырост для больших сборок: улучшайте полку на месте, до 30 стопок на клетку, и накрывайте брезентом, под которым виден один значок вместо вещей."
+  },
+  "details": {
+    "en": [
+      "Five levels of one shelf: 3, 6, 10, 18 and 30 stacks per cell. Level 1 is the game's own shelf. Builders bring the materials and finish the shelf where it stands: nothing is taken apart, nothing is taken off it, and it keeps working while they work. Every level costs more than the one before: steel, components, plasteel and Construction up to 10.",
+      "An upgraded shelf stays the game's own shelf, and each level adds boards and steel to it. Under a tarp the goods are not drawn, only one icon of what lies inside. There are closed crates for weapons, clothing and armour, and boxes for small things.",
+      "It is made for the speed of big storage: nothing runs every tick, a full store on 5 level-5 shelves is searched as fast as one on 50 ordinary shelves, and goods under a tarp cost the game nothing until someone touches them. Adaptive Storage racks such as Warehouse Storage get levels too. Tested in game with Pick Up And Haul, Common Sense, Storage Refill Hysteresis and Performance Optimizer. English, Russian and Ukrainian; needs Harmony."
+    ],
+    "uk": [
+      "П'ять рівнів однієї полиці: 3, 6, 10, 18 і 30 стосів на клітинку. Перший рівень і є звичайна полиця гри. Будівельники приносять матеріали й доробляють полицю на місці: її не розбирають, речі з неї не знімають, і вона працює, поки її покращують. Кожен рівень дорожчий за попередній: сталь, компоненти, пласталь і навичка будівництва до 10.",
+      "Покращена полиця лишається полицею з гри, а кожен рівень додає їй дошки й сталь. Під брезентом речі не малюються, видно лише один значок того, що лежить усередині. Є закриті ящики для зброї, одягу й броні та коробки для дрібниць.",
+      "Мод зроблено заради швидкості великих складів: нічого не працює щотіку, повний склад на 5 полицях п'ятого рівня шукається так само швидко, як на 50 звичайних, а речі під брезентом не забирають у гри час, поки їх не чіпають. Стелажі Adaptive Storage, наприклад Warehouse Storage, теж отримують рівні. Перевірено в грі разом із Pick Up And Haul, Common Sense, Storage Refill Hysteresis і Performance Optimizer. Англійська, російська та українська; потрібен Harmony."
+    ],
+    "ru": [
+      "Пять уровней одной полки: 3, 6, 10, 18 и 30 стопок на клетку. Первый уровень и есть обычная полка игры. Строители приносят материалы и доделывают полку на месте: её не разбирают, вещи с неё не снимают, и она работает, пока её улучшают. Каждый уровень дороже прошлого: сталь, компоненты, пласталь и навык стройки до 10.",
+      "Улучшенная полка остаётся полкой из игры, а каждый уровень добавляет ей доски и сталь. Под брезентом вещи не рисуются, виден один значок того, что лежит внутри. Есть закрытые ящики для оружия, одежды и брони и коробки для мелочей.",
+      "Мод сделан ради скорости больших складов: ничего не работает каждый тик, полный склад на 5 полках пятого уровня ищется так же быстро, как на 50 обычных, а вещи под брезентом не отнимают у игры время, пока их не трогают. Стеллажи Adaptive Storage, например Warehouse Storage, тоже получают уровни. Проверено в игре вместе с Pick Up And Haul, Common Sense, Storage Refill Hysteresis и Performance Optimizer. Английский, русский и украинский; нужен Harmony."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/shelf-life/01-header.jpg",
+      "caption": {
+        "en": "The same 120 things: 20 ordinary shelves or 2 shelves at level 5.",
+        "uk": "Ті самі 120 речей: 20 звичайних полиць або 2 полиці п'ятого рівня.",
+        "ru": "Те же 120 вещей: 20 обычных полок или 2 полки пятого уровня."
+      }
+    },
+    {
+      "file": "assets/shelf-life/02-levels.jpg",
+      "caption": {
+        "en": "Five levels of one shelf: 3, 6, 10, 18 and 30 stacks.",
+        "uk": "П'ять рівнів однієї полиці: 3, 6, 10, 18 і 30 стосів.",
+        "ru": "Пять уровней одной полки: 3, 6, 10, 18 и 30 стопок."
+      }
+    },
+    {
+      "file": "assets/shelf-life/03-tarps.jpg",
+      "caption": {
+        "en": "Tarps: one icon instead of the goods, for weapons, apparel, headgear, medicine and food.",
+        "uk": "Брезент: один значок замість речей, для зброї, одягу, шоломів, ліків і їжі.",
+        "ru": "Брезент: один значок вместо вещей, для оружия, одежды, шлемов, лекарств и еды."
+      }
+    },
+    {
+      "file": "assets/shelf-life/04-crates.jpg",
+      "caption": {
+        "en": "Closed crates and boxes, with how full they are.",
+        "uk": "Закриті ящики й коробки з тим, наскільки вони повні.",
+        "ru": "Закрытые ящики и коробки с тем, насколько они полны."
+      }
+    },
+    {
+      "file": "assets/shelf-life/05-hero.jpg",
+      "caption": {
+        "en": "Level 5 up close: 30 stacks per cell, three of them shown.",
+        "uk": "П'ятий рівень зблизька: 30 стосів на клітинці, видно три.",
+        "ru": "Пятый уровень вблизи: 30 стопок на клетке, видно три."
+      }
+    }
+  ],
+  "image": "assets/shelf-life/01-header.jpg"
+}

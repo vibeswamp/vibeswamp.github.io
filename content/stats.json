@@ -2,26 +2,26 @@
   "fetchedAt": "2026-11-08",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 247,
-      "lifetimeSubscriptions": 303,
+      "subscriptions": 249,
+      "lifetimeSubscriptions": 305,
       "favorited": 36,
-      "views": 1253,
+      "views": 1264,
       "created": "2026-10-18",
       "updated": "2026-11-08"
     },
     "seamless-world": {
-      "subscriptions": 204,
-      "lifetimeSubscriptions": 272,
-      "favorited": 86,
-      "views": 1451,
+      "subscriptions": 206,
+      "lifetimeSubscriptions": 274,
+      "favorited": 87,
+      "views": 1465,
       "created": "2026-10-19",
       "updated": "2026-11-08"
     },
     "trodden-trails": {
-      "subscriptions": 49,
-      "lifetimeSubscriptions": 53,
-      "favorited": 7,
-      "views": 171,
+      "subscriptions": 53,
+      "lifetimeSubscriptions": 57,
+      "favorited": 8,
+      "views": 181,
       "created": "2026-11-06",
       "updated": "2026-11-06"
     },
@@ -44,7 +44,7 @@
       "subscriptions": 3,
       "lifetimeSubscriptions": 3,
       "favorited": 0,
-      "views": 65,
+      "views": 72,
       "created": "2026-10-31",
       "updated": "2026-11-08"
     },
@@ -52,17 +52,25 @@
       "subscriptions": 3,
       "lifetimeSubscriptions": 4,
       "favorited": 1,
-      "views": 83,
+      "views": 89,
       "created": "2026-11-06",
       "updated": "2026-11-08"
     },
     "told-twice": {
-      "subscriptions": 5,
-      "lifetimeSubscriptions": 6,
+      "subscriptions": 6,
+      "lifetimeSubscriptions": 7,
       "favorited": 1,
-      "views": 44,
+      "views": 46,
       "created": "2026-10-31",
       "updated": "2026-11-07"
+    },
+    "shelf-life": {
+      "subscriptions": 1,
+      "lifetimeSubscriptions": 1,
+      "favorited": 0,
+      "views": 5,
+      "created": "2026-11-08",
+      "updated": "2026-11-08"
     }
   }
 }

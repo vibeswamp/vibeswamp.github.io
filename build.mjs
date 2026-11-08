@@ -49,7 +49,8 @@ const playUrl = (lang) => `${prefix(lang)}/creative/swamp/`;
 // The same page in every language: { en: "/x/", uk: "/uk/x/", ru: "/ru/x/" }.
 const allPaths = (fn) => Object.fromEntries(site.languages.map((l) => [l, fn(l)]));
 // Text in the page language, English when a translation is missing.
-const tr = (obj, lang) => (obj ? obj[lang] ?? obj.en ?? "" : "");
+// a text in three languages, or one plain string for all of them (a version like "0.5.0")
+const tr = (obj, lang) => (typeof obj === "string" ? obj : obj ? obj[lang] ?? obj.en ?? "" : "");
 const fmt = (lang, n) => new Intl.NumberFormat(site.strings[lang].locale).format(n);
 
 // Picks the right word form: key + One / Few / Many in site.json (Ukrainian and Russian have three forms).
@@ -1042,7 +1043,7 @@ ${postList(lang, related, { showProjects: false })}
       author: { "@type": "Person", name: site.author },
       url: `${site.baseUrl}${projectUrl("en", p.id)}`,
       ...(main ? { image: `${site.baseUrl}${main.info.src}` } : {}),
-      ...(p.version ? { softwareVersion: p.version.en } : {}),
+      ...(p.version ? { softwareVersion: tr(p.version, "en") } : {}),
       ...(s?.created ? { datePublished: s.created } : {}),
       ...(s?.updated ? { dateModified: s.updated } : {}),
       sameAs: p.platforms.filter((pl) => pl.url).map((pl) => pl.url),
@@ -1183,7 +1184,7 @@ function llmsTxt() {
     const s = stats.items[p.id];
     const url = p.page ? `${site.baseUrl}${projectUrl("en", p.id)}` : null;
     const where = p.platforms.filter((pl) => pl.url).map((pl) => `${pl.name}: ${pl.url}`).join("; ");
-    return `- ${url ? `[${nameOf(p, "en")}](${url})` : nameOf(p, "en")} (${p.game.en}${p.version ? `, ${p.version.en}` : ""}): ${p.summary.en}${
+    return `- ${url ? `[${nameOf(p, "en")}](${url})` : nameOf(p, "en")} (${p.game.en}${p.version ? `, ${tr(p.version, "en")}` : ""}): ${p.summary.en}${
       s?.created ? ` First released ${s.created}.` : ""
     }${s?.subscriptions != null ? ` ${s.subscriptions} Steam Workshop subscribers on ${stats.fetchedAt}.` : ""}${
       s?.downloads != null ? ` ${s.downloads} downloads on Thunderstore on ${s.counted}.` : ""
