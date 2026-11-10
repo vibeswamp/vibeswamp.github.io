@@ -1,5 +1,6 @@
 // Builds the static site into dist/ from content/. No dependencies: `node build.mjs` (add --offline to skip Steam).
 // Rules for colours, fonts and layout: DESIGN.md. How to add posts and screenshots: README.md.
+import { createHash } from "node:crypto";
 import { cp, mkdir, readdir, readFile, rm, writeFile } from "node:fs/promises";
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -11,6 +12,13 @@ const dist = join(root, "dist");
 const pub = join(root, "public");
 const readJson = async (...p) => JSON.parse((await readFile(join(root, ...p), "utf8")).replace(/^\uFEFF/, ""));
 const warn = (m) => console.warn(`warning: ${m}`);
+const sourceAssetUrl = name => {
+  const revision = createHash("sha256").update(readFileSync(join(root, "src", name))).digest("hex").slice(0, 12);
+  return `/${name}?v=${revision}`;
+};
+const siteStyles = sourceAssetUrl("style.css");
+const clickerScript = sourceAssetUrl("swamp.js");
+const strollScript = sourceAssetUrl("klyop-stroll.mjs");
 
 if (!process.argv.includes("--offline")) {
   try {
@@ -381,7 +389,7 @@ ${image ? `<meta property="og:image" content="${site.baseUrl}/${esc(String(image
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Tektur:wdth,wght@75..100,500..800&family=Overpass:wght@400;600;800&display=swap">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="${siteStyles}">
 ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>\n` : ""}</head>
 <body${page ? ` class="${page}"` : ""} data-lb-prev="${esc(t.lbPrev)}" data-lb-next="${esc(t.lbNext)}" data-lb-close="${esc(t.lbClose)}" data-frog="${esc(t.frogSays)}">
 <a class="skip" href="#main">${esc(t.skip)}</a>
@@ -406,7 +414,7 @@ ${nav.map(([key, href, label]) => `<a href="${href}"${key === current ? ` aria-c
 </nav>
 </div>
 </header>
-${stroll ? `<div class="klyop-trail" aria-hidden="true">
+${stroll ? `<div class="klyop-trail" aria-hidden="true" hidden>
   <div class="klyop-trail-bank">
     <span class="klyop-trail-runner" hidden>
       <span class="klyop-trail-frame"><img data-src="/klyop-stroll.webp" width="360" height="640" decoding="async" alt="" draggable="false"></span>
@@ -432,8 +440,8 @@ ${site.languages.filter((l) => l !== lang).map((l) => `<li><a href="${paths[l]}"
 <div class="prints" aria-hidden="true"></div>
 ${radio(lang)}
 <script type="application/json" id="tracks">${JSON.stringify(tracksFor(lang)).replace(/</g, "\\u003c")}</script>
-<script src="/site.js" defer></script>${stroll ? '\n<script type="module" src="/klyop-stroll.mjs"></script>' : ""}
-${page === "page-swamp" ? '<script type="module" src="/swamp.js"></script>' : ""}${page === "page-creative" ? '<script src="/pet.js" defer></script>' : ""}
+<script src="/site.js" defer></script>${stroll ? `\n<script type="module" src="${strollScript}"></script>` : ""}
+${page === "page-swamp" ? `<script type="module" src="${clickerScript}"></script>` : ""}${page === "page-creative" ? '<script src="/pet.js" defer></script>' : ""}
 </body>
 </html>
 `;

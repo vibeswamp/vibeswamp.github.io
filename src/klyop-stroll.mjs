@@ -130,4 +130,9 @@ function mountStroll(bank) {
 }
 
 const bank = typeof document === "undefined" ? null : document.querySelector(".klyop-trail-bank");
-if (bank) mountStroll(bank);
+const trail = bank?.closest(".klyop-trail");
+// Leave the atlas hidden if the matching stylesheet could not load.
+if (trail && getComputedStyle(trail).getPropertyValue("--runner-width").trim()) {
+  trail.hidden = false;
+  mountStroll(bank);
+}
