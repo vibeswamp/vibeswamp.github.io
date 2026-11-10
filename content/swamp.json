@@ -1,146 +1,476 @@
 {
-  "ru": {
-    "lead": "Лёгкая игра с жабой. Клёп квакает билды, мухи слетаются, а болото обрастает постройками и превращается в студию. Всё хранится в вашем браузере.",
-    "noscript": "Для игры нужен JavaScript.",
-    "flies": "мух",
-    "perSec": "в секунду",
-    "click": "Квакнуть билд",
-    "clickHint": "Нажимайте на Клёпа",
-    "perClick": "за кваканье",
-    "shop": "Болото",
-    "owned": "есть",
-    "locked": "Пока не видно",
-    "projects": "Сборки",
-    "start": "Собрать",
-    "running": "Собирается",
-    "done": "Готово",
-    "vibeOn": "Играет Болотное радио: болото работает быстрее на {p}%.",
-    "vibeOff": "Включите Болотное радио внизу, и болото заработает быстрее на {p}%.",
-    "away": "Пока вас не было, болото наловило {n} мух.",
-    "fat": "Жирная муха! +{n}",
-    "pond": "Мухи из пруда на главной: +{n}",
-    "reset": "Начать болото заново",
-    "resetAsk": "Стереть болото и начать с нуля? Мухи из пруда останутся.",
-    "stats": "Всего поймано: {n}. Кваканий: {c}.",
+  "en": {
+    "v2": {
+      "tabs": {
+        "shop": "Shop",
+        "construction": "Building",
+        "achievements": "Badges",
+        "records": "My stats"
+      },
+      "ui": {
+        "goal": "Croak and catch flies. Spend your catch on upgrades and build up your hut.",
+        "croak": "Croak",
+        "catchHint": "Tap highlighted flies to catch them.",
+        "locations": "Locations",
+        "lockedRooms": "Locked locations ({n})",
+        "management": "Swamp upgrades",
+        "builtStage": "Built · {name}",
+        "nextStage": "Next · {name}",
+        "houseCount": "×{n} · {name}",
+        "baseIncome": "Base income {n} flies/s",
+        "radioIncome": "Radio +{n}%",
+        "teaIncome": "Tea +{n}%",
+        "swarmIncome": "Swarm ×5",
+        "rankBonus": "New rank adds 10% to income",
+        "buy": "Buy for {n} flies",
+        "purchaseGain": "+{n} flies/s to base income",
+        "gardenLock": "Build the lily pads first",
+        "gardenPlant": "Ready in {s}s · +{n} flies",
+        "gardenHarvest": "Harvest · +{n} flies",
+        "compileStump": "Requires a stump compiler",
+        "compileRoom": "Go to the workshop",
+        "compileReady": "+{n} flies in {s}s",
+        "teaBenefit": "Passive income +{n}% for {s}s",
+        "swarmCatch": "Flies in swarm {c} · +{n} flies",
+        "swarmEmpty": "Waiting for more flies",
+        "radioStart": "Turn on Swamp Radio",
+        "radioStop": "Turn off Swamp Radio",
+        "radioBenefit": "+{n}% income while playing",
+        "statsLocal": "Stats for this browser",
+        "stats": {
+          "total": "Lifetime catch",
+          "clicks": "Croaks",
+          "caught": "Ordinary flies caught",
+          "fatCaught": "Fat flies caught"
+        }
+      },
+      "rooms": {
+        "shore": "Shore",
+        "workshop": "Workshop",
+        "radio": "Radio room",
+        "server": "Server room",
+        "office": "Office"
+      },
+      "roomHints": {
+        "shore": "The swamp is always close",
+        "workshop": "Buy a stump compiler or frog code review, or build the door.",
+        "radio": "Buy the Swamp Radio room or record a track.",
+        "server": "Buy your first peat server.",
+        "office": "Build the furniture and reach Night shift rank."
+      },
+      "stages": {
+        "pads": "Lily pads by the tussock",
+        "deck": "Dry decking",
+        "plank": "A plank overhead",
+        "poles": "Shelter posts",
+        "awning": "Reed awning",
+        "wall_l": "First wall",
+        "wall_r": "Side wall",
+        "window_hole": "Window opening",
+        "window": "A window over the swamp",
+        "door": "A door into the house",
+        "floor": "Floor on stilts",
+        "lamp": "Warm lantern",
+        "furniture": "Work table",
+        "chair": "Tussock chair",
+        "tea_corner": "Tea corner",
+        "workshop": "Workshop bench",
+        "extension": "An extra room",
+        "server_room": "Server corner",
+        "studio": "Studio lighting",
+        "radio_room": "Radio room antenna",
+        "office": "Swamp studio"
+      },
+      "open": "Open swamp",
+      "nextStep": "The next step in the mist",
+      "soon": "Soon",
+      "buildStage": "Build",
+      "stageProgress": "Step {n} of {max}",
+      "stageGate": "Catch {n} more lifetime flies",
+      "built": "Built",
+      "allBuilt": "The studio is ready. Take in the view.",
+      "projects": "Projects and upgrades",
+      "garden": "Duckweed",
+      "plant": "Plant duckweed",
+      "harvest": "Harvest duckweed",
+      "growing": "Growing · {n}s",
+      "compile": "Compile",
+      "compiling": "Compiling · {n}s",
+      "tea": "Tea",
+      "teaBonus": "+10% for one minute",
+      "tongue": "Catch the swarm",
+      "cooldown": "Rest · {n}s",
+      "teaActive": "Tea +10% · {n}s",
+      "teaSay": "While the tea is warm, the swamp works a little faster.",
+      "compileSay": "Built it. Time for a breather.",
+      "gardenSay": "The duckweed has grown. The flies approve.",
+      "fly": "Catch a fly",
+      "fatFly": "Catch a fat fly",
+      "caught": "Flies caught · {n}",
+      "achieved": "Badge earned · {name}",
+      "achievementCount": "Earned {n} of {max}",
+      "lockedAchievement": "Still ahead",
+      "recordsSoon": "The shared leaderboard will arrive later. For now your swamp keeps records in this browser.",
+      "localRecord": "Your lifetime catch · {n}",
+      "saveProblem": "Your previous save has been kept intact. The game could not safely read it or create a backup.",
+      "saveWarning": "The browser could not save your progress. Keep this tab open.",
+      "achievements": {
+        "first": [
+          "First croak",
+          "Croak at least once."
+        ],
+        "roof": [
+          "Over your head",
+          "Build a reed awning."
+        ],
+        "window": [
+          "Swamp view",
+          "Fit a window."
+        ],
+        "light": [
+          "Warm evening",
+          "Light the lantern."
+        ],
+        "home": [
+          "Come on in",
+          "Fit a door into the house."
+        ],
+        "office": [
+          "Your own studio",
+          "Finish all 21 building steps."
+        ],
+        "hundred": [
+          "Jar of flies",
+          "Catch 100 lifetime flies."
+        ],
+        "crew": [
+          "Swamp crew",
+          "Own 25 buildings in total."
+        ],
+        "rate": [
+          "Busy swamp",
+          "Reach a base catch of 1,000 flies per second."
+        ],
+        "hunter": [
+          "Fly catcher",
+          "Catch 25 flying flies."
+        ],
+        "tea": [
+          "Tea break",
+          "Have tea with Klyop."
+        ],
+        "explorer": [
+          "Every door is yours",
+          "Visit three locations."
+        ]
+      }
+    },
+    "lead": "A light game with the toad. Klyop croaks builds, flies gather, and the swamp fills up with buildings and turns into a studio. Everything is kept in your browser.",
+    "noscript": "The game needs JavaScript.",
+    "flies": "flies",
+    "perSec": "per second",
+    "click": "Croak a build",
+    "clickHint": "Press Klyop",
+    "perClick": "per croak",
+    "shop": "The swamp",
+    "owned": "owned",
+    "locked": "Not in sight yet",
+    "projects": "Builds",
+    "start": "Build",
+    "running": "Building",
+    "done": "Done",
+    "vibeOn": "Swamp Radio is playing: the swamp works {p}% faster.",
+    "vibeOff": "Turn on Swamp Radio at the bottom, and the swamp works {p}% faster.",
+    "away": "While you were away, the swamp caught {n} flies.",
+    "fat": "A fat fly! +{n}",
+    "pond": "Flies from the pond on the home page: +{n}",
+    "reset": "Start the swamp over",
+    "resetAsk": "Wipe the swamp and start from zero? The pond flies stay.",
+    "stats": "Caught in total: {n}. Croaks: {c}.",
     "say": [
-      "Ща починим.",
-      "Починил.",
-      "Оно работает?!",
-      "Не трогай, собирается.",
-      "Это мой трек.",
-      "Всё сломалось. Ладно, починил.",
-      "Собрал — врубил.",
-      "Это мой билд.",
-      "Муха моя."
+      "Lemme fix it.",
+      "Fixed it.",
+      "It works?!",
+      "Don't touch, it's building.",
+      "That's my track.",
+      "It all broke. Fine, fixed it.",
+      "Built it, cranked it.",
+      "That's my build.",
+      "That fly is mine."
     ],
     "buildings": [
       {
         "id": "tussock",
-        "name": "Кочка разработчика",
-        "text": "Сухое место, чтобы посидеть с ноутбуком. Сама ловит муху раз в пару секунд."
+        "name": "Developer's tussock",
+        "text": "A dry spot to sit with a laptop. Catches a fly every couple of seconds on its own."
       },
       {
         "id": "antenna",
-        "name": "Камышовая антенна",
-        "text": "Ловит сигнал и мух, которые летят на сигнал."
+        "name": "Reed antenna",
+        "text": "Picks up the signal, and the flies that fly to the signal."
       },
       {
         "id": "flytrap",
-        "name": "Мухоловка на скриптах",
-        "text": "Захлопывается по расписанию, иногда даже вовремя."
+        "name": "Scripted flytrap",
+        "text": "Snaps shut on a schedule, sometimes even on time."
       },
       {
         "id": "stump",
-        "name": "Пень-компилятор",
-        "text": "Собирает всё, что в него положили. Медленно, зато экран светит тепло."
+        "name": "Stump compiler",
+        "text": "Compiles whatever you put in it. Slowly, but the screen glows warm."
       },
       {
         "id": "review",
-        "name": "Лягушачий код-ревью",
-        "text": "Три лягушки читают каждую строчку и квакают на ошибки."
+        "name": "Frog code review",
+        "text": "Three frogs read every line and croak at the mistakes."
       },
       {
         "id": "beaver",
-        "name": "Бобровая сборочная",
-        "text": "Бобры строят плотины из старых патчей."
+        "name": "Beaver assembly line",
+        "text": "Beavers build dams out of old patches."
       },
       {
         "id": "peat",
-        "name": "Торфяной сервер",
-        "text": "Греется сам, охлаждается болотом. Не падает, только тонет."
+        "name": "Peat server",
+        "text": "Heats itself, cools in the swamp. It never goes down, it only sinks."
       },
       {
         "id": "radio",
-        "name": "Болотная радиорубка",
-        "text": "Крутит музыку на всё болото, и мухи слетаются потанцевать."
+        "name": "Swamp radio room",
+        "text": "Plays music to the whole swamp, and flies come to dance."
       }
     ],
     "builds": [
       {
         "id": "bug",
-        "name": "Поймать первый баг",
-        "text": "Кваканье приносит вдвое больше мух."
+        "name": "Catch the first bug",
+        "text": "Croaking brings twice as many flies."
       },
       {
         "id": "rimworld",
-        "name": "Собрать мод для RimWorld",
-        "text": "Кочки и антенны ловят вдвое больше."
+        "name": "Build a RimWorld mod",
+        "text": "Tussocks and antennas catch twice as much."
       },
       {
         "id": "seams",
-        "name": "Сшить мир без швов",
-        "text": "Всё болото работает в полтора раза быстрее."
+        "name": "Stitch a world without seams",
+        "text": "The whole swamp works one and a half times faster."
       },
       {
         "id": "kfsos",
-        "name": "Сварить сборку KFSOS",
-        "text": "Мухоловки и пни ловят вдвое больше."
+        "name": "Brew the KFSOS modpack",
+        "text": "Flytraps and stumps catch twice as much."
       },
       {
         "id": "friday",
-        "name": "Выпустить патч в пятницу вечером",
-        "text": "Каждое кваканье добавляет ещё 3% от улова в секунду."
+        "name": "Ship a patch on Friday evening",
+        "text": "Every croak adds another 3% of the per-second catch."
       },
       {
         "id": "workshop",
-        "name": "Выложить мод в Steam Workshop",
-        "text": "Код-ревью и бобры ловят вдвое больше."
+        "name": "Publish a mod on Steam Workshop",
+        "text": "Code review and beavers catch twice as much."
       },
       {
         "id": "track",
-        "name": "Записать трек в радиорубке",
-        "text": "Радио ускоряет болото вдвое сильнее."
+        "name": "Record a track in the radio room",
+        "text": "The radio speeds the swamp up twice as much."
       },
       {
         "id": "stream",
-        "name": "Провести стрим на Twitch",
-        "text": "Торф и радиорубка ловят вдвое больше."
+        "name": "Run a stream on Twitch",
+        "text": "Peat and the radio room catch twice as much."
       }
     ],
-    "rank": "Ранг",
+    "rank": "Rank",
     "ranks": [
-      "Стажёр болота",
-      "Колонист",
-      "Шахтёр",
-      "Ночная смена",
-      "Сварщик",
-      "Химик",
-      "Скалолаз",
-      "Фонарщик",
-      "Стример болота"
+      "Swamp intern",
+      "Colonist",
+      "Miner",
+      "Night shift",
+      "Welder",
+      "Chemist",
+      "Climber",
+      "Lamplighter",
+      "Swamp streamer"
     ],
-    "rankNext": "До следующего: {n} мух",
-    "rankUp": "Новый ранг: {r}. Всё болото ловит на 10% больше.",
-    "rankMax": "Высший ранг. Болото ваше.",
-    "vibe": "Вайб",
-    "vibeHint": "Жмите быстро: полный вайб утраивает кваканье на 8 секунд.",
-    "vibeGo": "Вайб: кваканье ×3",
-    "swarm": "Мушиный рой: болото ловит ×5 целых 15 секунд.",
-    "storm": "Клёп в ударе: кваканье ×7 на 10 секунд.",
-    "woke": "Я не спал. Я компилировал.",
-    "next": "Дальше"
+    "rankNext": "Next rank in {n} flies",
+    "rankUp": "New rank: {r}. The whole swamp catches 10% more.",
+    "rankMax": "Top rank. The swamp is yours.",
+    "vibe": "Vibe",
+    "vibeHint": "Click fast: a full vibe triples every croak for 8 seconds.",
+    "vibeGo": "Vibe: croaks ×3",
+    "swarm": "A fly swarm: the swamp catches ×5 for 15 seconds.",
+    "storm": "Klyop is on a roll: croaks ×7 for 10 seconds.",
+    "woke": "I wasn't asleep. I was compiling.",
+    "next": "Next"
   },
   "uk": {
+    "v2": {
+      "tabs": {
+        "shop": "Покупки",
+        "construction": "Будівництво",
+        "achievements": "Досягнення",
+        "records": "Підсумки"
+      },
+      "ui": {
+        "goal": "Квакай і лови мух. Витрачай улов на споруди й добудовуй хатину.",
+        "croak": "Квакнути",
+        "catchHint": "Натискай на підсвічених мух, щоб упіймати їх.",
+        "locations": "Локації",
+        "lockedRooms": "Закриті локації ({n})",
+        "management": "Розвиток болота",
+        "builtStage": "Збудовано · {name}",
+        "nextStage": "Далі · {name}",
+        "houseCount": "×{n} · {name}",
+        "baseIncome": "Базовий дохід {n} мух/с",
+        "radioIncome": "Радіо +{n}%",
+        "teaIncome": "Чай +{n}%",
+        "swarmIncome": "Рій ×5",
+        "rankBonus": "За новий ранг +10% до доходу",
+        "buy": "Купити за {n} мух",
+        "purchaseGain": "+{n} мух/с до базового доходу",
+        "gardenLock": "Спочатку збудуй латаття біля купини",
+        "gardenPlant": "Дозріє за {s} с · +{n} мух",
+        "gardenHarvest": "Зібрати · +{n} мух",
+        "compileStump": "Потрібен пень-компілятор",
+        "compileRoom": "Перейди до майстерні",
+        "compileReady": "+{n} мух за {s} с",
+        "teaBenefit": "Пасивний дохід +{n}% на {s} с",
+        "swarmCatch": "Мух у рої {c} · +{n} мух",
+        "swarmEmpty": "Чекаємо на нових мух",
+        "radioStart": "Увімкнути Болотне радіо",
+        "radioStop": "Вимкнути Болотне радіо",
+        "radioBenefit": "При ввімкненні +{n}% до доходу",
+        "statsLocal": "Підсумки в цьому браузері",
+        "stats": {
+          "total": "Увесь улов",
+          "clicks": "Квакань",
+          "caught": "Звичайних мух спіймано",
+          "fatCaught": "Товстих мух спіймано"
+        }
+      },
+      "rooms": {
+        "shore": "Берег",
+        "workshop": "Майстерня",
+        "radio": "Радіорубка",
+        "server": "Серверна",
+        "office": "Офіс"
+      },
+      "roomHints": {
+        "shore": "Болото завжди поруч",
+        "workshop": "Купи пень-компілятор або жаб’яче код-рев’ю, чи збудуй двері.",
+        "radio": "Купи болотну радіорубку або запиши трек.",
+        "server": "Купи перший торф’яний сервер.",
+        "office": "Збудуй меблі й отримай ранг «Нічна зміна»."
+      },
+      "stages": {
+        "pads": "Латаття біля купини",
+        "deck": "Сухий настил",
+        "plank": "Дошка над головою",
+        "poles": "Опори навісу",
+        "awning": "Очеретяний навіс",
+        "wall_l": "Перша стіна",
+        "wall_r": "Бічна стіна",
+        "window_hole": "Віконний отвір",
+        "window": "Вікно з видом на болото",
+        "door": "Двері до хати",
+        "floor": "Підлога на палях",
+        "lamp": "Теплий ліхтар",
+        "furniture": "Робочий стіл",
+        "chair": "Крісло-купина",
+        "tea_corner": "Чайний куточок",
+        "workshop": "Верстак майстерні",
+        "extension": "Прибудова",
+        "server_room": "Серверний куточок",
+        "studio": "Студійне світло",
+        "radio_room": "Антена радіорубки",
+        "office": "Болотна студія"
+      },
+      "open": "Відкрите болото",
+      "nextStep": "Наступний крок у тумані",
+      "soon": "Незабаром",
+      "buildStage": "Збудувати",
+      "stageProgress": "Крок {n} із {max}",
+      "stageGate": "Ще {n} мух за весь час",
+      "built": "Збудовано",
+      "allBuilt": "Студія готова. Можна просто милуватися.",
+      "projects": "Збірки та поліпшення",
+      "garden": "Ряска",
+      "plant": "Посадити ряску",
+      "harvest": "Зібрати ряску",
+      "growing": "Росте · {n} с",
+      "compile": "Компіляція",
+      "compiling": "Збирається · {n} с",
+      "tea": "Чай",
+      "teaBonus": "+10% на хвилину",
+      "tongue": "Спіймати рій",
+      "cooldown": "Перерва · {n} с",
+      "teaActive": "Чай +10% · {n} с",
+      "teaSay": "Поки чай теплий, болото працює жвавіше.",
+      "compileSay": "Зібрав. Можна видихнути.",
+      "gardenSay": "Ряска виросла. Мухи теж задоволені.",
+      "fly": "Спіймати муху",
+      "fatFly": "Спіймати товсту муху",
+      "caught": "Спіймано мух · {n}",
+      "achieved": "Відкрито досягнення · {name}",
+      "achievementCount": "Відкрито {n} із {max}",
+      "lockedAchievement": "Ще попереду",
+      "recordsSoon": "Спільна таблиця з'явиться пізніше. Зараз болото рахує рекорди у вашому браузері.",
+      "localRecord": "Ваш улов за весь час · {n}",
+      "saveProblem": "Збереження залишено в попередньому вигляді. Гра не змогла безпечно прочитати його або створити резервну копію.",
+      "saveWarning": "Браузер не дозволив зберегти прогрес. Залиште вкладку відкритою.",
+      "achievements": {
+        "first": [
+          "Перший квак",
+          "Квакнути хоча б один раз."
+        ],
+        "roof": [
+          "Над головою",
+          "Поставити очеретяний навіс."
+        ],
+        "window": [
+          "Вид на болото",
+          "Вставити вікно."
+        ],
+        "light": [
+          "Теплий вечір",
+          "Засвітити ліхтар."
+        ],
+        "home": [
+          "Можна входити",
+          "Поставити двері до хати."
+        ],
+        "office": [
+          "Власна студія",
+          "Завершити всі 21 крок будівництва."
+        ],
+        "hundred": [
+          "Банка мух",
+          "Наловити 100 мух за весь час."
+        ],
+        "crew": [
+          "Болотна бригада",
+          "Купити загалом 25 споруд."
+        ],
+        "rate": [
+          "Робота кипить",
+          "Досягти базового улову 1000 мух за секунду."
+        ],
+        "hunter": [
+          "Ловець мух",
+          "Спіймати 25 летючих мух."
+        ],
+        "tea": [
+          "Чайна пауза",
+          "Випити чай із Кльопом."
+        ],
+        "explorer": [
+          "Усі двері свої",
+          "Побувати в трьох локаціях."
+        ]
+      }
+    },
     "lead": "Легка гра з жабою. Кльоп квакає білди, мухи злітаються, а болото обростає будівлями й стає студією. Усе зберігається у вашому браузері.",
     "noscript": "Для гри потрібен JavaScript.",
     "flies": "мух",
@@ -281,145 +611,310 @@
     "woke": "Я не спав. Я компілював.",
     "next": "Далі"
   },
-  "en": {
-    "lead": "A light game with the toad. Klyop croaks builds, flies gather, and the swamp fills up with buildings and turns into a studio. Everything is kept in your browser.",
-    "noscript": "The game needs JavaScript.",
-    "flies": "flies",
-    "perSec": "per second",
-    "click": "Croak a build",
-    "clickHint": "Press Klyop",
-    "perClick": "per croak",
-    "shop": "The swamp",
-    "owned": "owned",
-    "locked": "Not in sight yet",
-    "projects": "Builds",
-    "start": "Build",
-    "running": "Building",
-    "done": "Done",
-    "vibeOn": "Swamp Radio is playing: the swamp works {p}% faster.",
-    "vibeOff": "Turn on Swamp Radio at the bottom, and the swamp works {p}% faster.",
-    "away": "While you were away, the swamp caught {n} flies.",
-    "fat": "A fat fly! +{n}",
-    "pond": "Flies from the pond on the home page: +{n}",
-    "reset": "Start the swamp over",
-    "resetAsk": "Wipe the swamp and start from zero? The pond flies stay.",
-    "stats": "Caught in total: {n}. Croaks: {c}.",
+  "ru": {
+    "v2": {
+      "tabs": {
+        "shop": "Покупки",
+        "construction": "Стройка",
+        "achievements": "Ачивки",
+        "records": "Итоги"
+      },
+      "ui": {
+        "goal": "Квакай и лови мух. Трать улов на постройки и достраивай хижину.",
+        "croak": "Квакнуть",
+        "catchHint": "Нажимай на подсвеченных мух, чтобы поймать их.",
+        "locations": "Локации",
+        "lockedRooms": "Закрытые локации ({n})",
+        "management": "Развитие болота",
+        "builtStage": "Построено · {name}",
+        "nextStage": "Дальше · {name}",
+        "houseCount": "×{n} · {name}",
+        "baseIncome": "Базовый доход {n} мух/с",
+        "radioIncome": "Радио +{n}%",
+        "teaIncome": "Чай +{n}%",
+        "swarmIncome": "Рой ×5",
+        "rankBonus": "За новый ранг +10% к доходу",
+        "buy": "Купить за {n} мух",
+        "purchaseGain": "+{n} мух/с к базовому доходу",
+        "gardenLock": "Сначала построй кувшинки у кочки",
+        "gardenPlant": "Созреет за {s} с · +{n} мух",
+        "gardenHarvest": "Собрать · +{n} мух",
+        "compileStump": "Нужен пень-компилятор",
+        "compileRoom": "Перейди в мастерскую",
+        "compileReady": "+{n} мух за {s} с",
+        "teaBenefit": "Пассивный доход +{n}% на {s} с",
+        "swarmCatch": "Мух в рое {c} · +{n} мух",
+        "swarmEmpty": "Ждём новых мух",
+        "radioStart": "Включить Болотное радио",
+        "radioStop": "Выключить Болотное радио",
+        "radioBenefit": "При включении +{n}% к доходу",
+        "statsLocal": "Итоги в этом браузере",
+        "stats": {
+          "total": "Весь улов",
+          "clicks": "Кваканий",
+          "caught": "Обычных мух поймано",
+          "fatCaught": "Жирных мух поймано"
+        }
+      },
+      "rooms": {
+        "shore": "Берег",
+        "workshop": "Мастерская",
+        "radio": "Радиорубка",
+        "server": "Серверная",
+        "office": "Офис"
+      },
+      "roomHints": {
+        "shore": "Болото всегда рядом",
+        "workshop": "Купи пень-компилятор или лягушачий код-ревью, либо построй дверь.",
+        "radio": "Купи болотную радиорубку или собери трек.",
+        "server": "Купи первый торфяной сервер.",
+        "office": "Построй мебель и получи ранг «Ночная смена»."
+      },
+      "stages": {
+        "pads": "Кувшинки у кочки",
+        "deck": "Сухой настил",
+        "plank": "Доска над головой",
+        "poles": "Опоры навеса",
+        "awning": "Камышовый навес",
+        "wall_l": "Первая стена",
+        "wall_r": "Боковая стена",
+        "window_hole": "Оконный проём",
+        "window": "Окно с видом на болото",
+        "door": "Дверь в дом",
+        "floor": "Пол на сваях",
+        "lamp": "Тёплый фонарь",
+        "furniture": "Рабочий стол",
+        "chair": "Кресло-кочка",
+        "tea_corner": "Чайный уголок",
+        "workshop": "Верстак мастерской",
+        "extension": "Пристройка",
+        "server_room": "Серверный угол",
+        "studio": "Студийный свет",
+        "radio_room": "Антенна радиорубки",
+        "office": "Болотная студия"
+      },
+      "open": "Открытое болото",
+      "nextStep": "Следующий шаг в тумане",
+      "soon": "Скоро",
+      "buildStage": "Построить",
+      "stageProgress": "Шаг {n} из {max}",
+      "stageGate": "Ещё {n} мух за всё время",
+      "built": "Построено",
+      "allBuilt": "Студия готова. Можно просто любоваться.",
+      "projects": "Сборки и улучшения",
+      "garden": "Ряска",
+      "plant": "Посадить ряску",
+      "harvest": "Собрать ряску",
+      "growing": "Растёт · {n} с",
+      "compile": "Компиляция",
+      "compiling": "Собирается · {n} с",
+      "tea": "Чай",
+      "teaBonus": "+10% на минуту",
+      "tongue": "Поймать рой",
+      "cooldown": "Перерыв · {n} с",
+      "teaActive": "Чай +10% · {n} с",
+      "teaSay": "Пока чай тёплый, болото работает бодрее.",
+      "compileSay": "Собрал. Можно выдохнуть.",
+      "gardenSay": "Ряска выросла. Мухи тоже довольны.",
+      "fly": "Поймать муху",
+      "fatFly": "Поймать жирную муху",
+      "caught": "Поймано мух · {n}",
+      "achieved": "Открыта ачивка · {name}",
+      "achievementCount": "Открыто {n} из {max}",
+      "lockedAchievement": "Ещё впереди",
+      "recordsSoon": "Общая таблица появится позже. Сейчас болото считает рекорды в вашем браузере.",
+      "localRecord": "Ваш улов за всё время · {n}",
+      "saveProblem": "Сохранение сохранено в прежнем виде. Игра не смогла безопасно прочитать его или создать резервную копию.",
+      "saveWarning": "Браузер не разрешил сохранить прогресс. Оставьте вкладку открытой.",
+      "achievements": {
+        "first": [
+          "Первый квак",
+          "Квакнуть хотя бы один раз."
+        ],
+        "roof": [
+          "Над головой",
+          "Поставить камышовый навес."
+        ],
+        "window": [
+          "Вид на болото",
+          "Вставить окно."
+        ],
+        "light": [
+          "Тёплый вечер",
+          "Зажечь фонарь."
+        ],
+        "home": [
+          "Можно входить",
+          "Поставить дверь в дом."
+        ],
+        "office": [
+          "Своя студия",
+          "Закончить все 21 шаг стройки."
+        ],
+        "hundred": [
+          "Банка мух",
+          "Наловить 100 мух за всё время."
+        ],
+        "crew": [
+          "Болотная бригада",
+          "Купить 25 построек суммарно."
+        ],
+        "rate": [
+          "Работа кипит",
+          "Достичь базового улова 1000 мух в секунду."
+        ],
+        "hunter": [
+          "Ловец мух",
+          "Поймать 25 летающих мух."
+        ],
+        "tea": [
+          "Чайная пауза",
+          "Выпить чай с Клёпом."
+        ],
+        "explorer": [
+          "Все двери свои",
+          "Побывать в трёх локациях."
+        ]
+      }
+    },
+    "lead": "Лёгкая игра с жабой. Клёп квакает билды, мухи слетаются, а болото обрастает постройками и превращается в студию. Всё хранится в вашем браузере.",
+    "noscript": "Для игры нужен JavaScript.",
+    "flies": "мух",
+    "perSec": "в секунду",
+    "click": "Квакнуть билд",
+    "clickHint": "Нажимайте на Клёпа",
+    "perClick": "за кваканье",
+    "shop": "Болото",
+    "owned": "есть",
+    "locked": "Пока не видно",
+    "projects": "Сборки",
+    "start": "Собрать",
+    "running": "Собирается",
+    "done": "Готово",
+    "vibeOn": "Играет Болотное радио: болото работает быстрее на {p}%.",
+    "vibeOff": "Включите Болотное радио внизу, и болото заработает быстрее на {p}%.",
+    "away": "Пока вас не было, болото наловило {n} мух.",
+    "fat": "Жирная муха! +{n}",
+    "pond": "Мухи из пруда на главной: +{n}",
+    "reset": "Начать болото заново",
+    "resetAsk": "Стереть болото и начать с нуля? Мухи из пруда останутся.",
+    "stats": "Всего поймано: {n}. Кваканий: {c}.",
     "say": [
-      "Lemme fix it.",
-      "Fixed it.",
-      "It works?!",
-      "Don't touch, it's building.",
-      "That's my track.",
-      "It all broke. Fine, fixed it.",
-      "Built it, cranked it.",
-      "That's my build.",
-      "That fly is mine."
+      "Ща починим.",
+      "Починил.",
+      "Оно работает?!",
+      "Не трогай, собирается.",
+      "Это мой трек.",
+      "Всё сломалось. Ладно, починил.",
+      "Собрал — врубил.",
+      "Это мой билд.",
+      "Муха моя."
     ],
     "buildings": [
       {
         "id": "tussock",
-        "name": "Developer's tussock",
-        "text": "A dry spot to sit with a laptop. Catches a fly every couple of seconds on its own."
+        "name": "Кочка разработчика",
+        "text": "Сухое место, чтобы посидеть с ноутбуком. Сама ловит муху раз в пару секунд."
       },
       {
         "id": "antenna",
-        "name": "Reed antenna",
-        "text": "Picks up the signal, and the flies that fly to the signal."
+        "name": "Камышовая антенна",
+        "text": "Ловит сигнал и мух, которые летят на сигнал."
       },
       {
         "id": "flytrap",
-        "name": "Scripted flytrap",
-        "text": "Snaps shut on a schedule, sometimes even on time."
+        "name": "Мухоловка на скриптах",
+        "text": "Захлопывается по расписанию, иногда даже вовремя."
       },
       {
         "id": "stump",
-        "name": "Stump compiler",
-        "text": "Compiles whatever you put in it. Slowly, but the screen glows warm."
+        "name": "Пень-компилятор",
+        "text": "Собирает всё, что в него положили. Медленно, зато экран светит тепло."
       },
       {
         "id": "review",
-        "name": "Frog code review",
-        "text": "Three frogs read every line and croak at the mistakes."
+        "name": "Лягушачий код-ревью",
+        "text": "Три лягушки читают каждую строчку и квакают на ошибки."
       },
       {
         "id": "beaver",
-        "name": "Beaver assembly line",
-        "text": "Beavers build dams out of old patches."
+        "name": "Бобровая сборочная",
+        "text": "Бобры строят плотины из старых патчей."
       },
       {
         "id": "peat",
-        "name": "Peat server",
-        "text": "Heats itself, cools in the swamp. It never goes down, it only sinks."
+        "name": "Торфяной сервер",
+        "text": "Греется сам, охлаждается болотом. Не падает, только тонет."
       },
       {
         "id": "radio",
-        "name": "Swamp radio room",
-        "text": "Plays music to the whole swamp, and flies come to dance."
+        "name": "Болотная радиорубка",
+        "text": "Крутит музыку на всё болото, и мухи слетаются потанцевать."
       }
     ],
     "builds": [
       {
         "id": "bug",
-        "name": "Catch the first bug",
-        "text": "Croaking brings twice as many flies."
+        "name": "Поймать первый баг",
+        "text": "Кваканье приносит вдвое больше мух."
       },
       {
         "id": "rimworld",
-        "name": "Build a RimWorld mod",
-        "text": "Tussocks and antennas catch twice as much."
+        "name": "Собрать мод для RimWorld",
+        "text": "Кочки и антенны ловят вдвое больше."
       },
       {
         "id": "seams",
-        "name": "Stitch a world without seams",
-        "text": "The whole swamp works one and a half times faster."
+        "name": "Сшить мир без швов",
+        "text": "Всё болото работает в полтора раза быстрее."
       },
       {
         "id": "kfsos",
-        "name": "Brew the KFSOS modpack",
-        "text": "Flytraps and stumps catch twice as much."
+        "name": "Сварить сборку KFSOS",
+        "text": "Мухоловки и пни ловят вдвое больше."
       },
       {
         "id": "friday",
-        "name": "Ship a patch on Friday evening",
-        "text": "Every croak adds another 3% of the per-second catch."
+        "name": "Выпустить патч в пятницу вечером",
+        "text": "Каждое кваканье добавляет ещё 3% от улова в секунду."
       },
       {
         "id": "workshop",
-        "name": "Publish a mod on Steam Workshop",
-        "text": "Code review and beavers catch twice as much."
+        "name": "Выложить мод в Steam Workshop",
+        "text": "Код-ревью и бобры ловят вдвое больше."
       },
       {
         "id": "track",
-        "name": "Record a track in the radio room",
-        "text": "The radio speeds the swamp up twice as much."
+        "name": "Записать трек в радиорубке",
+        "text": "Радио ускоряет болото вдвое сильнее."
       },
       {
         "id": "stream",
-        "name": "Run a stream on Twitch",
-        "text": "Peat and the radio room catch twice as much."
+        "name": "Провести стрим на Twitch",
+        "text": "Торф и радиорубка ловят вдвое больше."
       }
     ],
-    "rank": "Rank",
+    "rank": "Ранг",
     "ranks": [
-      "Swamp intern",
-      "Colonist",
-      "Miner",
-      "Night shift",
-      "Welder",
-      "Chemist",
-      "Climber",
-      "Lamplighter",
-      "Swamp streamer"
+      "Стажёр болота",
+      "Колонист",
+      "Шахтёр",
+      "Ночная смена",
+      "Сварщик",
+      "Химик",
+      "Скалолаз",
+      "Фонарщик",
+      "Стример болота"
     ],
-    "rankNext": "Next rank in {n} flies",
-    "rankUp": "New rank: {r}. The whole swamp catches 10% more.",
-    "rankMax": "Top rank. The swamp is yours.",
-    "vibe": "Vibe",
-    "vibeHint": "Click fast: a full vibe triples every croak for 8 seconds.",
-    "vibeGo": "Vibe: croaks ×3",
-    "swarm": "A fly swarm: the swamp catches ×5 for 15 seconds.",
-    "storm": "Klyop is on a roll: croaks ×7 for 10 seconds.",
-    "woke": "I wasn't asleep. I was compiling.",
-    "next": "Next"
+    "rankNext": "До следующего: {n} мух",
+    "rankUp": "Новый ранг: {r}. Всё болото ловит на 10% больше.",
+    "rankMax": "Высший ранг. Болото ваше.",
+    "vibe": "Вайб",
+    "vibeHint": "Жмите быстро: полный вайб утраивает кваканье на 8 секунд.",
+    "vibeGo": "Вайб: кваканье ×3",
+    "swarm": "Мушиный рой: болото ловит ×5 целых 15 секунд.",
+    "storm": "Клёп в ударе: кваканье ×7 на 10 секунд.",
+    "woke": "Я не спал. Я компилировал.",
+    "next": "Дальше"
   }
 }

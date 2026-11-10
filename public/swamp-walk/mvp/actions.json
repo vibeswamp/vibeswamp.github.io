@@ -1,0 +1,1 @@
+{"library":"klyop-mvp-events.glb","actions":{"strike":{"name":"MVP_Wrench_Swing","contact":0.25},"jumpStart":{"name":"Jump_Start"},"land":{"name":"Jump_Land"},"hurt":{"name":"Hit_Chest"}}}

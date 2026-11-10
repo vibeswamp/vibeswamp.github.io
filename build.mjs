@@ -46,6 +46,7 @@ const feedUrl = (lang) => `${prefix(lang)}/feed.xml`;
 const sectionUrl = (lang, key) => `${prefix(lang)}/${key}/`;
 const SECTION_OF_KIND = { mod: "mods", game: "games", modpack: "packs" };
 const playUrl = (lang) => `${prefix(lang)}/creative/swamp/`;
+const walkUrl = (lang) => `${playUrl(lang)}walk/`;
 // The same page in every language: { en: "/x/", uk: "/uk/x/", ru: "/ru/x/" }.
 const allPaths = (fn) => Object.fromEntries(site.languages.map((l) => [l, fn(l)]));
 // Text in the page language, English when a translation is missing.
@@ -349,6 +350,7 @@ function layout({ lang, paths, title, description, body, jsonld, image, current 
   const t = site.strings[lang];
   const path = paths[lang];
   const P = prefix(lang);
+  const stroll = page === "page-swamp";
   const nav = [
     ["creative", sectionUrl(lang, "creative"), t.navCreative],
     ["mods", sectionUrl(lang, "mods"), t.navMods],
@@ -404,6 +406,13 @@ ${nav.map(([key, href, label]) => `<a href="${href}"${key === current ? ` aria-c
 </nav>
 </div>
 </header>
+${stroll ? `<div class="klyop-trail" aria-hidden="true">
+  <div class="klyop-trail-bank">
+    <span class="klyop-trail-runner" hidden>
+      <span class="klyop-trail-frame"><img data-src="/klyop-stroll.webp" width="360" height="640" decoding="async" alt="" draggable="false"></span>
+    </span>
+  </div>
+</div>` : ""}
 <main id="main">
 ${body}
 </main>
@@ -423,7 +432,8 @@ ${site.languages.filter((l) => l !== lang).map((l) => `<li><a href="${paths[l]}"
 <div class="prints" aria-hidden="true"></div>
 ${radio(lang)}
 <script type="application/json" id="tracks">${JSON.stringify(tracksFor(lang)).replace(/</g, "\\u003c")}</script>
-<script src="/site.js" defer></script>${page === "page-swamp" ? `\n<script src="/swamp.js" defer></script>` : ""}${page === "page-creative" ? `\n<script src="/pet.js" defer></script>` : ""}
+<script src="/site.js" defer></script>${stroll ? '\n<script type="module" src="/klyop-stroll.mjs"></script>' : ""}
+${page === "page-swamp" ? '<script type="module" src="/swamp.js"></script>' : ""}${page === "page-creative" ? '<script src="/pet.js" defer></script>' : ""}
 </body>
 </html>
 `;
@@ -815,14 +825,20 @@ ${list.map(({ m, i }) => `<li class="track"><button type="button" class="play" d
 
 // Klyop builds the swamp: a slow clicker with the toad (src/swamp.js, texts in content/swamp.json).
 const SWAMP = existsSync(join(root, "content", "swamp.json")) ? JSON.parse(readFileSync(join(root, "content", "swamp.json"), "utf8")) : null;
+const SWAMP_V2 = await readJson("content", "swamp-v2.json");
+const SWAMP_WALK = await readJson("content", "swamp-walk.json");
 function playPage(lang) {
   const t = site.strings[lang];
   const S = SWAMP?.[lang] ?? SWAMP?.en ?? {};
-  const body = `${pageHead(lang, t.playTitle, S.lead ?? t.playDoor)}
+  const body = `<header class="wrap sw-intro">
+  <div><h1>${esc(t.playTitle)}</h1><p>${esc(S.v2?.ui?.goal ?? S.lead ?? t.playDoor)}</p></div>
+  <a class="sw-walk-link" href="${walkUrl(lang)}">${esc(SWAMP_WALK[lang].enter)} <span aria-hidden="true">→</span></a>
+</header>
 <div class="wrap swamp" id="swamp">
 <noscript><p class="held-note">${esc(S.noscript ?? "")}</p></noscript>
 </div>
 <script type="application/json" id="swamp-text">${JSON.stringify(S).replace(/</g, "\\u003c")}</script>
+<script type="application/json" id="swamp-v2-data">${JSON.stringify(SWAMP_V2).replace(/</g, "\\u003c")}</script>
 <div class="page-end"></div>`;
   return layout({
     lang,
@@ -835,6 +851,61 @@ function playPage(lang) {
     body,
     jsonld: { "@context": "https://schema.org", "@type": "VideoGame", name: t.playTitle, url: `${site.baseUrl}${playUrl(lang)}`, inLanguage: lang, author: { "@type": "Person", name: site.author }, gamePlatform: "Web browser" },
   });
+}
+
+function walkPage(lang) {
+  const swamp = SWAMP[lang];
+  const names = list => list.map(({ id, name }) => ({ id, name }));
+  const w = { ...SWAMP_WALK[lang], economyData: SWAMP_V2, shelterLabels: {
+    title: SWAMP_WALK[lang].shelterLedger, producers: names(swamp.buildings), projects: names(swamp.builds),
+  } };
+  return `<!doctype html>
+<html lang="${lang}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>${esc(w.title)} · VibeSwamp</title>
+<meta name="description" content="${esc(w.lead)}">
+<link rel="icon" href="/favicon.png">
+<link rel="stylesheet" href="/swamp-walk/style.css">
+<link rel="stylesheet" href="/swamp-walk/walk-hud.css">
+<script type="module" src="/swamp-walk/main.mjs"></script>
+</head>
+<body>
+<main class="swalk">
+  <canvas id="swalk-view" tabindex="0" aria-label="${esc(w.title)}" aria-describedby="swalk-help"></canvas>
+  <header class="walk-heading"><a class="walk-link" href="${playUrl(lang)}">${esc(w.back)}</a>
+    <h1>${esc(w.title)}</h1><p>${esc(w.lead)}</p>
+  </header>
+  <div class="walk-map" id="swalk-map" hidden>
+    <canvas id="swalk-chart" width="200" height="200" aria-hidden="true"></canvas>
+    <button id="swalk-reset" type="button">${esc(w.reset)}</button>
+    <button id="swalk-camera" type="button" title="V">${esc(w.camera)}</button>
+  </div>
+  <aside class="walk-sortie" id="swalk-sortie" hidden>
+    <div class="walk-sortie-title"><strong>${esc(w.sortie.title)}</strong><span id="swalk-health"></span></div>
+    <p id="swalk-objective" role="status"></p>
+    <p id="swalk-prompt" class="walk-prompt" hidden></p>
+  </aside>
+  <aside id="swalk-status" class="walk-status" role="status" hidden></aside>
+  <p class="walk-loading" id="swalk-loading" role="status">${esc(w.loading)}<noscript> · ${esc(w.error)}</noscript></p>
+  <p class="walk-help" id="swalk-help">
+    <span class="walk-help-desktop">${esc(w.controls)}</span>
+    <span class="walk-help-touch">${esc(w.touchControls)}</span>
+  </p>
+  <div class="walk-touch" id="swalk-touch" hidden>
+    <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span></span></div>
+    <div class="walk-touch-actions">
+      <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
+      <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>
+      <button class="walk-jump" id="swalk-dodge" type="button" hidden>${esc(w.dodge)}</button>
+      <button class="walk-jump" id="swalk-jump" type="button">${esc(w.jump)}</button>
+    </div>
+  </div>
+</main>
+<script type="application/json" id="swalk-text">${JSON.stringify(w).replace(/</g, "\\u003c")}</script>
+</body>
+</html>`;
 }
 
 function supportPage(lang) {
@@ -1219,6 +1290,9 @@ await cp(pub, dist, { recursive: true });
 await cp(join(root, "src", "style.css"), join(dist, "style.css"));
 await cp(join(root, "src", "site.js"), join(dist, "site.js"));
 if (existsSync(join(root, "src", "swamp.js"))) await cp(join(root, "src", "swamp.js"), join(dist, "swamp.js"));
+await cp(join(root, "src", "swamp"), join(dist, "swamp"), { recursive: true });
+await cp(join(root, "src", "swamp-walk"), join(dist, "swamp-walk"), { recursive: true });
+await cp(join(root, "src", "klyop-stroll.mjs"), join(dist, "klyop-stroll.mjs"));
 if (existsSync(join(root, "src", "pet.js"))) await cp(join(root, "src", "pet.js"), join(dist, "pet.js"));
 
 const pages = [];
@@ -1235,7 +1309,10 @@ for (const lang of site.languages) {
   await write(blogUrl(lang), blogPage(lang));
   for (const key of ["mods", "games", "packs"]) await write(sectionUrl(lang, key), sectionPage(lang, key));
   await write(sectionUrl(lang, "creative"), creativePage(lang));
-  if (SWAMP) await write(playUrl(lang), playPage(lang));
+  if (SWAMP) {
+    await write(playUrl(lang), playPage(lang));
+    await write(walkUrl(lang), walkPage(lang));
+  }
   await write(sectionUrl(lang, "support"), supportPage(lang));
   for (const p of postsIn(lang)) await write(postUrl(lang, p.slug), postPage(lang, p));
   await mkdir(join(dist, ...prefix(lang).split("/").filter(Boolean)), { recursive: true });

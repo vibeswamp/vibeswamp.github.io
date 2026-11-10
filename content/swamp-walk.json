@@ -1,0 +1,176 @@
+{
+  "en": {
+    "title": "First Landing",
+    "enter": "Step into 3D",
+    "back": "← Back to the clicker",
+    "lead": "Step out of your shack onto the landing. The boardwalk leads to the beaver dam.",
+    "loading": "Klyop is on his way to the landing…",
+    "error": "The 3D swamp couldn't start. Reload the page or try a browser with WebGL 2.",
+    "reset": "Back to the landing",
+    "controls": "WASD or arrows to run · Shift to sprint · Space to jump · E to interact · F to strike · Q to dodge · V to center camera",
+    "touchControls": "Stick to run · Edge to sprint · Swipe to turn the camera",
+    "vaultHint": "Face the rail and press jump to vault",
+    "move": "Move",
+    "jump": "Jump",
+    "north": "N",
+    "progress": "Places",
+    "complete": "Klyop has a route around the swamp now.",
+    "places": {
+      "stump": [
+        "Stump Workshop",
+        "The old screen plays the sunset long after dark."
+      ],
+      "beaver": [
+        "Beaver Dam",
+        "The dam holds the water back. Follow the lights beyond it."
+      ],
+      "radio": [
+        "Swamp Radio",
+        "You can hear the whole swamp up here. The way back goes behind the mast."
+      ]
+    },
+    "camera": "Camera",
+    "attack": "Strike",
+    "shelterLedger": "Klyop’s workshop log",
+    "dodge": "Dodge",
+    "sortie": {
+      "title": "First sortie",
+      "health": "Health",
+      "fight": "Step out of the orange windup sector, then hit back with your wrench.",
+      "approach": "The fly is on the trail beyond the dam. Follow the map marker.",
+      "patrol": "The beggar is guarding the bank. Go around or fight back.",
+      "return": "Fly defeated. Collect the salvage at the marker.",
+      "carry": "Carry the salvage back to your shack at the landing.",
+      "delivered": "Salvage delivered. It will stay in your shack.",
+      "deposit": "Drop off salvage",
+      "tea": "Make tea",
+      "teaDone": "Warm tea restored your health.",
+      "preparing": "Loading gear for the sortie…",
+      "unavailable": "The sortie is unavailable. You can still run and swim around the swamp.",
+      "radio": "Switch on the radio",
+      "radioOn": "Radio shack on air",
+      "vaultReady": "Space · vault",
+      "bankReady": "Space · climb out",
+      "hazard": "Flytrap closing",
+      "returnHome": "To the shack"
+    },
+    "motionPack": "/swamp-walk/mvp/profile.json",
+    "actionPack": "/swamp-walk/mvp/actions.json"
+  },
+  "uk": {
+    "title": "Перший причал",
+    "enter": "Вийти у 3D",
+    "back": "← До клікера",
+    "lead": "З хатини можна вийти на причал. Настил веде до бобрової греблі.",
+    "loading": "На Кльопа чекають на причалі…",
+    "error": "Не вдалося відкрити 3D-болото. Онови сторінку або спробуй браузер із WebGL 2.",
+    "reset": "На причал",
+    "controls": "WASD або стрілки — біг · Shift — спринт · Пробіл — стрибок · E — дія · F — удар · Q — ривок · V — камера",
+    "touchControls": "Стік — біг, біля краю — спринт · Свайп — камера",
+    "vaultHint": "Повернися до рейки та стрибни, щоб перелізти",
+    "move": "Рух",
+    "jump": "Стрибок",
+    "north": "Пн",
+    "progress": "Місця",
+    "complete": "Тепер у Кльопа є власний маршрут болотом.",
+    "places": {
+      "stump": [
+        "Пень-майстерня",
+        "Старий екран показує захід сонця навіть після настання темряви."
+      ],
+      "beaver": [
+        "Боброва гребля",
+        "Гребля тримає воду. Шукай ліхтарі на стежці за нею."
+      ],
+      "radio": [
+        "Болотна радіорубка",
+        "Звідси чути все болото. Зворотна стежка йде за щоглою."
+      ]
+    },
+    "camera": "Камера",
+    "attack": "Удар",
+    "shelterLedger": "Господарство Кльопи",
+    "dodge": "Ривок",
+    "sortie": {
+      "title": "Перша вилазка",
+      "health": "Здоров’я",
+      "fight": "Відійди від помаранчевого сектора замаху. У відповідь бий ключем.",
+      "approach": "Муха на стежці за греблею. Іди до позначки на мапі.",
+      "patrol": "Жебрак стереже берег. Можна обійти або відбитися.",
+      "return": "Муху переможено. Забери здобич біля позначки.",
+      "carry": "Віднеси здобич у свою хатину біля причалу.",
+      "delivered": "Здобич удома. Вона залишиться в хатині.",
+      "deposit": "Скласти здобич",
+      "tea": "Заварити чай",
+      "teaDone": "Теплий чай відновив сили.",
+      "preparing": "Спорядження для вилазки завантажується…",
+      "unavailable": "Вилазка поки недоступна. Болотом можна бігати й плавати.",
+      "radio": "Увімкнути радіо",
+      "radioOn": "Радіорубка в ефірі",
+      "vaultReady": "Пробіл · перелізти",
+      "bankReady": "Пробіл · вибратися на берег",
+      "hazard": "Мухоловка захлопується",
+      "returnHome": "До хатини"
+    },
+    "motionPack": "/swamp-walk/mvp/profile.json",
+    "actionPack": "/swamp-walk/mvp/actions.json"
+  },
+  "ru": {
+    "title": "Первый причал",
+    "enter": "Выйти в 3D",
+    "back": "← В кликер",
+    "lead": "Из лачуги можно выйти на причал. Настил ведёт к бобровой плотине.",
+    "loading": "Клёпа ждут на причале…",
+    "error": "Не удалось открыть 3D-болото. Обнови страницу или попробуй браузер с WebGL 2.",
+    "reset": "На причал",
+    "controls": "WASD или стрелки — бег · Shift — спринт · Пробел — прыжок · E — действие · F — удар · Q — рывок · V — камера",
+    "touchControls": "Стик — бег, у края — спринт · Свайп — камера",
+    "vaultHint": "Прыжок лицом к рейке — перелезание",
+    "move": "Движение",
+    "jump": "Прыжок",
+    "north": "С",
+    "progress": "Места",
+    "complete": "Теперь у Клёпа есть свой круг по болоту.",
+    "places": {
+      "stump": [
+        "Пень-мастерская",
+        "Старый экран показывает закат даже после темноты."
+      ],
+      "beaver": [
+        "Бобровая плотина",
+        "Плотина держит воду. Ищи фонари на тропе за ней."
+      ],
+      "radio": [
+        "Болотная радиорубка",
+        "Отсюда слышно всё болото. Обратная тропа идёт за мачтой."
+      ]
+    },
+    "camera": "Камера",
+    "attack": "Удар",
+    "shelterLedger": "Хозяйство Клёпы",
+    "dodge": "Рывок",
+    "sortie": {
+      "title": "Первая вылазка",
+      "health": "Здоровье",
+      "fight": "Отступай от оранжевого сектора замаха. В ответ бей ключом.",
+      "approach": "Муха у тропы за плотиной. Иди к метке на карте.",
+      "patrol": "Попрошайка сторожит берег. Можно обойти или отбиться.",
+      "return": "Муха повержена. Забери добычу у метки.",
+      "carry": "Отнеси добычу на причал, в свою лачугу.",
+      "delivered": "Добыча дома. Она останется в лачуге.",
+      "deposit": "Сложить добычу",
+      "tea": "Заварить чай",
+      "teaDone": "Тёплый чай восстановил силы.",
+      "preparing": "Снаряжение для вылазки загружается…",
+      "unavailable": "Вылазка пока недоступна. По болоту можно бегать и плавать.",
+      "radio": "Включить радио",
+      "radioOn": "Радиорубка в эфире",
+      "vaultReady": "Пробел · перелезть",
+      "bankReady": "Пробел · выбраться на берег",
+      "hazard": "Мухоловка захлопывается",
+      "returnHome": "В лачугу"
+    },
+    "motionPack": "/swamp-walk/mvp/profile.json",
+    "actionPack": "/swamp-walk/mvp/actions.json"
+  }
+}

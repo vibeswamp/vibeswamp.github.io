@@ -1,0 +1,287 @@
+import * as T from "./vendor/three.mjs";
+import { addCabin, onCabinPlot } from "./cabin.mjs";
+import { addCharacter } from "./character.mjs";
+import { createChart } from "./chart.mjs";
+import { overlapsSolid } from "./collisions.mjs";
+import { createControls } from "./controls.mjs";
+import { addEncounter } from "./encounter.mjs";
+import { createFeedback } from "./feedback.mjs";
+import { createLand, LANDMARKS, PIER, WATER } from "./land.mjs";
+import * as worldRules from "./land.mjs";
+import { advancePlayer, spawnPlayer } from "./motion.mjs";
+import { railDirection, railFloor } from "./rail.mjs";
+import { addScenery } from "./scenery.mjs";
+import { readShelter } from "./shelter-save.mjs";
+import { findBankExit } from "./shore.mjs";
+import { addTerrain, createSky } from "./surface.mjs";
+import { createSurfaceFX, surfaceContactKind } from "./surface-fx.mjs";
+import { createWalkHud } from "./walk-hud.mjs";
+import { openWorldSave } from "./walk-world-state.mjs";
+import { addWater } from "./water.mjs";
+
+const $ = (id) => document.getElementById(`swalk-${id}`);
+const text = JSON.parse($("text").textContent);
+const STEP = 1 / 90;
+const world = $("view").closest(".swalk");
+let resetFacts;
+const hud = createWalkHud(world, text, { resetFacts: () => resetFacts?.() ?? false });
+
+async function loadLayout() {
+  const response = await fetch("/swamp-walk/mvp/world.json");
+  if (!response.ok) throw new Error(`First Landing layout HTTP ${response.status}`);
+  return response.json();
+}
+
+async function start() {
+  const canvas = $("view");
+  const renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  renderer.outputColorSpace = T.SRGBColorSpace;
+  renderer.toneMapping = T.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+
+  const scene = new T.Scene();
+  const camera = new T.PerspectiveCamera(52, 1, 0.12, 230);
+  const sky = createSky(scene);
+  const terrain = createLand();
+  terrain.noGroundCover = (x, z) => onCabinPlot(x, z) || terrain.beaver.occupied(x, z, .10);
+  addTerrain(scene, terrain);
+  hud.phase(1);
+  let storage;
+  try { storage = window.localStorage; } catch {}
+  const shelter = readShelter(storage, text.economyData);
+  const [cabin, scenery, character, layout] = await Promise.all([
+    addCabin({ THREE: T, scene, ...shelter, labels: text.shelterLabels }),
+    addScenery(scene, terrain),
+    addCharacter(scene, text.motionPack, text.actionPack),
+    loadLayout(),
+  ]);
+  scene.updateMatrixWorld(true);
+  hud.phase(2);
+  if (shelter.stages.has("tea_corner") && !cabin.tea) cabin.tea = { x: cabin.spawn.x - 0.35, z: cabin.spawn.z - 0.75 };
+  const land = {
+    ...terrain,
+    floorAt: (x, z) => Math.max(terrain.floorAt(x, z), cabin.floorAt(x, z)),
+    surfaceAt: (x, z) => cabin.contains(x, z) ? "wood" : terrain.surfaceAt(x, z),
+  };
+  const exits = worldRules.WATER_EXITS ?? [];
+  const neutral = { x: 0, z: 0 };
+  const roof = scene.getObjectByName("Cabin/awning");
+  if (roof) {
+    const box = new T.Box3().setFromObject(roof);
+    cabin.solids.push({ minX: box.min.x, maxX: box.max.x, minY: box.min.y, maxY: box.max.y,
+      minZ: box.min.z, maxZ: box.max.z });
+  }
+  const obstacles = [...scenery.obstacles, ...cabin.solids];
+  // Gate pieces fade when they obscure the player. They remain solid for movement.
+  const outdoorCameraSolids = scenery.obstacles.filter(solid => solid.id !== "gate-post" && solid.id !== "gate-crossbar");
+  const cameraSolids = [...outdoorCameraSolids, ...cabin.solids];
+  const cutaway = ["awning", "window_hole", "window", "wall_l", "wall_r", "door"].flatMap(name => {
+    const group = scene.getObjectByName(`Cabin/${name}`);
+    return group ? [{ group, bounds: new T.Box3().setFromObject(group).expandByScalar(0.03) }] : [];
+  });
+  const parkour = character.parkour;
+  if (parkour) {
+    parkour.rail.y = land.floorAt(parkour.rail.x, parkour.rail.z);
+    scenery.addRail(parkour.rail);
+    for (const hint of $("help").children) hint.append(` · ${text.vaultHint}`);
+  }
+  const water = addWater(scene, land, scenery.reflection);
+  const drawChart = createChart($("chart"), land, text, [[cabin.spawn.x, cabin.spawn.z], [0, 25.55], ...layout.route]);
+  const places = LANDMARKS.map((point) => ({ ...point, y: land.heightAt(point.x, point.z) }));
+  const saved = openWorldSave(() => window.localStorage);
+  scenery.setRadio?.(saved.radio);
+  const discovered = saved.seen;
+  const feedback = createFeedback();
+  const surfaceFX = createSurfaceFX(T, scene, land, { water: WATER, play: feedback });
+  const buttons = { stick: $("stick"), jump: $("jump"), interact: $("interact"), attack: $("attack"), dodge: $("dodge") };
+  function clearAttack(actor, target, lift) {
+    const span = Math.hypot(actor.x - target.x, actor.z - target.z);
+    if (span > 2.0) return false;
+    for (let travel = 0.22; travel < span - 0.1; travel += 0.14) {
+      const t = travel / span;
+      const x = T.MathUtils.lerp(actor.x, target.x, t), z = T.MathUtils.lerp(actor.z, target.z, t);
+      const y = T.MathUtils.lerp(actor.y + lift, target.y + 0.63, t);
+      if (obstacles.some(solid => overlapsSolid(solid, x, y - 0.10, z, 0.10, 0.20))) return false;
+    }
+    return true;
+  }
+  const encounter = addEncounter({
+    scene, layout: { ...layout, radio: worldRules.RADIO_TUNING }, floorAt: land.floorAt,
+    character, cabin, saved, feedback, clearAttack, copy: text.sortie,
+    curios: scenery.curios,
+    tuneRadio: () => scenery.setRadio?.(true),
+    ui: { panel: $("sortie"), objective: $("objective"), health: $("health"), prompt: $("prompt"), ...buttons },
+    canReach: (x, z, y) => !obstacles.some(solid => overlapsSolid(solid, x, y, z, 0.25, 0.78)),
+  });
+  const target = new T.Vector3(), offset = new T.Vector3(), goal = new T.Vector3();
+  const sight = new T.Ray(), sightHit = new T.Vector3();
+  const pier = { x: PIER.x, z: PIER.z, heading: Math.PI };
+  let player, previous;
+  let swimDistance = 0;
+  let boom = 0, elapsed = 0, lastFrame = 0, budget = 0, chartAt = 0, noteUntil = 0;
+
+  function resize() {
+    const width = canvas.clientWidth, height = canvas.clientHeight;
+    if (!width || !height) return;
+    renderer.setSize(width, height, false);
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+  }
+
+  function placeCamera(pose, dt, snap) {
+    const { yaw, pitch } = controls.camera;
+    const inside = cabin.contains(pose.x, pose.z);
+    const nearCabin = Math.hypot(pose.x - cabin.spawn.x, pose.z - cabin.spawn.z) < 5.7;
+    const reach = inside ? 3.72 : camera.aspect < 0.8 ? 6.48 : 6.08;
+    const close = snap ? 0 : T.MathUtils.clamp((3.10 - boom) / 2.45, 0, 1);
+    const centerY = (inside ? 0.96 : 1.10) - 0.22 * close;
+    target.set(pose.x - Math.sin(yaw) * 0.43, Math.max(WATER, pose.y) + centerY,
+      pose.z - Math.cos(yaw) * 0.43);
+    offset.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
+    let available = reach;
+    for (let i = 0.42; i <= reach; i += 0.24) {
+      goal.copy(target).addScaledVector(offset, i);
+      if (goal.y < land.floorAt(goal.x, goal.z) + 0.29
+          || (nearCabin ? outdoorCameraSolids : cameraSolids).some(solid =>
+            overlapsSolid(solid, goal.x, goal.y - 0.15, goal.z, 0.19, 0.30))) {
+        available = Math.max(0.44, i - 0.23);
+        break;
+      }
+    }
+    boom = snap || available < boom ? available : T.MathUtils.damp(boom, available, 12, dt);
+    const fov = (camera.aspect < 0.8 ? 57 : 52) + Math.max(0, 3.0 - boom) * 9;
+    if (Math.abs(camera.fov - fov) > 0.2) {
+      camera.fov = fov;
+      camera.updateProjectionMatrix();
+    }
+    camera.position.copy(target).addScaledVector(offset, boom);
+    sight.origin.copy(target);
+    sight.direction.copy(offset);
+    for (const { group, bounds } of cutaway) {
+      group.visible = !nearCabin || !sight.intersectBox(bounds, sightHit) || sightHit.distanceTo(target) > boom + 0.12;
+    }
+    camera.lookAt(target);
+    scenery.updateGate(camera.position, pose, dt, snap);
+    sky.position.copy(camera.position);
+  }
+
+  function showProgress(place) {
+    const status = $("status");
+    const title = document.createElement("strong");
+    title.textContent = place ? text.places[place.id][0] : `${text.progress} ${discovered.size} / ${places.length}`;
+    status.replaceChildren(title);
+    const detail = place ? text.places[place.id][1] : discovered.size === places.length ? text.complete : "";
+    if (detail) {
+      const description = document.createElement("p");
+      description.textContent = detail;
+      status.append(description);
+    }
+  }
+
+  function reset(point) {
+    player = spawnPlayer(land.floorAt, point);
+    player.heading = point.heading ?? Math.PI;
+    previous = { ...player };
+    swimDistance = 0;
+    world.toggleAttribute("data-exploring", point !== cabin.spawn);
+    controls.resetCamera(player.heading);
+    encounter.reset();
+    noteUntil = 0;
+    showProgress();
+    drawChart(player, discovered, encounter.target());
+    placeCamera(player, 0, true);
+    character.update(player, player.y, 0, true, 1, land.floorAt);
+  }
+
+  function drawWorld() {
+    water.update(renderer, camera, elapsed);
+    renderer.render(scene, camera);
+  }
+
+  const center = () => controls.center(player.heading);
+  const controls = createControls(canvas, buttons, () => reset(pier), center);
+  $("reset").addEventListener("click", event => {
+    reset(pier);
+    if (event.detail > 0) canvas.focus({ preventScroll: true });
+  });
+  $("camera").addEventListener("click", center);
+  document.addEventListener("visibilitychange", () => { lastFrame = 0; budget = 0; });
+  resetFacts = () => {
+    if (!saved.reset()) return false;
+    scenery.setRadio?.(false);
+    reset(cabin.spawn);
+    return true;
+  };
+  resize();
+  new ResizeObserver(resize).observe(canvas);
+  reset(cabin.spawn);
+  scenery.update(0, camera.position, saved.radio);
+  encounter.draw(player, 0, false);
+  drawWorld();
+  hud.ready();
+  for (const id of ["status", "touch", "sortie"]) $(id).hidden = false;
+
+  renderer.setAnimationLoop((stamp) => {
+    if (document.hidden) return;
+    const dt = lastFrame ? Math.min((stamp - lastFrame) / 1000, 0.12) : 0;
+    lastFrame = stamp;
+    elapsed += dt;
+    budget += dt;
+    while (budget >= STEP) {
+      previous = { ...player };
+      const intent = controls.sample(stamp - (budget - STEP) * 1000);
+      const distance = advancePlayer(player, intent, land.floorAt, obstacles, STEP, parkour, exits);
+      const suppressedContact = !!(player.traversal || player.shoreClimb || player.swing !== null || player.hurt !== null);
+      const foot = character.advanceGait(player.pose, distance, suppressedContact);
+      const kind = surfaceContactKind(player, previous, foot);
+      if (kind) surfaceFX.emit({ kind, x: player.x, z: player.z, yaw: player.heading, displacement: distance });
+      swimDistance = player.swimming && previous.swimming ? swimDistance + distance : 0;
+      if (swimDistance >= 1.32) {
+        water.wake(player.x, player.z, elapsed);
+        swimDistance -= 1.32;
+      }
+      if (scenery.hazard?.step(player, STEP)) encounter.injure();
+      if (!encounter.step(player, intent, STEP, elapsed)) reset(layout.checkpoint ?? pier);
+      budget -= STEP;
+    }
+    if (!world.hasAttribute("data-exploring") && !cabin.contains(player.x, player.z)) {
+      world.dataset.exploring = "true";
+    }
+    for (const place of places) {
+      if (!discovered.has(place.id) && Math.hypot(player.x - place.x, player.z - place.z) < 3.65
+          && Math.abs(player.y - place.y) < 1.65) {
+        discovered.add(place.id);
+        saved.save();
+        showProgress(place);
+        noteUntil = elapsed + 5.4;
+      }
+    }
+    if (noteUntil && elapsed > noteUntil) {
+      noteUntil = 0;
+      showProgress();
+    }
+    if (hud.mapOpen && elapsed >= chartAt) {
+      drawChart(player, discovered, encounter.target());
+      chartAt = elapsed + 0.09;
+    }
+    const alpha = budget / STEP;
+    const rendered = { ...player };
+    for (const key of ["x", "y", "z"]) rendered[key] = T.MathUtils.lerp(previous[key], player[key], alpha);
+    const turn = player.heading - previous.heading;
+    rendered.heading = previous.heading + Math.atan2(Math.sin(turn), Math.cos(turn)) * alpha;
+    placeCamera(rendered, dt, false);
+    const floor = railFloor(parkour?.rail, land.floorAt(rendered.x, rendered.z), rendered.x, rendered.z);
+    character.update(rendered, floor, dt, false, alpha, land.floorAt);
+    surfaceFX.update(dt);
+    scenery.update(elapsed, camera.position, saved.radio);
+    encounter.draw(player, elapsed, railDirection(player, neutral, parkour, land.floorAt, obstacles),
+      findBankExit(player, neutral, exits, land.floorAt, obstacles));
+    drawWorld();
+  });
+}
+
+start().catch((error) => {
+  hud.fail();
+  console.error(error);
+});

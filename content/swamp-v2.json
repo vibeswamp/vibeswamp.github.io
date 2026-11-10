@@ -1,0 +1,380 @@
+{
+  "version": 2,
+  "growth": 1.15,
+  "milestones": [
+    10,
+    25,
+    50
+  ],
+  "milestoneMultiplier": 1.5,
+  "daySeconds": 1200,
+  "buildings": [
+    {
+      "id": "tussock",
+      "cost": 10,
+      "rate": 0.54,
+      "room": "shore"
+    },
+    {
+      "id": "antenna",
+      "cost": 100,
+      "rate": 4.05,
+      "room": "shore"
+    },
+    {
+      "id": "flytrap",
+      "cost": 1100,
+      "rate": 27,
+      "room": "shore"
+    },
+    {
+      "id": "stump",
+      "cost": 12000,
+      "rate": 175.5,
+      "room": "workshop"
+    },
+    {
+      "id": "review",
+      "cost": 130000,
+      "rate": 1147.5,
+      "room": "workshop"
+    },
+    {
+      "id": "beaver",
+      "cost": 1400000,
+      "rate": 7425,
+      "room": "shore"
+    },
+    {
+      "id": "peat",
+      "cost": 15000000,
+      "rate": 48600,
+      "room": "server"
+    },
+    {
+      "id": "radio",
+      "cost": 160000000,
+      "rate": 324000,
+      "room": "radio"
+    }
+  ],
+  "builds": [
+    {
+      "id": "bug",
+      "cost": 50,
+      "sec": 5
+    },
+    {
+      "id": "rimworld",
+      "cost": 600,
+      "sec": 10
+    },
+    {
+      "id": "seams",
+      "cost": 6000,
+      "sec": 15
+    },
+    {
+      "id": "kfsos",
+      "cost": 60000,
+      "sec": 20
+    },
+    {
+      "id": "friday",
+      "cost": 500000,
+      "sec": 25
+    },
+    {
+      "id": "workshop",
+      "cost": 4000000,
+      "sec": 30
+    },
+    {
+      "id": "track",
+      "cost": 30000000,
+      "sec": 40
+    },
+    {
+      "id": "stream",
+      "cost": 200000000,
+      "sec": 50
+    }
+  ],
+  "stages": [
+    {
+      "id": "pads",
+      "cost": 5,
+      "total": 10,
+      "part": "pads"
+    },
+    {
+      "id": "deck",
+      "cost": 12,
+      "total": 30,
+      "part": "deck"
+    },
+    {
+      "id": "plank",
+      "cost": 20,
+      "total": 60,
+      "part": "plank"
+    },
+    {
+      "id": "poles",
+      "cost": 50,
+      "total": 180,
+      "part": "poles"
+    },
+    {
+      "id": "awning",
+      "cost": 120,
+      "total": 450,
+      "part": "awning"
+    },
+    {
+      "id": "wall_l",
+      "cost": 300,
+      "total": 1200,
+      "part": "wall-l"
+    },
+    {
+      "id": "wall_r",
+      "cost": 900,
+      "total": 3500,
+      "part": "wall-r"
+    },
+    {
+      "id": "window_hole",
+      "cost": 1800,
+      "total": 9000,
+      "part": "window-hole"
+    },
+    {
+      "id": "window",
+      "cost": 4500,
+      "total": 22000,
+      "part": "window"
+    },
+    {
+      "id": "door",
+      "cost": 10000,
+      "total": 50000,
+      "part": "door"
+    },
+    {
+      "id": "floor",
+      "cost": 25000,
+      "total": 120000,
+      "part": "floor"
+    },
+    {
+      "id": "lamp",
+      "cost": 60000,
+      "total": 300000,
+      "part": "lamp"
+    },
+    {
+      "id": "furniture",
+      "cost": 140000,
+      "total": 750000,
+      "part": "furniture"
+    },
+    {
+      "id": "chair",
+      "cost": 350000,
+      "total": 1800000,
+      "part": "chair"
+    },
+    {
+      "id": "tea_corner",
+      "cost": 900000,
+      "total": 5000000,
+      "part": "tea-corner"
+    },
+    {
+      "id": "workshop",
+      "cost": 2400000,
+      "total": 15000000,
+      "part": "workshop"
+    },
+    {
+      "id": "extension",
+      "cost": 7000000,
+      "total": 50000000,
+      "part": "extension"
+    },
+    {
+      "id": "server_room",
+      "cost": 22000000,
+      "total": 160000000,
+      "part": "server-room"
+    },
+    {
+      "id": "studio",
+      "cost": 65000000,
+      "total": 500000000,
+      "part": "studio"
+    },
+    {
+      "id": "radio_room",
+      "cost": 220000000,
+      "total": 1600000000,
+      "part": "radio-room"
+    },
+    {
+      "id": "office",
+      "cost": 4000000000,
+      "total": 36000000000,
+      "part": "office"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "shore",
+      "icon": "tussock",
+      "background": null
+    },
+    {
+      "id": "workshop",
+      "icon": "stump",
+      "background": "/brand/swamp/v2-stage-3.webp"
+    },
+    {
+      "id": "radio",
+      "icon": "radio",
+      "background": null
+    },
+    {
+      "id": "server",
+      "icon": "peat",
+      "background": null
+    },
+    {
+      "id": "office",
+      "icon": "review",
+      "background": "/brand/swamp/v2-stage-3.webp"
+    }
+  ],
+  "activities": {
+    "garden": {
+      "seconds": 30,
+      "rewardSeconds": 8
+    },
+    "compile": {
+      "seconds": 10,
+      "cooldown": 45,
+      "rewardSeconds": 12
+    },
+    "tea": {
+      "seconds": 60,
+      "cooldown": 120,
+      "multiplier": 1.1
+    },
+    "tongue": {
+      "cooldown": 60
+    }
+  },
+  "achievements": [
+    {
+      "id": "first",
+      "icon": "tussock"
+    },
+    {
+      "id": "roof",
+      "icon": "beaver"
+    },
+    {
+      "id": "window",
+      "icon": "antenna"
+    },
+    {
+      "id": "light",
+      "icon": "peat"
+    },
+    {
+      "id": "home",
+      "icon": "stump"
+    },
+    {
+      "id": "office",
+      "icon": "review"
+    },
+    {
+      "id": "hundred",
+      "icon": "flytrap"
+    },
+    {
+      "id": "crew",
+      "icon": "beaver"
+    },
+    {
+      "id": "rate",
+      "icon": "radio"
+    },
+    {
+      "id": "hunter",
+      "icon": "flytrap"
+    },
+    {
+      "id": "tea",
+      "icon": "stump"
+    },
+    {
+      "id": "explorer",
+      "icon": "antenna"
+    }
+  ],
+  "art": {
+    "background": "/brand/swamp/bg.webp",
+    "mobileBackground": "/brand/swamp/bg-960.webp",
+    "stageLayers": {},
+    "stageBackgrounds": {
+      "poles": {
+        "src": "/brand/swamp/v2-stage-1.webp",
+        "covers": [
+          "pads",
+          "deck",
+          "plank",
+          "poles"
+        ]
+      },
+      "lamp": {
+        "src": "/brand/swamp/v2-stage-2.webp",
+        "covers": [
+          "pads",
+          "deck",
+          "plank",
+          "poles",
+          "awning",
+          "wall_l",
+          "wall_r",
+          "window_hole",
+          "window",
+          "door",
+          "floor",
+          "lamp"
+        ]
+      },
+      "tea_corner": {
+        "src": "/brand/swamp/v2-stage-3.webp",
+        "covers": [
+          "pads",
+          "deck",
+          "plank",
+          "poles",
+          "awning",
+          "wall_l",
+          "wall_r",
+          "window_hole",
+          "window",
+          "door",
+          "floor",
+          "lamp",
+          "furniture",
+          "chair",
+          "tea_corner"
+        ]
+      }
+    }
+  }
+}
