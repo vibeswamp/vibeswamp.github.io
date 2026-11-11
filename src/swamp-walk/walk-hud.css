@@ -35,7 +35,9 @@
   left: max(12px, env(safe-area-inset-left, 0px));
   right: auto;
   transform: none;
-  max-width: min(310px, calc(100% - 24px));
+  width: min(350px, calc(100% - 24px));
+  max-width: none;
+  box-sizing: border-box;
   padding: 10px 12px;
   text-align: start;
 }
@@ -43,6 +45,25 @@
 .walk-load-title, .walk-load-step { display: block; }
 .walk-load-step { margin-top: 4px; color: #e7dfc9; font-size: .75rem; }
 .swalk .walk-loading .walk-load-progress { width: 100%; margin: 7px 0 0; }
+.walk-load-numbers {
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 2px 8px;
+  margin-top: 6px; color: #e7dfc9; font-size: .72rem; font-variant-numeric: tabular-nums;
+}
+.walk-load-amount { color: #ffe1a9; }
+.walk-load-amount:empty { display: none; }
+.walk-load-time { margin-inline-start: auto; }
+.walk-load-files {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px;
+  margin: 8px 0 0; padding: 0; list-style: none;
+}
+.walk-load-file {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 3px;
+  padding: 3px 5px; border: 1px solid #d6c88733; border-radius: 4px;
+  color: #d4cfb8; font-size: .68rem; line-height: 1.2;
+}
+.walk-load-file[data-state="active"] { border-color: #e5ac57; color: #ffe1a9; }
+.walk-load-file[data-state="done"] { color: #c5d898; }
+.walk-load-file-value { font-variant-numeric: tabular-nums; }
 .walk-load-retry { margin-top: 8px; min-height: 44px; padding: 5px 9px; border: 1px solid #ead39080; border-radius: 6px; color: inherit; background: #203a2c; cursor: pointer; }
 .swalk [hidden] { display: none !important; }
 

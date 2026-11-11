@@ -15,16 +15,20 @@ const BLEND_SECONDS = 0.15;
 // Backward speed of the toe during support, at MODEL_SCALE and normal clip playback.
 const SUPPORT_SPEED = { walk: 0.61, run: 3.35, sprint: 4.32 };
 
-async function loadPilot(url, loader) {
+async function fetchProfile(url) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`Motion data HTTP ${response.status}`);
+  return { data: await response.json(), url: response.url };
+}
+
+async function loadPilot(url, loader, readJson) {
   if (!url) return null;
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Motion profile HTTP ${response.status}`);
-    const profile = await response.json();
+    const { data: profile, url: source } = await readJson(url);
     if (profile.modelScale !== MODEL_SCALE || !validRailProfile(profile.rail, profile.vault)) {
       throw new Error("Invalid Klyop motion profile");
     }
-    const library = await loader.loadAsync(new URL("klyop-kfsos-motion.glb", response.url).href);
+    const library = await loader.loadAsync(new URL("klyop-kfsos-motion.glb", source).href);
     const clips = {
       runJump: T.AnimationClip.findByName(library.animations, profile.clipNames.jump),
       vault: T.AnimationClip.findByName(library.animations, profile.clipNames.vault),
@@ -42,13 +46,11 @@ async function loadPilot(url, loader) {
   }
 }
 
-async function loadActions(url, loader) {
+async function loadActions(url, loader, readJson) {
   if (!url) return {};
   try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Action profile HTTP ${response.status}`);
-    const { library, actions } = await response.json();
-    const gltf = await loader.loadAsync(new URL(library, response.url).href);
+    const { data: { library, actions }, url: source } = await readJson(url);
+    const gltf = await loader.loadAsync(new URL(library, source).href);
     return Object.fromEntries(Object.entries(actions).map(([state, profile]) => {
       const clip = T.AnimationClip.findByName(gltf.animations, profile.name);
       if (!clip?.validate() || !clip.tracks.length) throw new Error(`Invalid action clip ${profile.name}`);
@@ -60,9 +62,11 @@ async function loadActions(url, loader) {
   }
 }
 
-export async function addCharacter(scene, pilotUrl, actionUrl) {
-  const loader = new T.GLTFLoader();
-  const [gltf, candidate, moves] = await Promise.all([loader.loadAsync(MODEL), loadPilot(pilotUrl, loader), loadActions(actionUrl, loader)]);
+export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJson = fetchProfile } = {}) {
+  const loader = new T.GLTFLoader(manager);
+  const [gltf, candidate, moves] = await Promise.all([
+    loader.loadAsync(MODEL), loadPilot(pilotUrl, loader, readJson), loadActions(actionUrl, loader, readJson),
+  ]);
   const binds = clip => clip.tracks.every(track =>
     gltf.scene.getObjectByName(T.PropertyBinding.parseTrackName(track.name).nodeName));
   const pilot = candidate && Object.values(candidate.clips).every(binds) ? candidate : null;

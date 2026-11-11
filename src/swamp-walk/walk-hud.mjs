@@ -1,6 +1,8 @@
 const COPY = {
   ru: {
-    phases: ["Подготовка сцены", "Загрузка Клёпы и лачуги", "Подключение управления"],
+    phases: ["Подключаем движок 3D", "Скачиваем стартовые файлы", "Собираем сцену", "Подключаем управление"],
+    files: { character: "Клёпа", motion: "Анимации", land: "Локация", textures: "Текстуры" },
+    elapsed: "Прошло", skipped: "Пропущено", megabytes: "МБ",
     map: "Карта", retry: "Повторить загрузку", reset: "Сбросить открытия 3D",
     confirm: "Сбросить открытия и трофей «Первого причала»?",
     resetDone: "Открытия 3D сброшены.", resetFailed: "Браузер не разрешил сбросить открытия.",
@@ -9,7 +11,9 @@ const COPY = {
     finish: "Муха побеждена. Забери добычу у метки.",
   },
   uk: {
-    phases: ["Підготовка сцени", "Завантаження Кльопи й хатини", "Підключення керування"],
+    phases: ["Підключаємо рушій 3D", "Завантажуємо стартові файли", "Збираємо сцену", "Підключаємо керування"],
+    files: { character: "Кльопа", motion: "Анімації", land: "Локація", textures: "Текстури" },
+    elapsed: "Минуло", skipped: "Пропущено", megabytes: "МБ",
     map: "Карта", retry: "Повторити завантаження", reset: "Скинути відкриття 3D",
     confirm: "Скинути відкриття й трофей «Першого причалу»?",
     resetDone: "Відкриття 3D скинуто.", resetFailed: "Браузер не дозволив скинути відкриття.",
@@ -18,7 +22,9 @@ const COPY = {
     finish: "Муху переможено. Забери здобич біля позначки.",
   },
   en: {
-    phases: ["Preparing the scene", "Loading Klyop and the hut", "Setting up controls"],
+    phases: ["Starting the 3D engine", "Downloading startup files", "Assembling the scene", "Setting up controls"],
+    files: { character: "Klyop", motion: "Animations", land: "Location", textures: "Textures" },
+    elapsed: "Elapsed", skipped: "Skipped", megabytes: "MB",
     map: "Map", retry: "Try loading again", reset: "Reset 3D discoveries",
     confirm: "Reset your First Landing discoveries and trophy?",
     resetDone: "3D discoveries reset.", resetFailed: "The browser blocked the reset.",
@@ -51,12 +57,61 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
   const loading = get("loading");
   const loadingTitle = make("strong", "walk-load-title", text.loading);
   const loadingStep = make("span", "walk-load-step");
+  loadingStep.setAttribute("role", "status");
   const progress = make("progress", "walk-load-progress");
-  progress.max = copy.phases.length;
+  progress.max = 100;
+  progress.setAttribute("aria-label", copy.phases[1]);
+  const numbers = make("div", "walk-load-numbers");
+  const amount = make("span", "walk-load-amount");
+  const elapsed = make("span", "walk-load-time");
+  numbers.append(amount, elapsed);
+  const details = make("ul", "walk-load-files");
+  details.hidden = true;
+  const groups = Object.fromEntries(Object.entries(copy.files).map(([id, label]) => {
+    const row = make("li", "walk-load-file");
+    const value = make("span", "walk-load-file-value");
+    row.append(make("span", "walk-load-file-label", label), value);
+    details.append(row);
+    return [id, { row, value }];
+  }));
+  const clock = doc.defaultView;
+  function updateElapsed() {
+    const seconds = Math.floor(clock.performance.now() / 1000);
+    elapsed.textContent = `${copy.elapsed} ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+  updateElapsed();
+  const timer = clock.setInterval(updateElapsed, 1000);
+  const mb = new Intl.NumberFormat(lang, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  let downloadState, drawFrame = 0;
+
+  function drawDownload() {
+    drawFrame = 0;
+    const { loaded, total, groups: files } = downloadState;
+    const percent = total ? Math.min(100, Math.floor(loaded * 100 / total)) : 100;
+    progress.value = percent;
+    amount.textContent = `${percent}% · ${mb.format(loaded / 1e6)} / ${mb.format(total / 1e6)} ${copy.megabytes}`;
+    details.hidden = false;
+    for (const [id, { row, value }] of Object.entries(groups)) {
+      const file = files[id];
+      row.hidden = !file;
+      if (!file) continue;
+      const done = file.finished === file.count;
+      row.dataset.state = done ? "done" : file.loaded ? "active" : "waiting";
+      value.textContent = done && file.skipped ? copy.skipped
+        : done ? `${file.count}/${file.count}`
+        : `${file.total ? Math.min(100, Math.floor(file.loaded * 100 / file.total)) : 0}%`;
+    }
+  }
+
+  function finishLoading() {
+    clock.clearInterval(timer);
+    updateElapsed();
+    if (drawFrame) clock.cancelAnimationFrame(drawFrame);
+  }
   const retry = button("walk-load-retry", copy.retry);
   retry.hidden = true;
   retry.addEventListener("click", () => doc.defaultView.location.reload());
-  loading.replaceChildren(loadingTitle, loadingStep, progress, retry);
+  loading.replaceChildren(loadingTitle, loadingStep, progress, numbers, details, retry);
 
   const map = get("map");
   const mapButton = button("walk-map-toggle", copy.map);
@@ -106,24 +161,32 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
   });
 
   function phase(index) {
-    progress.value = index + 1;
-    progress.setAttribute("aria-label", copy.phases[index]);
-    loadingStep.textContent = `${index + 1} / ${copy.phases.length} · ${copy.phases[index]}`;
+    loadingStep.textContent = copy.phases[index];
+    if (index >= 2 && downloadState && drawFrame) {
+      clock.cancelAnimationFrame(drawFrame);
+      drawDownload();
+    }
   }
   phase(0);
 
   return {
     phase,
+    download(state) {
+      downloadState = state;
+      if (!drawFrame) drawFrame = clock.requestAnimationFrame(drawDownload);
+    },
     get mapOpen() { return !tools.hidden; },
     ready() {
+      finishLoading();
       loading.hidden = true;
       world.dataset.ready = "true";
       map.hidden = false;
     },
     fail() {
+      finishLoading();
       loading.setAttribute("role", "alert");
       loadingTitle.textContent = text.error;
-      loadingStep.hidden = progress.hidden = true;
+      loadingStep.hidden = progress.hidden = amount.hidden = details.hidden = true;
       retry.hidden = false;
     },
   };

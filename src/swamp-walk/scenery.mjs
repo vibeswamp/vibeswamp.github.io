@@ -115,18 +115,18 @@ function organicCanopy(detail) {
   return geometry;
 }
 
-export async function addScenery(scene, land) {
+export async function addScenery(scene, land, manager) {
   const props = [
     ...LANDMARKS,
     { id: "flytrap", ...FLYTRAP },
     { id: "tussock", ...TUSSOCK },
   ];
-  const texture = new T.TextureLoader();
+  const texture = new T.TextureLoader(manager);
   const [wood, atlas, forestAtlas, pack] = await Promise.all([
     texture.loadAsync(`${ART}landing-planks.webp`),
     texture.loadAsync(`${ART}landing-deck.webp`),
     texture.loadAsync(FOREST_ATLAS),
-    new T.GLTFLoader().loadAsync(`${ART}landing.glb`),
+    new T.GLTFLoader(manager).loadAsync(`${ART}landing.glb`),
   ]);
   wood.colorSpace = T.SRGBColorSpace;
   wood.wrapS = T.RepeatWrapping;

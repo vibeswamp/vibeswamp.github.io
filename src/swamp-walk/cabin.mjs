@@ -6,7 +6,7 @@ const WALL = 0.15, EAVE = 2.18, DOOR_HALF = 0.69;
 const PLANKS = "/swamp-walk/models/landing-planks.webp";
 export const onCabinPlot = (x, z) => x >= X - HX && x <= X + HX && z >= Z - HZ && z <= Z + HZ;
 
-export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, projects = new Set(), labels }) {
+export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, projects = new Set(), labels, manager }) {
   const root = new THREE.Group();
   root.name = "MVP Cabin";
   root.position.set(X, FLOOR, Z);
@@ -17,7 +17,7 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
   let texture = null;
   if (hasDeck || has("awning") || has("wall_l") || has("wall_r") || has("window_hole") || has("door")) {
     try {
-      texture = await new THREE.TextureLoader().loadAsync(PLANKS);
+      texture = await new THREE.TextureLoader(manager).loadAsync(PLANKS);
       texture.colorSpace = THREE.SRGBColorSpace;
     } catch {
       // The solid timber palette is also the loading fallback.

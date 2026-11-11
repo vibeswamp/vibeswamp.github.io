@@ -33,9 +33,17 @@ const walkCharacter = moduleUrl("swamp-walk/character.mjs", {
   "./motion.mjs": walkMotion,
   "./gait-contacts.mjs": sourceAssetUrl("swamp-walk/gait-contacts.mjs"),
 });
-const walkScript = moduleUrl("swamp-walk/main.mjs", {
-  "./motion.mjs": walkMotion, "./character.mjs": walkCharacter,
+const walkMain = moduleUrl("swamp-walk/main.mjs", {
+  "./motion.mjs": walkMotion,
+  "./character.mjs": walkCharacter,
+  "./walk-assets.mjs": sourceAssetUrl("swamp-walk/walk-assets.mjs"),
+  "./scenery.mjs": sourceAssetUrl("swamp-walk/scenery.mjs"),
+  "./cabin.mjs": sourceAssetUrl("swamp-walk/cabin.mjs"),
 });
+const walkScript = moduleUrl("swamp-walk/walk-entry.mjs", {
+  "./main.mjs": walkMain, "./walk-hud.mjs": sourceAssetUrl("swamp-walk/walk-hud.mjs"),
+});
+const walkHudStyles = sourceAssetUrl("swamp-walk/walk-hud.css");
 
 if (!process.argv.includes("--offline")) {
   try {
@@ -881,6 +889,42 @@ ${list.map(({ m, i }) => `<li class="track"><button type="button" class="play" d
 const SWAMP = existsSync(join(root, "content", "swamp.json")) ? JSON.parse(readFileSync(join(root, "content", "swamp.json"), "utf8")) : null;
 const SWAMP_V2 = await readJson("content", "swamp-v2.json");
 const SWAMP_WALK = await readJson("content", "swamp-walk.json");
+
+function walkAsset(path, group, optional = false) {
+  const file = join(pub, path.slice(1));
+  if (optional && !existsSync(file)) return null;
+  const bytes = readFileSync(file);
+  return { path, url: sourceAssetUrl(path.slice(1), bytes), group, bytes: bytes.length, optional };
+}
+
+function walkLoadingAssets(walk) {
+  const assets = [
+    walkAsset("/swamp-walk/mvp/world.json", "land"),
+    walkAsset("/swamp-walk/klyop-walk.glb", "character"),
+    walkAsset("/swamp-walk/models/landing.glb", "land"),
+    ...["landing-planks", "landing-deck", "forest-atlas"].map(name =>
+      walkAsset(`/swamp-walk/models/${name}.webp`, "textures")),
+  ];
+  if (walk.motionPack) {
+    assets.push(walkAsset(walk.motionPack, "motion", true),
+      walkAsset(new URL("klyop-kfsos-motion.glb", new URL(walk.motionPack, site.baseUrl)).pathname, "motion", true));
+  }
+  if (walk.actionPack) {
+    const config = walkAsset(walk.actionPack, "motion", true);
+    if (config) {
+      assets.push(config);
+      try {
+        const { library } = JSON.parse(readFileSync(join(pub, walk.actionPack.slice(1)), "utf8"));
+        if (typeof library === "string") {
+          assets.push(walkAsset(new URL(library, new URL(walk.actionPack, site.baseUrl)).pathname, "motion", true));
+        }
+      } catch (error) {
+        warn(`3D action profile: ${error.message}`);
+      }
+    }
+  }
+  return assets.filter(Boolean);
+}
 function playPage(lang) {
   const t = site.strings[lang];
   const S = SWAMP?.[lang] ?? SWAMP?.en ?? {};
@@ -910,7 +954,7 @@ function playPage(lang) {
 function walkPage(lang) {
   const swamp = SWAMP[lang];
   const names = list => list.map(({ id, name }) => ({ id, name }));
-  const w = { ...SWAMP_WALK[lang], economyData: SWAMP_V2, shelterLabels: {
+  const w = { ...SWAMP_WALK[lang], loadingAssets: walkLoadingAssets(SWAMP_WALK[lang]), economyData: SWAMP_V2, shelterLabels: {
     title: SWAMP_WALK[lang].shelterLedger, producers: names(swamp.buildings), projects: names(swamp.builds),
   } };
   return `<!doctype html>
@@ -922,7 +966,7 @@ function walkPage(lang) {
 <meta name="description" content="${esc(w.lead)}">
 <link rel="icon" href="/favicon.png">
 <link rel="stylesheet" href="/swamp-walk/style.css">
-<link rel="stylesheet" href="/swamp-walk/walk-hud.css">
+<link rel="stylesheet" href="${walkHudStyles}">
 <script type="module" src="${walkScript}"></script>
 </head>
 <body>
@@ -942,7 +986,7 @@ function walkPage(lang) {
     <p id="swalk-prompt" class="walk-prompt" hidden></p>
   </aside>
   <aside id="swalk-status" class="walk-status" role="status" hidden></aside>
-  <p class="walk-loading" id="swalk-loading" role="status">${esc(w.loading)}<noscript> · ${esc(w.error)}</noscript></p>
+  <section class="walk-loading" id="swalk-loading" aria-label="${esc(w.loading)}">${esc(w.loading)}<noscript> · ${esc(w.error)}</noscript></section>
   <p class="walk-help" id="swalk-help">
     <span class="walk-help-desktop">${esc(w.controls)}</span>
     <span class="walk-help-touch">${esc(w.touchControls)}</span>

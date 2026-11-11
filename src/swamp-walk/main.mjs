@@ -15,24 +15,25 @@ import { readShelter } from "./shelter-save.mjs";
 import { findBankExit } from "./shore.mjs";
 import { addTerrain, createSky } from "./surface.mjs";
 import { createSurfaceFX, surfaceContactKind } from "./surface-fx.mjs";
-import { createWalkHud } from "./walk-hud.mjs";
+import { preloadWalkAssets } from "./walk-assets.mjs";
 import { openWorldSave } from "./walk-world-state.mjs";
 import { addWater } from "./water.mjs";
 
 const $ = (id) => document.getElementById(`swalk-${id}`);
-const text = JSON.parse($("text").textContent);
 const STEP = 1 / 90;
-const world = $("view").closest(".swalk");
-let resetFacts;
-const hud = createWalkHud(world, text, { resetFacts: () => resetFacts?.() ?? false });
 
-async function loadLayout() {
-  const response = await fetch("/swamp-walk/mvp/world.json");
-  if (!response.ok) throw new Error(`First Landing layout HTTP ${response.status}`);
-  return response.json();
+export async function start(world, text, hud, setResetFacts) {
+  hud.phase(1);
+  const assets = await preloadWalkAssets(text.loadingAssets, new T.LoadingManager(), hud.download);
+  try {
+    hud.phase(2);
+    await assemble(world, text, hud, setResetFacts, assets);
+  } finally {
+    assets.dispose();
+  }
 }
 
-async function start() {
+async function assemble(world, text, hud, setResetFacts, assets) {
   const canvas = $("view");
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.outputColorSpace = T.SRGBColorSpace;
@@ -46,18 +47,17 @@ async function start() {
   const terrain = createLand();
   terrain.noGroundCover = (x, z) => onCabinPlot(x, z) || terrain.beaver.occupied(x, z, .10);
   addTerrain(scene, terrain);
-  hud.phase(1);
   let storage;
   try { storage = window.localStorage; } catch {}
   const shelter = readShelter(storage, text.economyData);
   const [cabin, scenery, character, layout] = await Promise.all([
-    addCabin({ THREE: T, scene, ...shelter, labels: text.shelterLabels }),
-    addScenery(scene, terrain),
-    addCharacter(scene, text.motionPack, text.actionPack),
-    loadLayout(),
+    addCabin({ THREE: T, scene, ...shelter, labels: text.shelterLabels, manager: assets.manager }),
+    addScenery(scene, terrain, assets.manager),
+    addCharacter(scene, text.motionPack, text.actionPack, { manager: assets.manager, readJson: assets.json }),
+    assets.json("/swamp-walk/mvp/world.json").then(result => result.data),
   ]);
   scene.updateMatrixWorld(true);
-  hud.phase(2);
+  hud.phase(3);
   if (shelter.stages.has("tea_corner") && !cabin.tea) cabin.tea = { x: cabin.spawn.x - 0.35, z: cabin.spawn.z - 0.75 };
   const land = {
     ...terrain,
@@ -207,12 +207,12 @@ async function start() {
   });
   $("camera").addEventListener("click", center);
   document.addEventListener("visibilitychange", () => { lastFrame = 0; budget = 0; });
-  resetFacts = () => {
+  setResetFacts(() => {
     if (!saved.reset()) return false;
     scenery.setRadio?.(false);
     reset(cabin.spawn);
     return true;
-  };
+  });
   resize();
   new ResizeObserver(resize).observe(canvas);
   reset(cabin.spawn);
@@ -280,8 +280,3 @@ async function start() {
     drawWorld();
   });
 }
-
-start().catch((error) => {
-  hud.fail();
-  console.error(error);
-});
