@@ -110,18 +110,21 @@ function startClicker(host, textEl, lockedStorage) {
 <p class="sw-say" aria-live="polite"></p>
 </div>
 <div class="sw-stage-brief"><span class="sw-stage-label"></span><button type="button" class="sw-stage-next"></button></div>
-<nav class="sw-doors" aria-label="${U.locations}"></nav>
 <div class="sw-low">
 <div class="sw-meter"><span class="sw-meter-l">${T.vibe}</span><span class="sw-meter-bar" aria-hidden="true"><span></span></span></div>
-<p class="sw-hint">${T.vibeHint}</p><p class="sw-hint">${U.catchHint}</p>
+<button type="button" class="sw-room-toggle sw-compact-toggle" aria-expanded="false" aria-controls="sw-doors"><span class="sw-room-current"></span><span class="sw-compact-caret" aria-hidden="true">▾</span></button>
+<button type="button" class="sw-compact-toggle" aria-expanded="false" aria-controls="sw-action-drawer">${U.actions}</button>
+<button type="button" class="sw-compact-toggle" aria-expanded="false" aria-controls="sw-hints">${U.tips}</button>
+<div class="sw-hints" id="sw-hints"><p class="sw-hint">${T.vibeHint}</p><p class="sw-hint">${U.catchHint}</p><p class="sw-hint sw-rank-tip">${U.rankBonus}</p></div>
 </div>
-<div class="sw-activities">
+<nav class="sw-doors" id="sw-doors" aria-label="${U.locations}"></nav>
+<div class="sw-action-drawer" id="sw-action-drawer"><div class="sw-activities">
 <button type="button" data-activity="garden" title="${V.plant}"><span aria-hidden="true">❧</span><span class="sw-action-name">${V.garden}</span><small></small></button>
 <button type="button" data-activity="compile"><span aria-hidden="true">⌘</span><span class="sw-action-name">${V.compile}</span><small></small><progress max="10" value="0" aria-label="${V.compile}" hidden></progress></button>
 <button type="button" data-activity="tea"><span aria-hidden="true">♨</span><span class="sw-action-name">${V.tea}</span><small></small></button>
 <button type="button" data-activity="tongue"><span aria-hidden="true">↝</span><span class="sw-action-name">${V.tongue}</span><small></small></button>
 </div>
-<div class="sw-radio-boost" hidden><button type="button" class="sw-radio-toggle"></button><span class="sw-radio-detail"></span></div>
+<div class="sw-radio-boost" hidden><button type="button" class="sw-radio-toggle"></button><span class="sw-radio-detail"></span></div></div>
 </section>
 <section class="sw-shop" aria-labelledby="sw-management">
 <h2 id="sw-management">${U.management}</h2>
@@ -153,6 +156,18 @@ function startClicker(host, textEl, lockedStorage) {
   const btn = $(".sw-klyop"), kImg = $(".sw-k"), pops = $(".sw-pops");
   const meter = $(".sw-meter-bar span"), meterBox = $(".sw-meter");
   const rankImg = $(".sw-rank-img"), rankNo = $(".sw-rank-no"), rankName = $(".sw-rank-name"), rankBar = $(".sw-rank-bar"), rankNext = $(".sw-rank-next"), rankBox = $(".sw-rank"), rankBonus = $(".sw-rank-bonus");
+  const roomCurrent = $(".sw-room-current"), roomToggle = $(".sw-room-toggle");
+  const compactToggles = [...host.querySelectorAll(".sw-compact-toggle")];
+  for (const toggle of compactToggles) {
+    toggle.addEventListener("click", () => {
+      const open = toggle.getAttribute("aria-expanded") !== "true";
+      for (const control of compactToggles) {
+        const expanded = control === toggle && open;
+        control.setAttribute("aria-expanded", String(expanded));
+        $(`#${control.getAttribute("aria-controls")}`).toggleAttribute("data-compact-open", expanded);
+      }
+    });
+  }
   const buyCards = [...host.querySelectorAll(".sw-buy")], buildBtns = [...host.querySelectorAll(".sw-build")];
   host.addEventListener("dragstart", (event) => event.preventDefault());
   const producerLabels = Object.fromEntries(buildings.map(({ id, name }) => [id, name]));
@@ -288,7 +303,64 @@ function startClicker(host, textEl, lockedStorage) {
 
   // ---------- scene and ordinary flies ----------
   const drawHouses = (fresh) => drawScene(S, fresh);
-  let nextFlyAt = 0, fliesStarted = false;
+  let nextFlyAt = 0, fliesStarted = false, flyDrag = null;
+  const finishFlyDrag = () => {
+    if (!flyDrag) return;
+    const { fly, id, ghost, resume } = flyDrag;
+    flyDrag = null;
+    ghost.remove();
+    fly.classList.remove("sw-fly-held");
+    btn.classList.remove("sw-fly-target");
+    if (fly.hasPointerCapture(id)) fly.releasePointerCapture(id);
+    if (fly.isConnected && !document.hidden && !survivorsActive) resume?.();
+  };
+  const overKlyop = ({ clientX, clientY }) => {
+    const { left, right, top, bottom, width, height } = kImg.getBoundingClientRect();
+    return width > 0 && height > 0 &&
+      clientX >= left - 10 && clientX <= right + 10 && clientY >= top - 8 && clientY <= bottom + 8;
+  };
+  const positionFly = (event) => {
+    const bounds = world.getBoundingClientRect();
+    flyDrag.ghost.style.left = `${event.clientX - bounds.left}px`;
+    flyDrag.ghost.style.top = `${event.clientY - bounds.top}px`;
+    flyDrag.moved ||= Math.hypot(event.clientX - flyDrag.x, event.clientY - flyDrag.y) >= 7;
+    btn.classList.toggle("sw-fly-target", flyDrag.moved && overKlyop(event));
+  };
+  const bindFly = (fly, catchFly, pause, resume) => {
+    fly.addEventListener("pointerdown", (event) => {
+      event.stopPropagation();
+      if (event.button !== 0 || flyDrag || !writeOwner) return;
+      fly.setPointerCapture(event.pointerId);
+      const ghost = document.createElement("span");
+      ghost.className = `${fly.className} sw-fly-dragged`;
+      ghost.setAttribute("aria-hidden", "true");
+      ghost.innerHTML = FLY;
+      flyDrag = { fly, ghost, id: event.pointerId, x: event.clientX, y: event.clientY, moved: false, resume };
+      pause?.();
+      fly.classList.add("sw-fly-held");
+      world.append(ghost);
+      positionFly(event);
+    });
+    const ownsPointer = (event) => flyDrag?.fly === fly && flyDrag.id === event.pointerId;
+    fly.addEventListener("pointermove", (event) => {
+      if (ownsPointer(event)) positionFly(event);
+    });
+    fly.addEventListener("pointerup", (event) => {
+      if (!ownsPointer(event)) return;
+      positionFly(event);
+      const { moved } = flyDrag;
+      const delivered = moved && overKlyop(event);
+      finishFlyDrag();
+      if ((!moved || delivered) && fly.isConnected && writeOwner) catchFly(delivered);
+    });
+    const cancel = (event) => { if (ownsPointer(event)) finishFlyDrag(); };
+    fly.addEventListener("pointercancel", cancel);
+    fly.addEventListener("lostpointercapture", cancel);
+    fly.addEventListener("click", (event) => {
+      event.stopPropagation();
+      if (event.detail === 0 && fly.isConnected && writeOwner) catchFly(false);
+    });
+  };
   const drawFlies = () => {
     if (document.hidden || survivorsActive) return;
     const want = Math.max(2, Math.min(10, 2 + Math.floor(Math.log2(rate() + 1) * 0.7)));
@@ -300,10 +372,16 @@ function startClicker(host, textEl, lockedStorage) {
       f.innerHTML = FLY;
       const x = Math.random() < 0.5 ? rnd(6, 22) : rnd(68, 82);
       f.style.cssText = `left:${x.toFixed(1)}%;top:${rnd(22, 53).toFixed(1)}%;--dx:${rnd(-12, 12).toFixed(0)}px;--dy:${rnd(-20, 20).toFixed(0)}px;--d:${rnd(2.6, 6).toFixed(2)}s;animation-delay:-${rnd(0, 5).toFixed(2)}s`;
-      f.addEventListener("click", (event) => { event.stopPropagation(); catchFlies([f]); render(); save(); });
+      bindFly(f, (delivered) => {
+        catchFlies([f], delivered);
+        render(); save();
+      });
       fliesEl.append(f);
     }
-    while (fliesEl.childElementCount > want) fliesEl.lastChild.remove();
+    while (fliesEl.childElementCount > want) {
+      const last = fliesEl.lastElementChild;
+      (last === flyDrag?.fly ? last.previousElementSibling : last).remove();
+    }
     fliesStarted = true; nextFlyAt = now() + 6000;
   };
 
@@ -358,12 +436,18 @@ function startClicker(host, textEl, lockedStorage) {
     progress.value = D.activities.compile.seconds - secondsLeft(activities.compileEnd);
 
     const tea = $('[data-activity="tea"]');
-    tea.disabled = time < activities.teaReady;
+    const teaActive = time < activities.teaUntil;
+    const resting = time < activities.teaReady;
+    tea.disabled = teaActive || (resting && !S.teaBags);
     const teaPercent = Math.round((D.activities.tea.multiplier - 1) * 100);
     const teaDetail = tea.querySelector("small");
-    if (time < activities.teaUntil) teaDetail.textContent = fill(U.teaBenefit, { n: teaPercent, s: secondsLeft(activities.teaUntil) });
-    else if (time < activities.teaReady) teaDetail.textContent = fill(V.cooldown, { n: secondsLeft(activities.teaReady) });
-    else teaDetail.textContent = fill(U.teaBenefit, { n: teaPercent, s: D.activities.tea.seconds });
+    if (!teaActive && resting && S.teaBags) teaDetail.textContent = fill(U.teaBagBrew, { n: fmt(S.teaBags) });
+    else {
+      const detail = teaActive ? fill(U.teaBenefit, { n: teaPercent, s: secondsLeft(activities.teaUntil) })
+        : resting ? fill(V.cooldown, { n: secondsLeft(activities.teaReady) })
+        : fill(U.teaBenefit, { n: teaPercent, s: D.activities.tea.seconds });
+      teaDetail.textContent = S.teaBags ? `${detail} · ${fill(U.teaBagStock, { n: fmt(S.teaBags) })}` : detail;
+    }
 
     const tongue = $('[data-activity="tongue"]');
     const count = fliesEl.childElementCount;
@@ -377,6 +461,11 @@ function startClicker(host, textEl, lockedStorage) {
   const render = () => {
     if (survivorsActive) return;
     checkAchievements(); renderActivities(); drawScene(S);
+    const roomName = V.rooms[S.room];
+    if (roomCurrent.textContent !== roomName) {
+      roomCurrent.textContent = roomName;
+      roomToggle.setAttribute("aria-label", `${U.locations} · ${roomName}`);
+    }
     const next = D.stages[S.stage];
     $(".sw-stage-progress").textContent = fill(V.stageProgress, { n: S.stage, max: D.stages.length });
     const construct = $(".sw-construct");
@@ -400,6 +489,7 @@ function startClicker(host, textEl, lockedStorage) {
     if (modifiers.tea) incomeLines.push(fill(U.teaIncome, { n: Math.round((D.activities.tea.multiplier - 1) * 100) }));
     if (modifiers.swarm) incomeLines.push(U.swarmIncome);
     incomeDetail.textContent = incomeLines.join(" · ");
+    incomeDetail.toggleAttribute("data-boosted", incomeLines.length > 1);
     radioToggle.textContent = modifiers.radio ? U.radioStop : U.radioStart;
     radioToggle.setAttribute("aria-pressed", String(modifiers.radio));
     radioDetail.textContent = fill(modifiers.radio ? U.radioIncome : U.radioBenefit, { n: vibePct() });
@@ -482,15 +572,22 @@ function startClicker(host, textEl, lockedStorage) {
     S.flies += value; S.total += value;
     if (message) speak(message);
   };
-  const catchFlies = (flies) => {
+  const rollTeaBag = () => {
+    if (Math.random() >= 0.08) return;
+    S.teaBags++;
+    speak(U.teaBagDrop);
+  };
+  const catchFlies = (flies, delivered = false) => {
     const visible = flies.filter((fly) => fly.isConnected);
     if (!visible.length) return;
-    const value = flyReward(visible.length);
+    const value = flyReward(visible.length) * (delivered ? 2 : 1);
+    if (visible.includes(flyDrag?.fly)) finishFlyDrag();
     const bounds = world.getBoundingClientRect();
     const position = visible[0].getBoundingClientRect();
     visible.forEach((fly) => fly.remove());
     S.caught += visible.length;
     reward(value); pop(`+${fmt(value)}`, position.left - bounds.left + 22, position.top - bounds.top, "small");
+    if (delivered) rollTeaBag();
     kEvent(["fly"]);
   };
   world.addEventListener("pointerdown", (event) => {
@@ -512,7 +609,8 @@ function startClicker(host, textEl, lockedStorage) {
       activities.compileReady = activities.compileEnd + D.activities.compile.cooldown * 1000;
       kEvent(["type", "tea"]);
     }
-    if (activity === "tea" && time >= activities.teaReady) {
+    if (activity === "tea" && time >= activities.teaUntil && (time >= activities.teaReady || S.teaBags)) {
+      if (time < activities.teaReady) S.teaBags--;
       activities.teaUntil = time + D.activities.tea.seconds * 1000;
       activities.teaReady = time + D.activities.tea.cooldown * 1000;
       S.teas++; speak(V.teaSay); kEvent(["tea"]);
@@ -576,6 +674,7 @@ function startClicker(host, textEl, lockedStorage) {
 
   $(".sw-reset").addEventListener("click", () => {
     if (!confirm(T.resetAsk)) return;
+    finishFlyDrag();
     S = freshSave(pond);
     vibe = 0; vibeUntil = 0; swarmUntil = 0; stormUntil = 0;
     toastQueue.length = 0; clearTimeout(toastTimer); toastTimer = 0; $(".sw-toast").hidden = true;
@@ -601,10 +700,8 @@ function startClicker(host, textEl, lockedStorage) {
     let expiry;
     const dismiss = () => { activeFatMotion = null; f.remove(); later(); };
     if (fly) fly.onfinish = dismiss;
-    else { f.style.left = "45%"; expiry = setTimeout(dismiss, 13000); }
-    f.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (!f.isConnected) return;
+    else { f.style.left = "24%"; expiry = setTimeout(dismiss, 13000); }
+    bindFly(f, (delivered) => {
       S.fatCaught++; S.caught++;
       const roll = Math.random();
       if (roll < 0.5) {
@@ -613,9 +710,22 @@ function startClicker(host, textEl, lockedStorage) {
         speak(fill(T.fat, { n: fmt(got) }));
       } else if (roll < 0.75) { swarmUntil = now() + 15000; speak(T.swarm); }
       else { stormUntil = now() + 10000; speak(T.storm); }
+      if (delivered) {
+        const bonus = flyReward(2);
+        const position = kImg.getBoundingClientRect(), bounds = world.getBoundingClientRect();
+        reward(bonus);
+        pop(`+${fmt(bonus)}`, position.left - bounds.left + position.width / 2, position.top - bounds.top, "small");
+        rollTeaBag();
+      }
       VS().sound?.("croak");
       kEvent(["fly"]);
       fly?.cancel(); clearTimeout(expiry); activeFatMotion = null; f.remove(); render(); save(); later();
+    }, () => {
+      fly?.pause();
+      clearTimeout(expiry);
+    }, () => {
+      if (fly) fly.play();
+      else expiry = setTimeout(dismiss, 13000);
     });
   };
   const later = () => setTimeout(fat, rnd(25, 55) * 1000);
@@ -671,6 +781,7 @@ function startClicker(host, textEl, lockedStorage) {
   setInterval(drawFlies, 2000);
   setInterval(save, 5000);
   addEventListener("pagehide", () => {
+    finishFlyDrag();
     save();
     if (lockedStorage) writeOwner = false;
   });
@@ -678,6 +789,7 @@ function startClicker(host, textEl, lockedStorage) {
     const suspended = document.hidden || survivorsActive;
     host.classList.toggle("sw-paused", suspended);
     if (suspended) {
+      finishFlyDrag();
       activeFatMotion?.pause();
       cancelAnimationFrame(K.raf);
       K.raf = 0;

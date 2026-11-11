@@ -12,13 +12,30 @@ const dist = join(root, "dist");
 const pub = join(root, "public");
 const readJson = async (...p) => JSON.parse((await readFile(join(root, ...p), "utf8")).replace(/^\uFEFF/, ""));
 const warn = (m) => console.warn(`warning: ${m}`);
-const sourceAssetUrl = name => {
-  const revision = createHash("sha256").update(readFileSync(join(root, "src", name))).digest("hex").slice(0, 12);
+const sourceAssetUrl = (name, content = readFileSync(join(root, "src", name))) => {
+  const revision = createHash("sha256").update(content).digest("hex").slice(0, 12);
   return `/${name}?v=${revision}`;
 };
+const emittedModules = new Map();
+function moduleUrl(name, dependencies) {
+  let source = readFileSync(join(root, "src", name), "utf8");
+  for (const [specifier, url] of Object.entries(dependencies)) {
+    source = source.replace(`"${specifier}"`, `"${specifier}${url.slice(url.indexOf("?"))}"`);
+  }
+  emittedModules.set(name, source);
+  return sourceAssetUrl(name, source);
+}
 const siteStyles = sourceAssetUrl("style.css");
-const clickerScript = sourceAssetUrl("swamp.js");
+const clickerScript = moduleUrl("swamp.js", { "./swamp/save.mjs": sourceAssetUrl("swamp/save.mjs") });
 const strollScript = sourceAssetUrl("klyop-stroll.mjs");
+const walkMotion = sourceAssetUrl("swamp-walk/motion.mjs");
+const walkCharacter = moduleUrl("swamp-walk/character.mjs", {
+  "./motion.mjs": walkMotion,
+  "./gait-contacts.mjs": sourceAssetUrl("swamp-walk/gait-contacts.mjs"),
+});
+const walkScript = moduleUrl("swamp-walk/main.mjs", {
+  "./motion.mjs": walkMotion, "./character.mjs": walkCharacter,
+});
 
 if (!process.argv.includes("--offline")) {
   try {
@@ -38,6 +55,7 @@ const projects = (
 ).sort((a, b) => a.order - b.order);
 const stats = existsSync(join(root, "content", "stats.json")) ? await readJson("content", "stats.json") : { items: {} };
 const byId = Object.fromEntries(projects.map((p) => [p.id, p]));
+const redditInsights = await readJson("content", "reddit-insights.json");
 const posts = await loadPosts();
 
 // ---------- small helpers ----------
@@ -629,6 +647,31 @@ const RIPPLES = [[22, 40, 0], [70, 30, 1.6], [84, 62, 3.1]]
   .map(([x, y, d]) => `<span class="ripple" style="left:${x}%;top:${y}%;animation-delay:${d}s"></span>`)
   .join("");
 
+function reachBlock(lang) {
+  const { reach: labels, locale } = site.strings[lang];
+  const workshop = site.links.find(link => link.name === "Steam Workshop");
+  const lantern = byId["belt-lantern"];
+  const lanternLink = lantern.platforms.find(link => link.name === "Thunderstore");
+  const views = projects.filter(project => project.workshopId)
+    .map(project => stats.items[project.id]?.views).filter(Number.isFinite);
+  const viewTotal = views.length ? views.reduce((sum, value) => sum + value, 0) : null;
+  const downloads = stats.items[lantern.id]?.downloads;
+  const counted = value => Number.isFinite(value) ? fmt(lang, value) : "—";
+  const reddit = redditInsights;
+  const redditViews = reddit.approximate
+    ? "≈" + new Intl.NumberFormat(locale, { notation: "compact", maximumFractionDigits: 1 }).format(reddit.views)
+    : fmt(lang, reddit.views);
+  const icon = (id, url, label) => `<a class="reach-platform" href="${esc(url)}" aria-label="${esc(label)}"><img src="/platforms/${id}.svg" width="19" height="19" alt=""></a>`;
+  return `<section class="reach" aria-labelledby="reach-title">
+<h2 id="reach-title" class="reach-title">${esc(labels.title)}</h2>
+<ul class="reach-list">
+<li>${icon("steam", workshop.url, workshop.name)}<div><b class="reach-number">${counted(viewTotal)}</b> <span>${esc(labels.workshopViews)}</span></div></li>
+<li>${icon("thunderstore", lanternLink.url, "Belt Lantern · Thunderstore")}<div><b class="reach-number">${counted(downloads)}</b> <span>${esc(labels.lanternDownloads)}</span></div></li>
+<li>${icon("reddit", reddit.profileUrl, labels.redditProfile)}<div><b class="reach-number">${esc(redditViews)}</b> <span>${esc(labels.redditViews)}</span><div class="reach-post"><a href="${esc(reddit.postUrl)}">${esc(reddit.postTitle)}</a><time datetime="${esc(reddit.measuredOn)}" title="Reddit Insights">${esc(longDate(lang, reddit.measuredOn))}</time></div></div></li>
+</ul>
+</section>`;
+}
+
 function hero(lang, total) {
   const t = site.strings[lang];
   return `<section class="hero" aria-labelledby="hero-h">
@@ -639,7 +682,10 @@ ${REEDS("left")}${REEDS("right")}
 <h1 id="hero-h">${esc(t.lead)}</h1>
 <p class="lede">${esc(t.about)}</p>
 </div>
+<div class="hero-stats">
 ${total ? `<p class="count"><span class="count-num">${fmt(lang, total)}</span><span class="count-label">${esc(plural(lang, total, "subs"))}</span><span class="count-date">${esc(t.countedOn)} ${esc(longDate(lang, stats.fetchedAt))}</span></p>` : ""}
+${reachBlock(lang)}
+</div>
 </div>
 <div class="pond">
 ${WAVE}
@@ -877,7 +923,7 @@ function walkPage(lang) {
 <link rel="icon" href="/favicon.png">
 <link rel="stylesheet" href="/swamp-walk/style.css">
 <link rel="stylesheet" href="/swamp-walk/walk-hud.css">
-<script type="module" src="/swamp-walk/main.mjs"></script>
+<script type="module" src="${walkScript}"></script>
 </head>
 <body>
 <main class="swalk">
@@ -1297,11 +1343,12 @@ await mkdir(dist, { recursive: true });
 await cp(pub, dist, { recursive: true });
 await cp(join(root, "src", "style.css"), join(dist, "style.css"));
 await cp(join(root, "src", "site.js"), join(dist, "site.js"));
-if (existsSync(join(root, "src", "swamp.js"))) await cp(join(root, "src", "swamp.js"), join(dist, "swamp.js"));
 await cp(join(root, "src", "swamp"), join(dist, "swamp"), { recursive: true });
 await cp(join(root, "src", "swamp-walk"), join(dist, "swamp-walk"), { recursive: true });
 await cp(join(root, "src", "klyop-stroll.mjs"), join(dist, "klyop-stroll.mjs"));
 if (existsSync(join(root, "src", "pet.js"))) await cp(join(root, "src", "pet.js"), join(dist, "pet.js"));
+
+for (const [name, source] of emittedModules) await writeFile(join(dist, name), source);
 
 const pages = [];
 const write = async (path, html) => {

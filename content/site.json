@@ -51,6 +51,13 @@
       "subsOne": "subscriber on the Steam Workshop",
       "subsMany": "subscribers on the Steam Workshop",
       "countedOn": "counted on",
+      "reach": {
+        "title": "Reach",
+        "workshopViews": "Workshop item views",
+        "lanternDownloads": "Belt Lantern downloads",
+        "redditViews": "Post views",
+        "redditProfile": "Reddit profile"
+      },
       "statusReleased": "released",
       "statusPreparing": "being prepared",
       "statusInprogress": "in the works",
@@ -203,6 +210,13 @@
       "subsFew": "підписники у майстерні Steam",
       "subsMany": "підписників у майстерні Steam",
       "countedOn": "пораховано",
+      "reach": {
+        "title": "Охоплення",
+        "workshopViews": "Перегляди робіт Steam",
+        "lanternDownloads": "Завантаження Belt Lantern",
+        "redditViews": "Перегляди допису",
+        "redditProfile": "Профіль Reddit"
+      },
       "statusReleased": "вийшло",
       "statusPreparing": "готується",
       "statusInprogress": "у роботі",
@@ -358,6 +372,13 @@
       "subsFew": "подписчика в мастерской Steam",
       "subsMany": "подписчиков в мастерской Steam",
       "countedOn": "посчитано",
+      "reach": {
+        "title": "Охват",
+        "workshopViews": "Просмотры работ Steam",
+        "lanternDownloads": "Загрузки Belt Lantern",
+        "redditViews": "Просмотры поста",
+        "redditProfile": "Профиль Reddit"
+      },
       "statusReleased": "вышло",
       "statusPreparing": "готовится",
       "statusInprogress": "в работе",

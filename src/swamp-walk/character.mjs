@@ -1,20 +1,19 @@
 import * as T from "./vendor/three.mjs";
 import { createFootPlacement, crossedFootContact } from "./gait-contacts.mjs";
 import { createKlyopVaultStow } from "./klyop-vault-stow.mjs";
-import { SWIM_FLOOR } from "./land.mjs";
-import { JUMP_IMPULSE } from "./motion.mjs";
+import { JUMP_IMPULSE, waterSupportHeight } from "./motion.mjs";
 import { validRailProfile } from "./rail.mjs";
 import { applyKlyopPresentation } from "./klyop-presentation.mjs";
 
 const MODEL = "/swamp-walk/klyop-walk.glb";
 const CLIPS = {
-  idle: "Idle_Loop", run: "Jog_Fwd_Loop", sprint: "Sprint_Loop", air: "Jump_Loop",
+  idle: "Idle_Loop", walk: "Walk_Loop", run: "Jog_Fwd_Loop", sprint: "Sprint_Loop", air: "Jump_Loop",
   swim: "Swim_Fwd_Loop", float: "Swim_Idle_Loop",
 };
 const MODEL_SCALE = 1.26;
 const BLEND_SECONDS = 0.15;
 // Backward speed of the toe during support, at MODEL_SCALE and normal clip playback.
-const SUPPORT_SPEED = { run: 3.35, sprint: 4.32 };
+const SUPPORT_SPEED = { walk: 0.61, run: 3.35, sprint: 4.32 };
 
 async function loadPilot(url, loader) {
   if (!url) return null;
@@ -193,7 +192,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl) {
       if (pilot && actions.runJump.isScheduled()) {
         const { takeoff, apex, contact } = pilot.profile.jump;
         const rise = T.MathUtils.clamp(1 - player.dy / JUMP_IMPULSE, 0, 1);
-        const height = Math.max(0, player.y - Math.max(floor, SWIM_FLOOR));
+        const height = Math.max(0, player.y - waterSupportHeight(floor));
         const remaining = (player.dy + Math.sqrt(player.dy ** 2 + 30.4 * height)) / 15.2;
         const fall = T.MathUtils.clamp(1 - remaining / 0.38, 0, 1);
         actions.runJump.time = state !== "runJump" ? contact : player.dy >= 0
@@ -212,12 +211,12 @@ export async function addCharacter(scene, pilotUrl, actionUrl) {
       mixer.update(dt);
       if (snap) footPlacement.reset();
       if (floorAt && player.grounded && !player.swimming && !player.traversal && !player.shoreClimb
-          && !actions.vault?.isScheduled() && (state === "idle" || state === "run" || state === "sprint")) {
+          && !actions.vault?.isScheduled() && (state === "idle" || state === "walk" || state === "run" || state === "sprint")) {
         footPlacement.update(state, (previousPhase + phaseStep * alpha) % 1, floorAt, dt, floor);
       } else {
         footPlacement.reset();
       }
-      const returnsToCarry = state === "idle" || state === "run" || state === "sprint";
+      const returnsToCarry = state === "idle" || !!cycleLength[state];
       if (state === "vault") vaultStow?.set(true);
       else if (snap || !returnsToCarry || blendTime === BLEND_SECONDS) vaultStow?.set(false);
       const handsFree = vaultStow?.stowed || freeHandActions.some(action => action.isScheduled() && action.getEffectiveWeight() > 0);

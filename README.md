@@ -14,6 +14,7 @@ not answer, the last numbers stay. GitHub Actions builds and publishes the site 
 - `content/projects/*.json`: one file per mod or game.
 - `content/posts/*.{en,uk,ru}.md`: blog posts, one file per language.
 - `content/site.json`: interface texts, links, music list.
+- `content/reddit-insights.json`: manual post view snapshot. Update `views`, `measuredOn` (YYYY-MM-DD), and `approximate` together after checking Reddit Insights.
 - `src/`: styles and scripts; `public/`: pictures, music, the toad.
 
 Portions of the materials used to create the RimWorld mods are trademarks and/or copyrighted works of Ludeon Studios

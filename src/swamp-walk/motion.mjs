@@ -5,11 +5,23 @@ import { advanceBankExit, findBankExit } from "./shore.mjs";
 
 const MAP_LIMIT = RADIUS - 2;
 const RUN_SPEED = 3.7;
+const WADE_SPEED = 1.15;
+// Waist height measured from the Walk_Loop pelvis at the in-game model scale.
+const WAIST_FLOOR = WATER - 0.56;
+const SWIM_EXIT_HYSTERESIS = 0.03;
 const SPRINT_SPEED = 6.55;
 const STEP_HEIGHT = 0.16;
 const COYOTE = 0.10;
 const JUMP_BUFFER = 0.12;
 export const JUMP_IMPULSE = 5.9;
+
+function swimsAt(ground, wasSwimming) {
+  return ground < WAIST_FLOOR + (wasSwimming ? SWIM_EXIT_HYSTERESIS : 0);
+}
+
+export function waterSupportHeight(ground, wasSwimming = false) {
+  return swimsAt(ground, wasSwimming) ? SWIM_FLOOR : ground;
+}
 
 export function spawnPlayer(floorAt, point = SPAWN) {
   const { x, z } = point;
@@ -43,7 +55,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   const x0 = player.x, z0 = player.z;
   const rail = parkour?.rail;
   const groundAt = (x, z) => railFloor(rail, floorAt(x, z), x, z);
-  const restingFloor = (x, z) => Math.max(groundAt(x, z), SWIM_FLOOR);
+  const restingFloor = (x, z) => waterSupportHeight(groundAt(x, z), player.swimming);
   const fromFloor = restingFloor(x0, z0);
   if (player.landing !== null) player.landing.age += dt;
   const magnitude = clamp(Math.hypot(intent.x, intent.z), 0, 1);
@@ -64,7 +76,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   const strength = player.dodge ? 1 : magnitude;
   const sprinting = intent.sprint && !player.swimming && !wading;
   const topSpeed = player.dodge ? SPRINT_SPEED : !player.grounded ? player.airLimit
-    : player.swimming ? 2.75 : wading ? 2.6 : sprinting ? SPRINT_SPEED : RUN_SPEED;
+    : player.swimming ? 2.75 : wading ? WADE_SPEED : sprinting ? SPRINT_SPEED : RUN_SPEED;
   if (player.grounded) player.coyote = player.swimming ? 0 : COYOTE;
   else player.coyote = Math.max(0, player.coyote - dt);
 
@@ -142,7 +154,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   if (player.grounded && step + 1e-8 < Math.hypot(dx, dz)) player.speed = step / dt;
 
   const ground = groundAt(player.x, player.z);
-  const floor = Math.max(ground, SWIM_FLOOR);
+  const floor = waterSupportHeight(ground, player.swimming);
   if (player.grounded && player.y - floor <= 0.125) {
     player.y = floor;
   } else {
@@ -172,11 +184,11 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   if (player.grounded) player.airAge = null;
   else if (player.airAge !== null) player.airAge += dt;
   if (player.landing?.age > 0.30) player.landing = null;
-  player.swimming = player.grounded && ground < SWIM_FLOOR + (player.swimming ? 0.06 : -0.03);
+  player.swimming = player.grounded && swimsAt(ground, player.swimming);
   const moving = step > 1e-7;
   if (player.swimming) player.pose = moving ? "swim" : "float";
   else if (!player.grounded) player.pose = "air";
   else if (!moving) player.pose = "idle";
-  else player.pose = player.y >= WATER && step / dt > 4.25 ? "sprint" : "run";
+  else player.pose = player.y < WATER ? "walk" : step / dt > 4.25 ? "sprint" : "run";
   return step;
 }
