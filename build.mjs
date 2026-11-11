@@ -1006,11 +1006,14 @@ function walkPage(lang) {
   </p>
   <div class="walk-touch" id="swalk-touch" hidden>
     <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span class="walk-stick-ring"><span class="walk-stick-knob"></span></span></div>
-    <div class="walk-touch-actions">
-      <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
-      <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>
-      <button class="walk-jump" id="swalk-dodge" type="button" hidden>${esc(w.dodge)}</button>
-      <button class="walk-jump" id="swalk-jump" type="button">${esc(w.jump)}</button>
+    <div class="walk-touch-right">
+      <button class="walk-center" id="swalk-camera-center" type="button" aria-label="${esc(w.centerCamera)}" title="${esc(w.centerCamera)}"></button>
+      <div class="walk-touch-actions">
+        <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
+        <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>
+        <button class="walk-jump" id="swalk-dodge" type="button" hidden>${esc(w.dodge)}</button>
+        <button class="walk-jump" id="swalk-jump" type="button">${esc(w.jump)}</button>
+      </div>
     </div>
   </div>
 </main>

@@ -30,6 +30,7 @@
       ]
     },
     "camera": "Camera",
+    "centerCamera": "Return camera behind Klyop",
     "attack": "Strike",
     "shelterLedger": "Klyop’s workshop log",
     "dodge": "Dodge",
@@ -90,6 +91,7 @@
       ]
     },
     "camera": "Камера",
+    "centerCamera": "Повернути камеру за спину",
     "attack": "Удар",
     "shelterLedger": "Господарство Кльопи",
     "dodge": "Ривок",
@@ -150,6 +152,7 @@
       ]
     },
     "camera": "Камера",
+    "centerCamera": "Вернуть камеру за спину",
     "attack": "Удар",
     "shelterLedger": "Хозяйство Клёпы",
     "dodge": "Рывок",

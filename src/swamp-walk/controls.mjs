@@ -5,15 +5,21 @@ const KEYS = new Set([
   "ShiftLeft", "ShiftRight", "Space", "KeyR", "KeyE", "Enter", "KeyF", "KeyQ", "KeyV",
 ]);
 const START_PITCH = 0.32;
+const TOUCH_PITCH = 0.42;
+const SWIPE_PAUSE = 1.15;
+const FOLLOW_RATE = 2.1;
+const CENTER_RATE = 13;
 const DEADZONE = 0.10;
 const ACTIONS = { Space: "jump", TouchJump: "jump", KeyE: "interact", Enter: "interact", KeyF: "attack", KeyQ: "dodge" };
 
-export function createControls(canvas, { stick, jump, interact, attack, dodge }, onReset, onCenter) {
+export function createControls(canvas, { stick, jump, interact, attack, dodge }, onReset, onCenter, touchLayout) {
   const keys = new Set();
   const queue = [];
   let drag = null, touch = null, stickSprinting = false;
   let stickX = 0, stickZ = 0, currentX = 0, currentZ = 0, currentSprint = false;
-  const camera = { yaw: 0, pitch: START_PITCH };
+  const restingPitch = () => touchLayout.matches ? TOUCH_PITCH : START_PITCH;
+  const camera = { yaw: 0, pitch: restingPitch() };
+  let followDelay = 0, centerYaw = null;
 
   function clearStick() {
     touch = null;
@@ -66,19 +72,29 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
 
   canvas.addEventListener("pointerdown", (event) => {
     if (drag || (event.pointerType === "mouse" && event.button !== 0)) return;
-    drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    drag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointermove", (event) => {
     if (drag?.id !== event.pointerId) return;
-    camera.yaw -= (event.clientX - drag.x) * 0.006;
-    camera.pitch = clamp(camera.pitch + (event.clientY - drag.y) * 0.005, 0.10, 0.94);
+    const dx = event.clientX - drag.x, dy = event.clientY - drag.y;
+    if (dx || dy) {
+      centerYaw = null;
+      drag.moved = true;
+      camera.yaw -= dx * 0.006;
+      camera.pitch = clamp(camera.pitch + dy * 0.005, 0.10, 0.94);
+    }
     drag.x = event.clientX;
     drag.y = event.clientY;
   });
-  canvas.addEventListener("lostpointercapture", (event) => {
-    if (drag?.id === event.pointerId) drag = null;
-  });
+  function endCameraDrag(event) {
+    if (drag?.id !== event.pointerId) return;
+    if (drag.moved) followDelay = SWIPE_PAUSE;
+    drag = null;
+  }
+  for (const name of ["pointerup", "pointercancel", "lostpointercapture"]) {
+    canvas.addEventListener(name, endCameraDrag);
+  }
 
   function moveStick(event) {
     const x = (event.clientX - touch.x) / 35, z = (event.clientY - touch.y) / 35;
@@ -114,15 +130,50 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   }
 
   function center(heading) {
-    camera.yaw = heading + Math.PI;
+    if (!touchLayout.matches) {
+      camera.yaw = heading + Math.PI;
+      return;
+    }
+    centerYaw = heading + Math.PI;
+    followDelay = SWIPE_PAUSE;
+  }
+
+  function updateCamera(heading, dt) {
+    if (!touchLayout.matches) return;
+    if (centerYaw !== null) {
+      const weight = -Math.expm1(-CENTER_RATE * dt);
+      const delta = centerYaw - camera.yaw;
+      const turn = Math.atan2(Math.sin(delta), Math.cos(delta));
+      camera.yaw += turn * weight;
+      const pitchDelta = restingPitch() - camera.pitch;
+      camera.pitch += pitchDelta * weight;
+      if (Math.abs(turn) < .008 && Math.abs(pitchDelta) < .008) {
+        camera.yaw = centerYaw;
+        camera.pitch = restingPitch();
+        centerYaw = null;
+      }
+      return;
+    }
+    if (drag) return;
+    followDelay = Math.max(0, followDelay - dt);
+    if (followDelay > 0) return;
+    // Camera-relative movement would keep turning the actor if we chased a sideways or backward stick.
+    const magnitude = Math.hypot(currentX, currentZ);
+    if (magnitude > DEADZONE && (currentZ >= 0 || Math.abs(currentX) > .07)) return;
+    const delta = heading + Math.PI - camera.yaw;
+    const turn = Math.atan2(Math.sin(delta), Math.cos(delta));
+    camera.yaw += turn * -Math.expm1(-FOLLOW_RATE * dt);
   }
   return {
     camera,
     center,
+    updateCamera,
     resetCamera(heading) {
       clearInput();
-      camera.pitch = START_PITCH;
-      center(heading);
+      centerYaw = null;
+      followDelay = 0;
+      camera.pitch = restingPitch();
+      camera.yaw = heading + Math.PI;
     },
     sample(time) {
       const tapped = new Set();

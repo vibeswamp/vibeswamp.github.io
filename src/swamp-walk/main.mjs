@@ -36,6 +36,7 @@ export async function start(world, text, hud, setResetFacts) {
 
 async function assemble(world, text, hud, setResetFacts, assets) {
   const canvas = $("view");
+  const touchLayout = matchMedia("(pointer: coarse)");
   const renderer = new T.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
   renderer.outputColorSpace = T.SRGBColorSpace;
   renderer.toneMapping = T.ACESFilmicToneMapping;
@@ -138,9 +139,10 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     const { yaw, pitch } = controls.camera;
     const inside = cabin.contains(pose.x, pose.z);
     const nearCabin = Math.hypot(pose.x - cabin.spawn.x, pose.z - cabin.spawn.z) < 5.7;
-    const reach = inside ? 3.72 : camera.aspect < 0.8 ? 6.48 : 6.08;
+    const mobile = touchLayout.matches;
+    const reach = inside ? 3.72 : mobile ? 7.14 : camera.aspect < 0.8 ? 6.48 : 6.08;
     const close = snap ? 0 : T.MathUtils.clamp((3.10 - boom) / 2.45, 0, 1);
-    const centerY = (inside ? 0.96 : 1.10) - 0.22 * close;
+    const centerY = (inside ? 0.96 : mobile ? 1.24 : 1.10) - 0.22 * close;
     target.set(pose.x - Math.sin(yaw) * 0.43, Math.max(WATER, pose.y) + centerY,
       pose.z - Math.cos(yaw) * 0.43);
     offset.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
@@ -207,12 +209,13 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   }
 
   const center = () => controls.center(player.heading);
-  const controls = createControls(canvas, buttons, () => reset(pier), center);
+  const controls = createControls(canvas, buttons, () => reset(pier), center, touchLayout);
   $("reset").addEventListener("click", event => {
     reset(pier);
     if (event.detail > 0) canvas.focus({ preventScroll: true });
   });
   $("camera").addEventListener("click", center);
+  $("camera-center").addEventListener("click", center);
   document.addEventListener("visibilitychange", () => { lastFrame = 0; budget = 0; });
   setResetFacts(() => {
     if (!saved.reset()) return false;
@@ -277,6 +280,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     for (const key of ["x", "y", "z"]) rendered[key] = T.MathUtils.lerp(previous[key], player[key], alpha);
     const turn = player.heading - previous.heading;
     rendered.heading = previous.heading + Math.atan2(Math.sin(turn), Math.cos(turn)) * alpha;
+    controls.updateCamera(rendered.heading, dt);
     placeCamera(rendered, dt, false);
     const floor = railFloor(parkour?.rail, land.floorAt(rendered.x, rendered.z), rendered.x, rendered.z);
     character.update(rendered, floor, dt, false, alpha, land.floorAt);
