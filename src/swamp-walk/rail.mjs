@@ -90,7 +90,7 @@ function clearPath(player, parkour, direction, floorAt, obstacles) {
 }
 
 export function railDirection(player, intent, parkour, floorAt, obstacles) {
-  if (!parkour || !player.grounded || player.swimming || player.traversal) return 0;
+  if (!parkour?.rail || !player.grounded || player.swimming || player.traversal || player.mantle) return 0;
   const { rail, vault } = parkour;
   const { lateral, side } = local(rail, player.x, player.z);
   if (Math.abs(side) > 0.70 || Math.abs(lateral) > 0.15 || Math.abs(player.y - rail.y) > 0.025) return 0;

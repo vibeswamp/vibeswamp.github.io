@@ -28,12 +28,23 @@ function moduleUrl(name, dependencies) {
 const siteStyles = sourceAssetUrl("style.css");
 const clickerScript = moduleUrl("swamp.js", { "./swamp/save.mjs": sourceAssetUrl("swamp/save.mjs") });
 const strollScript = sourceAssetUrl("klyop-stroll.mjs");
-const walkMotion = sourceAssetUrl("swamp-walk/motion.mjs");
+const walkRail = sourceAssetUrl("swamp-walk/rail.mjs");
+const walkDeckClimb = moduleUrl("swamp-walk/deck-climb.mjs", { "./rail.mjs": walkRail });
+const walkMotion = moduleUrl("swamp-walk/motion.mjs", {
+  "./deck-climb.mjs": walkDeckClimb, "./rail.mjs": walkRail,
+});
 const walkCharacter = moduleUrl("swamp-walk/character.mjs", {
+  "./deck-climb.mjs": walkDeckClimb,
+  "./rail.mjs": walkRail,
+  "./mantle-palms.mjs": sourceAssetUrl("swamp-walk/mantle-palms.mjs"),
   "./motion.mjs": walkMotion,
   "./gait-contacts.mjs": sourceAssetUrl("swamp-walk/gait-contacts.mjs"),
 });
 const walkMain = moduleUrl("swamp-walk/main.mjs", {
+  "./deck-climb.mjs": walkDeckClimb,
+  "./rail.mjs": walkRail,
+  "./controls.mjs": sourceAssetUrl("swamp-walk/controls.mjs"),
+  "./encounter.mjs": sourceAssetUrl("swamp-walk/encounter.mjs"),
   "./motion.mjs": walkMotion,
   "./character.mjs": walkCharacter,
   "./walk-assets.mjs": sourceAssetUrl("swamp-walk/walk-assets.mjs"),
@@ -43,6 +54,7 @@ const walkMain = moduleUrl("swamp-walk/main.mjs", {
 const walkScript = moduleUrl("swamp-walk/walk-entry.mjs", {
   "./main.mjs": walkMain, "./walk-hud.mjs": sourceAssetUrl("swamp-walk/walk-hud.mjs"),
 });
+const walkStyles = sourceAssetUrl("swamp-walk/style.css");
 const walkHudStyles = sourceAssetUrl("swamp-walk/walk-hud.css");
 
 if (!process.argv.includes("--offline")) {
@@ -909,14 +921,14 @@ function walkLoadingAssets(walk) {
     assets.push(walkAsset(walk.motionPack, "motion", true),
       walkAsset(new URL("klyop-kfsos-motion.glb", new URL(walk.motionPack, site.baseUrl)).pathname, "motion", true));
   }
-  if (walk.actionPack) {
-    const config = walkAsset(walk.actionPack, "motion", true);
+  for (const pack of [walk.actionPack, walk.deckPack].filter(Boolean)) {
+    const config = walkAsset(pack, "motion", true);
     if (config) {
       assets.push(config);
       try {
-        const { library } = JSON.parse(readFileSync(join(pub, walk.actionPack.slice(1)), "utf8"));
+        const { library } = JSON.parse(readFileSync(join(pub, pack.slice(1)), "utf8"));
         if (typeof library === "string") {
-          assets.push(walkAsset(new URL(library, new URL(walk.actionPack, site.baseUrl)).pathname, "motion", true));
+          assets.push(walkAsset(new URL(library, new URL(pack, site.baseUrl)).pathname, "motion", true));
         }
       } catch (error) {
         warn(`3D action profile: ${error.message}`);
@@ -954,7 +966,8 @@ function playPage(lang) {
 function walkPage(lang) {
   const swamp = SWAMP[lang];
   const names = list => list.map(({ id, name }) => ({ id, name }));
-  const w = { ...SWAMP_WALK[lang], loadingAssets: walkLoadingAssets(SWAMP_WALK[lang]), economyData: SWAMP_V2, shelterLabels: {
+  const walk = { ...SWAMP_WALK[lang], deckPack: "/swamp-walk/mvp/deck-climb.json" };
+  const w = { ...walk, loadingAssets: walkLoadingAssets(walk), economyData: SWAMP_V2, shelterLabels: {
     title: SWAMP_WALK[lang].shelterLedger, producers: names(swamp.buildings), projects: names(swamp.builds),
   } };
   return `<!doctype html>
@@ -965,7 +978,7 @@ function walkPage(lang) {
 <title>${esc(w.title)} · VibeSwamp</title>
 <meta name="description" content="${esc(w.lead)}">
 <link rel="icon" href="/favicon.png">
-<link rel="stylesheet" href="/swamp-walk/style.css">
+<link rel="stylesheet" href="${walkStyles}">
 <link rel="stylesheet" href="${walkHudStyles}">
 <script type="module" src="${walkScript}"></script>
 </head>
@@ -992,7 +1005,7 @@ function walkPage(lang) {
     <span class="walk-help-touch">${esc(w.touchControls)}</span>
   </p>
   <div class="walk-touch" id="swalk-touch" hidden>
-    <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span></span></div>
+    <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span class="walk-stick-ring"><span class="walk-stick-knob"></span></span></div>
     <div class="walk-touch-actions">
       <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
       <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>

@@ -160,7 +160,8 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     }
   }
 
-  function paint(player, time, vaultReady, bankReady) {
+  const jumpLabel = ui.jump.textContent;
+  function paint(player, time, vaultReady, bankReady, deckReady) {
     const action = actionAt(player, time);
     const injured = damageTime > 0;
     const phase = carrying ? "carrying" : sortie.state === "complete" && saved.trophy ? "delivered"
@@ -173,9 +174,9 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
       : patrolThreat(player) ? copy.patrol
       : pending ? copy.preparing
       : curioNoteUntil > time ? forestText.rustle : served ? copy.teaDone : radioNote ? copy.radioOn : lines.idle;
-    const traversal = !action && (vaultReady ? copy.vaultReady : bankReady ? copy.bankReady : "");
+    const traversal = deckReady ? copy.deckReady : !action && (vaultReady ? copy.vaultReady : bankReady ? copy.bankReady : "");
     const armed = Boolean(flyToken || patrolThreat(player));
-    const key = JSON.stringify([phase, action, health, hint, injured, traversal, armed]);
+    const key = JSON.stringify([phase, action, health, hint, injured, traversal, armed, deckReady]);
     if (key === signature) return;
     signature = key;
     ui.panel.dataset.phase = phase;
@@ -186,7 +187,10 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     const label = action ? lines[action] ?? copy[action] ?? forestText[action] : "";
     ui.prompt.textContent = traversal || label;
     ui.prompt.toggleAttribute("data-vault", Boolean(traversal));
+    ui.prompt.toggleAttribute("data-deck-climb", deckReady);
     ui.prompt.hidden = !action && !traversal;
+    ui.jump.textContent = deckReady ? copy.deckClimb : jumpLabel;
+    ui.jump.toggleAttribute("data-deck-climb", deckReady);
     ui.interact.hidden = !action;
     ui.interact.textContent = label;
     ui.attack.hidden = !armed;
@@ -227,8 +231,8 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
       else player.hurt = null;
       return health > 0;
     },
-    draw(player, time, vaultReady, bankReady) {
-      paint(player, time, vaultReady, bankReady);
+    draw(player, time, vaultReady, bankReady, deckReady = false) {
+      paint(player, time, vaultReady, bankReady, deckReady);
       const cleared = sortie.state === "complete";
       marker.visible = !cleared && (!flyToken || distance(player, fly.position) > 6.4);
       ring.visible = !cleared && !flyToken;

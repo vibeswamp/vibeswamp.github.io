@@ -21,6 +21,9 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
     stickSprinting = false;
     stick.style.removeProperty("--stick-x");
     stick.style.removeProperty("--stick-y");
+    stick.style.removeProperty("--stick-origin-x");
+    stick.style.removeProperty("--stick-origin-y");
+    stick.removeAttribute("data-active");
   }
   function clearInput() {
     keys.clear();
@@ -91,18 +94,24 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   stick.addEventListener("pointerdown", (event) => {
     if (touch || event.button !== 0) return;
     const bounds = stick.getBoundingClientRect();
-    touch = { id: event.pointerId, x: bounds.x + bounds.width / 2, y: bounds.y + bounds.height / 2 };
+    touch = { id: event.pointerId, x: event.clientX, y: event.clientY };
+    stick.style.setProperty("--stick-origin-x", `${event.clientX - bounds.left}px`);
+    stick.style.setProperty("--stick-origin-y", `${event.clientY - bounds.top}px`);
+    stick.setAttribute("data-active", "");
     stick.setPointerCapture(event.pointerId);
     moveStick(event);
   });
   stick.addEventListener("pointermove", (event) => {
     if (touch?.id === event.pointerId) moveStick(event);
   });
-  stick.addEventListener("lostpointercapture", (event) => {
+  function releaseStick(event) {
     if (touch?.id !== event.pointerId) return;
     clearStick();
     queue.push({ time: event.timeStamp, x: 0, z: 0, sprint: false });
-  });
+  }
+  for (const name of ["pointerup", "pointercancel", "lostpointercapture"]) {
+    stick.addEventListener(name, releaseStick);
+  }
 
   function center(heading) {
     camera.yaw = heading + Math.PI;

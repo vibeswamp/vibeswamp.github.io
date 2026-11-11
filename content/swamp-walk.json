@@ -51,6 +51,8 @@
       "radioOn": "Radio shack on air",
       "vaultReady": "Space · vault",
       "bankReady": "Space · climb out",
+      "deckReady": "Space · climb onto the boardwalk",
+      "deckClimb": "Climb up",
       "hazard": "Flytrap closing",
       "returnHome": "To the shack"
     },
@@ -109,6 +111,8 @@
       "radioOn": "Радіорубка в ефірі",
       "vaultReady": "Пробіл · перелізти",
       "bankReady": "Пробіл · вибратися на берег",
+      "deckReady": "Пробіл · підтягнутися на місток",
+      "deckClimb": "На місток",
       "hazard": "Мухоловка захлопується",
       "returnHome": "До хатини"
     },
@@ -167,6 +171,8 @@
       "radioOn": "Радиорубка в эфире",
       "vaultReady": "Пробел · перелезть",
       "bankReady": "Пробел · выбраться на берег",
+      "deckReady": "Пробел · подтянуться на мостик",
+      "deckClimb": "На мостик",
       "hazard": "Мухоловка захлопывается",
       "returnHome": "В лачугу"
     },

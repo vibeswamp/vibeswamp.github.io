@@ -1,6 +1,7 @@
 import { RADIUS, SPAWN, SWIM_FLOOR, WATER, clamp } from "./land.mjs";
 import { BODY_RADIUS, advanceRailVault, railBlocks, railFloor, tryRailVault } from "./rail.mjs";
 import { BODY_HEIGHT, distanceToSolid, overlapsSolid, solidNormal } from "./collisions.mjs";
+import { advanceDeckClimb, planDeckClimb } from "./deck-climb.mjs";
 import { advanceBankExit, findBankExit } from "./shore.mjs";
 
 const MAP_LIMIT = RADIUS - 2;
@@ -29,11 +30,12 @@ export function spawnPlayer(floorAt, point = SPAWN) {
     x, z, y: floorAt(x, z), dy: 0, speed: 0, grounded: true,
     swimming: false, pose: "idle", heading: Math.PI, runningJump: false, traversal: null,
     coyote: 0, jumpBuffer: 0, swing: null, hurt: null, landing: null, airLimit: RUN_SPEED, airAge: null,
-    dodge: null, dodgeCooldown: 0, shoreClimb: null,
+    dodge: null, dodgeCooldown: 0, shoreClimb: null, mantle: null,
   };
 }
 
 export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, exits = []) {
+  if (player.mantle) return advanceDeckClimb(player, dt, floorAt, obstacles);
   if (intent.jump) player.swing = null;
   player.jumpBuffer = intent.jump ? JUMP_BUFFER : Math.max(0, player.jumpBuffer - dt);
   if (player.traversal || tryRailVault(player, intent, parkour, floorAt, obstacles)) {
@@ -42,6 +44,13 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
     return advanceRailVault(player, parkour, dt);
   }
   if (intent.jump && player.swimming) {
+    player.mantle = planDeckClimb(player, parkour?.mantle, floorAt, obstacles);
+    if (player.mantle) {
+      player.dy = player.speed = player.jumpBuffer = player.coyote = 0;
+      player.runningJump = false;
+      player.airAge = player.landing = null;
+      return advanceDeckClimb(player, dt, floorAt, obstacles);
+    }
     const exit = findBankExit(player, intent, exits, floorAt, obstacles);
     if (exit) {
       player.shoreClimb = { from: { x: player.x, y: player.y, z: player.z }, to: exit, time: 0 };

@@ -4,6 +4,7 @@ import { addCharacter } from "./character.mjs";
 import { createChart } from "./chart.mjs";
 import { overlapsSolid } from "./collisions.mjs";
 import { createControls } from "./controls.mjs";
+import { createDeckExits, planDeckClimb } from "./deck-climb.mjs";
 import { addEncounter } from "./encounter.mjs";
 import { createFeedback } from "./feedback.mjs";
 import { createLand, LANDMARKS, PIER, WATER } from "./land.mjs";
@@ -45,6 +46,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   const camera = new T.PerspectiveCamera(52, 1, 0.12, 230);
   const sky = createSky(scene);
   const terrain = createLand();
+  const deckExits = createDeckExits(terrain.deck);
   terrain.noGroundCover = (x, z) => onCabinPlot(x, z) || terrain.beaver.occupied(x, z, .10);
   addTerrain(scene, terrain);
   let storage;
@@ -53,7 +55,9 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   const [cabin, scenery, character, layout] = await Promise.all([
     addCabin({ THREE: T, scene, ...shelter, labels: text.shelterLabels, manager: assets.manager }),
     addScenery(scene, terrain, assets.manager),
-    addCharacter(scene, text.motionPack, text.actionPack, { manager: assets.manager, readJson: assets.json }),
+    addCharacter(scene, text.motionPack, text.actionPack, {
+      manager: assets.manager, readJson: assets.json, deckUrl: text.deckPack, deckExits,
+    }),
     assets.json("/swamp-walk/mvp/world.json").then(result => result.data),
   ]);
   scene.updateMatrixWorld(true);
@@ -81,7 +85,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     return group ? [{ group, bounds: new T.Box3().setFromObject(group).expandByScalar(0.03) }] : [];
   });
   const parkour = character.parkour;
-  if (parkour) {
+  if (parkour?.rail) {
     parkour.rail.y = land.floorAt(parkour.rail.x, parkour.rail.z);
     scenery.addRail(parkour.rail);
     for (const hint of $("help").children) hint.append(` · ${text.vaultHint}`);
@@ -119,6 +123,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   const pier = { x: PIER.x, z: PIER.z, heading: Math.PI };
   let player, previous;
   let swimDistance = 0;
+  let deckReady = false, nextDeckCheck = 0;
   let boom = 0, elapsed = 0, lastFrame = 0, budget = 0, chartAt = 0, noteUntil = 0;
 
   function resize() {
@@ -181,6 +186,8 @@ async function assemble(world, text, hud, setResetFacts, assets) {
 
   function reset(point) {
     player = spawnPlayer(land.floorAt, point);
+    deckReady = false;
+    nextDeckCheck = 0;
     player.heading = point.heading ?? Math.PI;
     previous = { ...player };
     swimDistance = 0;
@@ -232,7 +239,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
       previous = { ...player };
       const intent = controls.sample(stamp - (budget - STEP) * 1000);
       const distance = advancePlayer(player, intent, land.floorAt, obstacles, STEP, parkour, exits);
-      const suppressedContact = !!(player.traversal || player.shoreClimb || player.swing !== null || player.hurt !== null);
+      const suppressedContact = !!(player.traversal || player.shoreClimb || player.mantle || player.swing !== null || player.hurt !== null);
       const foot = character.advanceGait(player.pose, distance, suppressedContact);
       const kind = surfaceContactKind(player, previous, foot);
       if (kind) surfaceFX.emit({ kind, x: player.x, z: player.z, yaw: player.heading, displacement: distance });
@@ -275,8 +282,15 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     character.update(rendered, floor, dt, false, alpha, land.floorAt);
     surfaceFX.update(dt);
     scenery.update(elapsed, camera.position, saved.radio);
+    if (!player.swimming || player.mantle || player.shoreClimb) {
+      deckReady = false;
+      nextDeckCheck = elapsed;
+    } else if (elapsed >= nextDeckCheck) {
+      deckReady = Boolean(planDeckClimb(player, parkour?.mantle, land.floorAt, obstacles));
+      nextDeckCheck = elapsed + 0.09;
+    }
     encounter.draw(player, elapsed, railDirection(player, neutral, parkour, land.floorAt, obstacles),
-      findBankExit(player, neutral, exits, land.floorAt, obstacles));
+      !deckReady && findBankExit(player, neutral, exits, land.floorAt, obstacles), deckReady);
     drawWorld();
   });
 }

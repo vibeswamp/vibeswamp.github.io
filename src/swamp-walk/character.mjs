@@ -1,4 +1,6 @@
 import * as T from "./vendor/three.mjs";
+import { prepareDeckClimb } from "./deck-climb.mjs";
+import { createMantlePlacement } from "./mantle-palms.mjs";
 import { createFootPlacement, crossedFootContact } from "./gait-contacts.mjs";
 import { createKlyopVaultStow } from "./klyop-vault-stow.mjs";
 import { JUMP_IMPULSE, waterSupportHeight } from "./motion.mjs";
@@ -47,29 +49,36 @@ async function loadPilot(url, loader, readJson) {
 }
 
 async function loadActions(url, loader, readJson) {
-  if (!url) return {};
+  if (!url) return null;
   try {
-    const { data: { library, actions }, url: source } = await readJson(url);
+    const { data: { library, actions, profiles }, url: source } = await readJson(url);
     const gltf = await loader.loadAsync(new URL(library, source).href);
-    return Object.fromEntries(Object.entries(actions).map(([state, profile]) => {
+    const moves = Object.fromEntries(Object.entries(actions).map(([state, profile]) => {
       const clip = T.AnimationClip.findByName(gltf.animations, profile.name);
       if (!clip?.validate() || !clip.tracks.length) throw new Error(`Invalid action clip ${profile.name}`);
       return [state, { ...profile, clip }];
     }));
+    return { moves, profiles };
   } catch (error) {
     console.warn("Klyop action library:", error);
-    return {};
+    return null;
   }
 }
 
-export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJson = fetchProfile } = {}) {
+export async function addCharacter(scene, pilotUrl, actionUrl, {
+  manager, readJson = fetchProfile, deckUrl, deckExits = [],
+} = {}) {
   const loader = new T.GLTFLoader(manager);
-  const [gltf, candidate, moves] = await Promise.all([
-    loader.loadAsync(MODEL), loadPilot(pilotUrl, loader, readJson), loadActions(actionUrl, loader, readJson),
+  const [gltf, candidate, combat, deck] = await Promise.all([
+    loader.loadAsync(MODEL), loadPilot(pilotUrl, loader, readJson),
+    loadActions(actionUrl, loader, readJson), loadActions(deckUrl, loader, readJson),
   ]);
   const binds = clip => clip.tracks.every(track =>
     gltf.scene.getObjectByName(T.PropertyBinding.parseTrackName(track.name).nodeName));
   const pilot = candidate && Object.values(candidate.clips).every(binds) ? candidate : null;
+  const mantleSetup = deck && Object.values(deck.moves).every(move => binds(move.clip))
+    ? prepareDeckClimb(deckExits, deck.profiles, name => deck.moves[name]?.clip.duration) : null;
+  const moves = { ...combat?.moves, ...(mantleSetup ? deck.moves : {}) };
   const body = new T.Group();
   gltf.scene.scale.setScalar(MODEL_SCALE);
   const setClothWetness = applyKlyopPresentation(T, gltf.scene);
@@ -79,10 +88,11 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
   const wrench = gltf.scene.getObjectByName("Swamp_Wrench");
   const bodyMesh = gltf.scene.getObjectByName("Klyop_Body");
   const footPlacement = createFootPlacement(T, gltf.scene, bodyMesh);
+  const mantlePlacement = mantleSetup ? createMantlePlacement(T, gltf.scene, bodyMesh) : null;
   const openGrip = bodyMesh.morphTargetDictionary.OpenGrip;
   const belt = gltf.scene.getObjectByName("Electrician_Rig_T2");
   const lantern = gltf.scene.getObjectByName("Darkwater_Lantern_T2");
-  const vaultStow = pilot ? createKlyopVaultStow(T, wrench, belt) : null;
+  const vaultStow = pilot || mantleSetup ? createKlyopVaultStow(T, wrench, belt) : null;
   const down = new T.Vector3(0, -1, 0);
   const hanging = new T.Vector3(-0.32, -1, 0);
   const swimmingHanger = new T.Vector3(-3.08, -1, 0);
@@ -107,7 +117,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
     if (binds(move.clip)) actions[state] = mixer.clipAction(move.clip).setEffectiveTimeScale(0);
   }
   const freeHandActions = [actions.swim, actions.float, actions.vault, actions.runJump,
-    actions.jumpStart, actions.land, actions.hurt,
+    actions.jumpStart, actions.land, actions.hurt, actions.mantleHead, actions.mantleHigh,
     swing?.stow ? actions.strike : null].filter(Boolean);
   const cycleLength = {};
   for (const [state, speed] of Object.entries(SUPPORT_SPEED)) {
@@ -139,7 +149,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
   scene.add(shadow);
 
   return {
-    parkour: pilot ? { rail: pilot.profile.rail, vault: pilot.profile.vault } : null,
+    parkour: pilot || mantleSetup ? { rail: pilot?.profile.rail, vault: pilot?.profile.vault, mantle: mantleSetup } : null,
     attack,
     advanceGait(state, distance, suppressContact = false) {
       const stride = cycleLength[state];
@@ -150,12 +160,15 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
     },
     update(player, floor, dt, snap, alpha = 1, floorAt) {
       footPlacement.restore();
+      mantlePlacement?.restore();
       body.position.set(player.x, player.y + 0.015, player.z);
       body.rotation.y = player.heading;
-      clothWetness = player.swimming || player.shoreClimb ? 1 : snap ? 0 : Math.max(0, clothWetness - dt / 4.5);
+      clothWetness = player.swimming || player.shoreClimb || player.mantle ? 1 : snap ? 0 : Math.max(0, clothWetness - dt / 4.5);
       setClothWetness(clothWetness);
+      const mantle = player.mantle?.approach ? null : player.mantle;
       let state = player.pose;
-      if (state === "air") {
+      if (mantle) state = mantle.program.action;
+      else if (state === "air") {
         if (pilot && player.runningJump) state = "runJump";
         else if (actions.jumpStart && player.airAge !== null && player.airAge < 0.19) state = "jumpStart";
       } else if (player.grounded && !player.swimming && !player.traversal) {
@@ -180,7 +193,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
         blendTime = 0;
       }
       if (blendTime < BLEND_SECONDS) {
-        const blendRate = state === "vault" ? player.traversal?.rate ?? 1 : 1;
+        const blendRate = mantle ? 9 : state === "vault" ? player.traversal?.rate ?? 1 : 1;
         blendTime = Math.min(blendTime + dt * blendRate, BLEND_SECONDS);
         for (const [name, action] of Object.entries(actions)) {
           if (!action.isScheduled()) continue;
@@ -206,6 +219,10 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
         actions.vault.time = state === "vault" ? player.traversal.time : pilot.profile.vault.duration;
       }
       const times = { strike: player.swing, hurt: player.hurt, jumpStart: player.airAge, land: player.landing?.age };
+      for (const profile of mantleSetup?.profiles ?? []) {
+        times[profile.action] = mantle?.program === profile
+          ? T.MathUtils.lerp(mantle.previousClipTime ?? mantle.clipTime, mantle.clipTime, alpha) : profile.to;
+      }
       for (const [name, time] of Object.entries(times)) {
         const action = actions[name];
         if (!action?.isScheduled()) continue;
@@ -213,6 +230,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
         action.time = time != null ? Math.min(time, end) : end;
       }
       mixer.update(dt);
+      if (mantle) mantlePlacement?.update(mantle, actions[state].time, actions[state].getEffectiveWeight());
       if (snap) footPlacement.reset();
       if (floorAt && player.grounded && !player.swimming && !player.traversal && !player.shoreClimb
           && !actions.vault?.isScheduled() && (state === "idle" || state === "walk" || state === "run" || state === "sprint")) {
@@ -221,7 +239,7 @@ export async function addCharacter(scene, pilotUrl, actionUrl, { manager, readJs
         footPlacement.reset();
       }
       const returnsToCarry = state === "idle" || !!cycleLength[state];
-      if (state === "vault") vaultStow?.set(true);
+      if (state === "vault" || mantle) vaultStow?.set(true);
       else if (snap || !returnsToCarry || blendTime === BLEND_SECONDS) vaultStow?.set(false);
       const handsFree = vaultStow?.stowed || freeHandActions.some(action => action.isScheduled() && action.getEffectiveWeight() > 0);
       wrench.visible = vaultStow?.stowed || !handsFree;
