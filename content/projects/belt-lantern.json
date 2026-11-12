@@ -48,5 +48,16 @@
       "Darkwater: кооперативная игра про подводную лодку. Для мода нужен BepInExPack 5.4.2305. Яркость и цвет света можно поменять в маленьком окне прямо в игре, Alt+V."
     ]
   },
+  "image": "assets/belt-lantern/icon.jpg",
+  "gallery": [
+    {
+      "file": "assets/belt-lantern/icon.jpg",
+      "caption": {
+        "en": "The mod's picture on its Thunderstore page, drawn by a neural network.",
+        "uk": "Картинка мода на його сторінці в Thunderstore, намальована нейромережею.",
+        "ru": "Картинка мода на его странице в Thunderstore, нарисована нейросетью."
+      }
+    }
+  ],
   "group": "other"
 }

@@ -1757,3 +1757,7 @@ html.no-trans *, html.no-trans *::before, html.no-trans *::after { transition: n
    heading takes the focus without drawing a ring */
 html.nav-wait main#main { opacity: 0.55; transition: opacity 120ms ease-out 120ms; }
 main h1[tabindex="-1"]:focus { outline: none; }
+
+/* the main picture of a project page is not stretched past its own width either (Belt Lantern has a 560 px square) */
+.water-top .spread > .shot .zoom-main { display: inline-block; max-width: 100%; vertical-align: top; }
+.water-top .spread > .shot .zoom-main img { width: var(--natw, 100%); max-width: 100%; }
