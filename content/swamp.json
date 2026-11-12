@@ -77,7 +77,15 @@
         },
         "secretName": "Secret badge",
         "secretText": "Opens by itself when it happens.",
-        "achProgress": "{v} of {g}"
+        "achProgress": "{v} of {g}",
+        "howTo": {
+          "title": "How to play",
+          "lines": [
+            "Tap Klyop: he croaks and catches flies.",
+            "Catch flying flies or drag them to Klyop for three times the catch.",
+            "Spend flies on buildings, they catch on their own. Building steps are in the Next build card."
+          ]
+        }
       },
       "rooms": {
         "shore": "Shore",
@@ -506,7 +514,15 @@
         },
         "secretName": "Таємна ачівка",
         "secretText": "Відкриється сама, коли станеться.",
-        "achProgress": "{v} із {g}"
+        "achProgress": "{v} із {g}",
+        "howTo": {
+          "title": "Як грати",
+          "lines": [
+            "Тисни на Кльопу: він квакає і ловить мух.",
+            "Лови мух у повітрі або тягни їх до Кльопи, так утричі більше.",
+            "Витрачай мух на споруди, вони ловлять самі. Кроки будівництва — у картці «Далі будуємо»."
+          ]
+        }
       },
       "rooms": {
         "shore": "Берег",
@@ -935,7 +951,15 @@
         },
         "secretName": "Тайная ачивка",
         "secretText": "Откроется сама, когда случится.",
-        "achProgress": "{v} из {g}"
+        "achProgress": "{v} из {g}",
+        "howTo": {
+          "title": "Как играть",
+          "lines": [
+            "Жми на Клёпу: он квакает и ловит мух.",
+            "Лови летающих мух или тащи их к Клёпе, так втрое больше.",
+            "Трать мух на постройки, они ловят сами. Шаги стройки — в карточке «Дальше строим»."
+          ]
+        }
       },
       "rooms": {
         "shore": "Берег",

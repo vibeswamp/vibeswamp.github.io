@@ -1,0 +1,41 @@
+{
+  "id": "kfsos-godot",
+  "order": 50,
+  "name": "Cataclysmic Fortress: State of Survival",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "KFSOS as a standalone third-person survival game. That is where the project began: first on Godot, then on Unreal, and then the idea moved to Minecraft to find players and test the concept.",
+    "uk": "KFSOS як окрема гра на виживання від третьої особи. З цього проєкт і почався: спершу на Godot, потім на Unreal, а потім ідея переїхала в Minecraft, щоб зібрати гравців і обкатати концепт.",
+    "ru": "KFSOS как самостоятельная игра на выживание от третьего лица. С этого проект и начался: сначала на Godot, потом на Unreal, а потом идея переехала в Minecraft, чтобы собрать игроков и обкатать концепт."
+  },
+  "details": {
+    "en": [
+      "KFSOS stands for Cataclysmic Fortress: State of Survival. The Godot and Unreal versions are frozen; the project lives on as the KFSOS Lite modpack for Minecraft."
+    ],
+    "uk": [
+      "KFSOS — це Cataclysmic Fortress: State of Survival. Версії на Godot і Unreal заморожені, проєкт живе далі як збірка KFSOS Lite для Minecraft."
+    ],
+    "ru": [
+      "KFSOS — это Cataclysmic Fortress: State of Survival. Версии на Godot и Unreal заморожены, проект живёт дальше как сборка KFSOS Lite для Minecraft."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/kfsos-godot/01-main-menu.jpg",
+      "caption": {
+        "en": "The main menu of the Godot version: “KFSOS // Cataclysmic Fortress”, a field boot console.",
+        "uk": "Головне меню версії на Godot: «KFSOS // Cataclysmic Fortress», консоль польового завантаження.",
+        "ru": "Главное меню версии на Godot: «KFSOS // Cataclysmic Fortress», консоль полевой загрузки."
+      }
+    }
+  ],
+  "image": "assets/kfsos-godot/01-main-menu.jpg"
+}

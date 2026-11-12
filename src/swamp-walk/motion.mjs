@@ -12,6 +12,9 @@ const WAIST_FLOOR = WATER - 0.56;
 const SWIM_EXIT_HYSTERESIS = 0.03;
 const SPRINT_SPEED = 6.55;
 const STEP_HEIGHT = 0.16;
+// Walking into a ledge up to this height (a low deck edge, a root, a stair) makes Klyop hop onto it by himself.
+const HOP_HEIGHT = 0.36;
+const GRAVITY = 15.2;
 const COYOTE = 0.10;
 const JUMP_BUFFER = 0.12;
 export const JUMP_IMPULSE = 5.9;
@@ -43,7 +46,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
     player.dodge = null;
     return advanceRailVault(player, parkour, dt);
   }
-  if (intent.jump && player.swimming) {
+  if (intent.jump && (player.swimming || player.grounded)) {
     player.mantle = planDeckClimb(player, parkour?.mantle, floorAt, obstacles);
     if (player.mantle) {
       player.dy = player.speed = player.jumpBuffer = player.coyote = 0;
@@ -51,6 +54,8 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
       player.airAge = player.landing = null;
       return advanceDeckClimb(player, dt, floorAt, obstacles);
     }
+  }
+  if (intent.jump && player.swimming) {
     const exit = findBankExit(player, intent, exits, floorAt, obstacles);
     if (exit) {
       player.shoreClimb = { from: { x: player.x, y: player.y, z: player.z }, to: exit, time: 0 };
@@ -161,6 +166,20 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   const step = Math.hypot(player.x - x0, player.z - z0);
   if (takeoff) player.runningJump = step > 1e-7 && (takeoffSpeed >= 1.2 || strength >= 0.65);
   if (player.grounded && step + 1e-8 < Math.hypot(dx, dz)) player.speed = step / dt;
+  if (!takeoff && player.grounded && !player.swimming && !player.dodge && player.swing === null
+      && player.y >= WATER - 0.2 && strength > 0.4 && step < 0.5 * Math.hypot(dx, dz)) {
+    const ahead = 0.3 / Math.max(1e-6, Math.hypot(dx, dz));
+    const hx = clamp(x0 + dx * ahead, -MAP_LIMIT, MAP_LIMIT), hz = clamp(z0 + dz * ahead, -MAP_LIMIT, MAP_LIMIT);
+    const rise = restingFloor(hx, hz) - Math.max(fromFloor, player.y);
+    if (rise > STEP_HEIGHT && rise <= HOP_HEIGHT && !railBlocks(rail, hx, player.y + rise, hz)
+        && !obstacles.some(solid => overlapsSolid(solid, hx, player.y + rise + 0.02, hz, BODY_RADIUS, BODY_HEIGHT))) {
+      player.dy = Math.sqrt(2 * GRAVITY * (rise + 0.07));
+      player.airLimit = RUN_SPEED;
+      player.airAge = 0;
+      player.grounded = false;
+      player.landing = null;
+    }
+  }
 
   const ground = groundAt(player.x, player.z);
   const floor = waterSupportHeight(ground, player.swimming);
@@ -169,7 +188,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   } else {
     if (player.grounded) player.airLimit = Math.max(RUN_SPEED, player.speed);
     player.grounded = false;
-    player.dy -= 15.2 * dt;
+    player.dy -= GRAVITY * dt;
     if (player.dy > 0) {
       const head = player.y + BODY_HEIGHT;
       for (const solid of obstacles) {

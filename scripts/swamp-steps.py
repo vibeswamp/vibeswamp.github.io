@@ -53,7 +53,7 @@ bg, s1, s2, s3 = load("bg"), load("v2-stage-1"), load("v2-stage-2"), load("v2-st
 layers = {}
 
 # ---- era 0: lily pads by the tussock, cloned from a pad the painting already has (stage-1, left water)
-pad_src = s1.crop((int(W * .185), int(H * .618), int(W * .238), int(H * .668)))
+pad_src = s1.crop((int(W * .150), int(H * .614), int(W * .216), int(H * .662)))
 pad_mask = Image.new("L", pad_src.size, 0)
 ImageDraw.Draw(pad_mask).ellipse([1, 1, pad_src.width - 2, pad_src.height - 2], fill=255)
 pad_mask = pad_mask.filter(ImageFilter.GaussianBlur(1.4))
@@ -70,9 +70,18 @@ layers["pads"] = pads
 # ---- era 1: the round deck, then a plank on two posts (stage-1)
 DECK = [(23.8, 80), (25, 76), (29, 73), (35, 71.2), (42, 70.2), (50, 69.8), (58, 70.2), (65, 71.2), (71, 73), (75.2, 76),
         (76.6, 80), (75.4, 83.2), (71.5, 85.6), (64, 87.6), (50, 88.6), (36, 87.6), (28.5, 85.6), (24.8, 83.2)]
-layers["deck"] = cut(s1, mask(DECK))
+# The deck under the posts' iron feet: cover the feet with boards from right beside them, so the deck alone
+# (before any posts) shows no stumps.
+deck_src = s1.copy()
+for (x0, x1, y0, y1), dx in (((29.2, 35.2, 72.6, 77.0), 6.4), ((63.8, 70.4, 72.2, 76.8), -6.8)):
+    box = (int(W * x0 / 100), int(H * y0 / 100), int(W * x1 / 100), int(H * y1 / 100))
+    patch = s1.crop((box[0] + int(W * dx / 100), box[1], box[2] + int(W * dx / 100), box[3]))
+    soft = Image.new("L", patch.size, 0)
+    ImageDraw.Draw(soft).rounded_rectangle([3, 3, patch.width - 4, patch.height - 4], radius=8, fill=255)
+    deck_src.paste(patch, box[:2], soft.filter(ImageFilter.GaussianBlur(3)))
+layers["deck"] = cut(deck_src, mask(DECK))
 PLANK = [(18.6, 39.6), (21, 37), (30, 35.4), (50, 34.6), (70, 35), (77, 36.2), (77.8, 38.6), (74, 41.4), (60, 42.2), (40, 42.6), (25, 42.8), (19.6, 41.6)]
-POSTS_1 = [rect(29.6, 40, 33.8, 76.2), rect(67.8, 40, 71.6, 76.2)]
+POSTS_1 = [rect(29.4, 40, 35.0, 76.6), rect(64.4, 40, 70.2, 76.6)]  # measured on a 1% grid
 layers["plank"] = cut(s1, mask(PLANK, *POSTS_1))
 
 # ---- era 2: the hut (stage-2). Posts and the eave beam, then the moss roof, walls, window, door
@@ -108,9 +117,10 @@ layers["door"] = cut(s2, mask(DOOR))
 
 # ---- era 3: inside the hut (stage-3). The step "floor" switches the painting and dims the room; each next step
 # lights up its corner.
-ROOM = [(28.4, 36), (71, 36), (71, 71.6), (28.4, 71.6)]
+# the opening between the posts, under the eave beam, above the front edge of the floor
+ROOM = [(28.6, 39.8), (70.0, 39.8), (70.0, 71.4), (28.6, 71.4)]
 dark = Image.new("RGBA", (W, H), (12, 9, 6, 255))
-dark.putalpha(mask(ROOM, feather=6).point(lambda v: int(v * .8)))
+dark.putalpha(mask(ROOM, feather=10).point(lambda v: int(v * .78)))
 layers["interior-dark"] = dark
 layers["floor"] = cut(s3, mask([(33, 61), (67, 61), (71, 71.8), (29, 71.8)], feather=8))
 layers["lamp"] = cut(s3, mask(rect(41.6, 41.2, 61.4, 60.6), rect(32.6, 50.4, 36.6, 58.2), feather=8, ellipses=((74.2, 48.4, 2.6, 4.4),)))

@@ -1,5 +1,14 @@
 /* VibeSwamp. Tokens and rules: DESIGN.md */
 /* fonts from the site itself (public/fonts, SIL OFL 1.1, see README there); was Google Fonts until 12.11.2026 */
+/* widths that used to be in ch are in em now (1ch of Overpass = 0.642em; Bitter and Tektur within 1-2%): ch follows the width
+   of «0» in whatever font is on screen, so while the fallback font showed, paragraphs got narrower and jumped back (12.11.2026) */
+/* while the site's fonts load, the system fonts stand in, scaled to the same width (measured 12.11.2026: Georgia is ~11%
+   wider than Bitter), so swapping them does not push the page down (CLS on the desktop home page was 0.54) */
+@font-face { font-family: "Bitter fallback"; font-weight: 600 700; src: local("Georgia Bold"), local("Georgia-Bold"); size-adjust: 90%; ascent-override: 104%; descent-override: 30%; line-gap-override: 0%; }
+@font-face { font-family: "Overpass fallback"; font-weight: 400; src: local("Segoe UI"), local("SegoeUI"); size-adjust: 101.3%; ascent-override: 87%; descent-override: 37.5%; line-gap-override: 0%; }
+@font-face { font-family: "Overpass fallback"; font-weight: 600 800; src: local("Segoe UI Semibold"), local("SegoeUI-Semibold"); size-adjust: 101.6%; ascent-override: 86.6%; descent-override: 37.4%; line-gap-override: 0%; }
+@font-face { font-family: "Tektur fallback"; font-weight: 500 800; src: local("Arial Bold"), local("Arial-BoldMT"); size-adjust: 71.2%; ascent-override: 140%; descent-override: 42%; line-gap-override: 0%; }
+@font-face { font-family: "Overpass fallback 2"; font-weight: 400; src: local("Arial"), local("ArialMT"); size-adjust: 99%; ascent-override: 88.9%; descent-override: 38.4%; line-gap-override: 0%; }
 @font-face { font-family: "Bitter"; font-style: normal; font-weight: 600 700; font-display: swap; src: url("/fonts/bitter-cyrillic-ext.woff2") format("woff2"); unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
 @font-face { font-family: "Bitter"; font-style: normal; font-weight: 600 700; font-display: swap; src: url("/fonts/bitter-cyrillic.woff2") format("woff2"); unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
 @font-face { font-family: "Bitter"; font-style: normal; font-weight: 600 700; font-display: swap; src: url("/fonts/bitter-latin-ext.woff2") format("woff2"); unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF; }
@@ -41,8 +50,8 @@
   --s5: 48px;
   --s6: 80px;
 
-  --serif: "Bitter", Georgia, serif;
-  --sans: "Overpass", "Segoe UI", system-ui, sans-serif;
+  --serif: "Bitter", "Bitter fallback", Georgia, serif;
+  --sans: "Overpass", "Overpass fallback", "Overpass fallback 2", "Segoe UI", system-ui, sans-serif;
   --page: 1180px;
   --ease: 140ms ease-out;
 }
@@ -226,8 +235,8 @@ a:hover { text-decoration-thickness: 2px; }
   padding-top: var(--s5);
   padding-bottom: var(--s6);
 }
-.intro h1 { max-width: 22ch; margin-bottom: var(--s3); }
-.lede { font-size: 19px; line-height: 1.55; max-width: 56ch; margin: 0; }
+.intro h1 { max-width: 14.12em; margin-bottom: var(--s3); }
+.lede { font-size: 19px; line-height: 1.55; max-width: 35.95em; margin: 0; }
 .count { margin: 0; padding-left: var(--s4); border-left: 1px solid var(--line); display: grid; gap: var(--s1); }
 .count-num { font-family: var(--serif); font-weight: 700; font-size: 56px; line-height: 1; color: var(--signal); font-variant-numeric: tabular-nums; }
 .count-label { font-size: 17px; }
@@ -268,10 +277,10 @@ a:hover { text-decoration-thickness: 2px; }
 .wrow h4 a { color: var(--on-water); text-decoration-color: var(--water-line); text-underline-offset: 4px; }
 .wrow h4 a:hover { text-decoration-color: var(--duckweed); }
 .wrow .facts { font-size: 14px; margin: 0; }
-.wrow-sum { margin: 0; max-width: 62ch; }
+.wrow-sum { margin: 0; max-width: 39.8em; }
 
 .shot { margin: 0; }
-.shot figcaption { font-size: 14px; line-height: 1.5; color: var(--on-water-2); margin-top: var(--s2); max-width: 70ch; }
+.shot figcaption { font-size: 14px; line-height: 1.5; color: var(--on-water-2); margin-top: var(--s2); max-width: 44.94em; }
 
 .zoom {
   position: relative;
@@ -312,7 +321,7 @@ a:hover { text-decoration-thickness: 2px; }
 .spread-name a:hover { text-decoration-color: var(--duckweed); }
 .facts { list-style: none; margin: 0 0 var(--s3); padding: 0; display: flex; flex-wrap: wrap; gap: var(--s1) var(--s3); font-size: 15px; }
 .soft { color: var(--on-water-2); }
-.summary { font-size: 18px; line-height: 1.6; max-width: 60ch; }
+.summary { font-size: 18px; line-height: 1.6; max-width: 38.52em; }
 .actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s2) var(--s3); margin: var(--s4) 0 0; }
 .actions .soft { font-size: 15px; }
 
@@ -371,7 +380,7 @@ a:hover { text-decoration-thickness: 2px; }
 .row:hover { background: var(--hover); }
 .row-status { margin: 0; padding-top: 2px; font-size: 15px; color: var(--ink-2); }
 .row-game { margin: 2px 0 0; font-size: 15px; color: var(--ink-2); }
-.row-sum { margin: 0; max-width: 66ch; }
+.row-sum { margin: 0; max-width: 42.37em; }
 .row h3 a { color: var(--ink); text-decoration-color: var(--line); }
 .row h3 a:hover { text-decoration-color: var(--signal); text-decoration-thickness: 2px; }
 .row-where { margin: var(--s1) 0 0; font-size: 15px; color: var(--ink-2); }
@@ -379,7 +388,7 @@ a:hover { text-decoration-thickness: 2px; }
 .held { padding-top: var(--s5); }
 .held .sec-head { margin-bottom: var(--s2); }
 .held h2 { font-size: 24px; }
-.held-note { color: var(--ink-2); margin-bottom: var(--s3); max-width: 66ch; }
+.held-note { color: var(--ink-2); margin-bottom: var(--s3); max-width: 42.37em; }
 .hold-note { margin: var(--s3) 0 0; color: var(--on-water-2); font-size: 15px; }
 
 /* ---------- blog rows: big day on the notebook margin ---------- */
@@ -403,7 +412,7 @@ a:hover { text-decoration-thickness: 2px; }
 .post-row:hover h3 a { text-decoration-color: var(--signal); text-decoration-thickness: 2px; }
 .post-row h3 a:focus-visible { outline: none; }
 .post-row:has(h3 a:focus-visible) { outline: 2px solid var(--signal); outline-offset: -2px; }
-.post-row p { margin: 0; max-width: 62ch; }
+.post-row p { margin: 0; max-width: 39.8em; }
 .post-row .tags { margin-top: var(--s2); }
 .post-thumb { display: block; width: 176px; height: auto; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 4px; }
 .tags { font-size: 15px; color: var(--ink-2); }
@@ -416,7 +425,7 @@ a:hover { text-decoration-thickness: 2px; }
 .thanks { margin-top: var(--s6); background: var(--surface); border-top: 1px solid var(--line); }
 .thanks-in { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s3) var(--s5); align-items: end; padding-top: var(--s5); padding-bottom: var(--s5); }
 .thanks h2 { margin-bottom: var(--s3); }
-.thanks-in p { max-width: 58ch; }
+.thanks-in p { max-width: 37.24em; }
 .thanks-side p:last-child, .thanks-in > div > p:last-child { margin-bottom: 0; }
 .also { font-size: 15px; color: var(--ink-2); }
 
@@ -432,20 +441,20 @@ a:hover { text-decoration-thickness: 2px; }
 .project-body { padding-top: var(--s5); }
 .spread.solo { grid-template-columns: minmax(0, 1fr); max-width: 760px; }
 .plans { padding-top: var(--s5); }
-.plan-list { margin: 0 0 var(--s3); padding-left: 1.3em; font-size: 18px; line-height: 1.65; max-width: 66ch; }
+.plan-list { margin: 0 0 var(--s3); padding-left: 1.3em; font-size: 18px; line-height: 1.65; max-width: 42.37em; }
 .plan-list li + li { margin-top: var(--s2); }
 .plan-list li::marker { color: var(--signal); }
-.plans-note { font-size: 15px; color: var(--ink-2); max-width: 66ch; }
+.plans-note { font-size: 15px; color: var(--ink-2); max-width: 42.37em; }
 .gallery { padding-top: var(--s5); }
 .gallery-cols { list-style: none; margin: 0; padding: 0; columns: 2; column-gap: var(--s4); }
 .gallery-cols li { break-inside: avoid; margin-bottom: var(--s4); }
 .gallery-cols figure { margin: 0; }
-.gallery-cols figcaption, .prose figcaption { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin-top: var(--s2); max-width: 62ch; }
+.gallery-cols figcaption, .prose figcaption { font-size: 15px; line-height: 1.5; color: var(--ink-2); margin-top: var(--s2); max-width: 39.8em; }
 .project-posts { padding-top: var(--s5); padding-bottom: var(--s6); }
 .page-end { height: var(--s5); }
 
 /* ---------- reading: post text and mod descriptions ---------- */
-.prose { font-size: 18px; line-height: 1.65; max-width: 66ch; }
+.prose { font-size: 18px; line-height: 1.65; max-width: 42.37em; }
 .prose p, .prose ul, .prose ol { margin: 0 0 var(--s4); }
 .prose ul, .prose ol { padding-left: 1.3em; }
 .prose li + li { margin-top: var(--s1); }
@@ -471,10 +480,10 @@ a:hover { text-decoration-thickness: 2px; }
 .post { padding-top: var(--s4); padding-bottom: var(--s6); }
 .post-grid { display: grid; grid-template-columns: 8rem minmax(0, 1fr); gap: var(--s4); }
 .date-margin { padding-top: 6px; }
-.post h1 { font-size: 40px; max-width: 24ch; margin-bottom: var(--s2); }
+.post h1 { font-size: 40px; max-width: 15.41em; margin-bottom: var(--s2); }
 .post .tags { margin-bottom: var(--s4); }
-.post-nav { display: flex; justify-content: space-between; gap: var(--s4); max-width: 66ch; margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line); }
-.post-nav a { display: grid; gap: 2px; max-width: 30ch; padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3)); border-radius: 4px; color: var(--ink); text-decoration: none; }
+.post-nav { display: flex; justify-content: space-between; gap: var(--s4); max-width: 42.37em; margin-top: var(--s5); padding-top: var(--s4); border-top: 1px solid var(--line); }
+.post-nav a { display: grid; gap: 2px; max-width: 19.26em; padding: var(--s2) var(--s3); margin: 0 calc(-1 * var(--s3)); border-radius: 4px; color: var(--ink); text-decoration: none; }
 .post-nav a:hover { background: var(--hover); }
 .post-nav .label { font-size: 14px; color: var(--ink-2); }
 .post-nav .title { font-family: var(--serif); font-weight: 600; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
@@ -487,7 +496,7 @@ a:hover { text-decoration-thickness: 2px; }
 .foot-links { list-style: none; margin: 0 0 var(--s3); padding: 0; display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); }
 .foot a { color: var(--ink-2); }
 .foot a:hover { color: var(--ink); }
-.disclaimer { max-width: 90ch; margin: 0; }
+.disclaimer { max-width: 57.78em; margin: 0; }
 
 /* ---------- picture viewer (site.js) ---------- */
 .lightbox {
@@ -507,7 +516,7 @@ a:hover { text-decoration-thickness: 2px; }
 .lb-stage { display: grid; place-items: center; min-height: 0; padding: 64px 80px var(--s3); }
 .lb-stage img { display: block; max-width: 100%; max-height: calc(100dvh - 170px); width: auto; height: auto; border-radius: 4px; }
 .lb-bar { display: flex; flex-wrap: wrap; justify-content: center; align-items: baseline; gap: var(--s2) var(--s4); padding: 0 var(--s4) var(--s4); }
-.lb-caption { margin: 0; max-width: 70ch; font-size: 16px; text-align: center; }
+.lb-caption { margin: 0; max-width: 44.94em; font-size: 16px; text-align: center; }
 .lb-count { margin: 0; font-size: 14px; color: var(--on-water-2); font-variant-numeric: tabular-nums; }
 .lb-btn {
   position: absolute;
@@ -598,7 +607,7 @@ html.js.frog-docked body.home .brand .toad { visibility: visible; }
 /* ---------- the swamp ---------- */
 .hero { position: relative; overflow: hidden; background: var(--water-deep); color: var(--on-water); padding-top: var(--s5); }
 .hero-in { position: relative; z-index: 2; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: var(--s4) var(--s5); align-items: end; padding-bottom: 112px; }
-.hero h1 { color: var(--on-water); max-width: 20ch; margin-bottom: var(--s3); }
+.hero h1 { color: var(--on-water); max-width: 12.84em; margin-bottom: var(--s3); }
 .hero .lede { color: var(--on-water); }
 .hero .count { border-left-color: var(--water-line); }
 .hero .count-num { color: var(--amber); }
@@ -739,8 +748,8 @@ html.js [data-reveal].in { opacity: 1; transform: none; }
 
 /* ---------- the swamp: less empty water, a shorter top (Codex) ---------- */
 .pond { height: 96px; }
-.hero h1 { font-size: clamp(32px, 3vw, 42px); max-width: 23ch; }
-.hero .lede { font-size: 18px; max-width: 48ch; }
+.hero h1 { font-size: clamp(32px, 3vw, 42px); max-width: 14.77em; }
+.hero .lede { font-size: 18px; max-width: 30.82em; }
 .hero .count { border-left: 0; padding-left: 0; }
 .hero .count-num { font-size: 44px; }
 .hero .count-label { font-size: 15px; }
@@ -800,7 +809,7 @@ html.js [data-reveal].in .shot { transform: none; }
 
 /* support */
 .support { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s5) var(--s5); padding-top: var(--s3); }
-.support section { max-width: 60ch; }
+.support section { max-width: 38.52em; }
 .support h2 { font-size: 24px; margin-bottom: var(--s2); }
 .mono-path { font-family: Consolas, "Cascadia Mono", monospace; font-size: 14px; background: var(--surface); padding: var(--s2) var(--s3); border-radius: 4px; overflow-wrap: anywhere; }
 
@@ -860,7 +869,7 @@ html.js [data-reveal].in .shot { transform: none; }
 /* the pond is part of the flow now: the space above it is the place of the toad, not an empty margin */
 .pond { position: relative; }
 .hero-in { padding-bottom: 112px; }
-.toad-row p { max-width: 60ch; }
+.toad-row p { max-width: 38.52em; }
 @media (max-width: 900px) { .hero-in { padding-bottom: 104px; } }
 @media (max-width: 600px) { .hero-in { padding-bottom: 96px; } }
 
@@ -873,7 +882,7 @@ html.js [data-reveal].in .shot { transform: none; }
   --brass: #D5AD71;
   --metal-text: #FFF4D9;
   --metal-soft: #BDB6A0;
-  --display: "Tektur", "Bitter", sans-serif;
+  --display: "Tektur", "Tektur fallback", "Bitter", sans-serif;
   --rivets: radial-gradient(circle at 60px 3px, var(--metal-edge) 1.6px, transparent 2.1px) 0 0 / 120px 6px repeat-x;
 }
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); clip-path: inset(50%); white-space: nowrap; }
@@ -945,7 +954,7 @@ html.js [data-reveal].in .shot { transform: none; }
 .tc-name { line-height: 0.95; }
 .tc-l { display: block; }
 .tc-rule { display: block; }
-.tc-tag { max-width: 36ch; margin-top: 2.4cqw !important; font-size: max(13px, 1.9cqw); line-height: 1.4; }
+.tc-tag { max-width: 23.11em; margin-top: 2.4cqw !important; font-size: max(13px, 1.9cqw); line-height: 1.4; }
 
 /* Toi-Late: the night-shift lockup, cream and rust on the dark tiled corridor */
 .tc-toi .tc-bg { transform: scale(1.24); }
@@ -969,12 +978,12 @@ html.js [data-reveal].in .shot { transform: none; }
 .tc-kattila .tc-name { font-family: var(--sans); font-weight: 800; font-size: 10.5cqw; color: #7FE0C4; -webkit-text-stroke: max(1px, 0.25cqw) #13302A; letter-spacing: 0.02em; }
 .tc-kattila .tc-rule { width: 46cqw; height: 1px; background: #3B5A55; margin: 1.8cqw auto; }
 .tc-kattila .tc-sub { font-size: max(10px, 1.5cqw); font-weight: 800; letter-spacing: 0.04em; text-transform: uppercase; color: #13302A; }
-.tc-kattila .tc-tag { color: #16302B; font-weight: 600; max-width: 48ch; }
+.tc-kattila .tc-tag { color: #16302B; font-weight: 600; max-width: 30.82em; }
 /* Chronicles of Voxelheim: gold serif on a dark teal glow, the ornament from its panels */
 .tc-vox::after { background: radial-gradient(ellipse at 50% 52%, rgba(12, 32, 36, 0.88) 0 36%, rgba(12, 32, 36, 0.42) 72%, rgba(12, 32, 36, 0.15)); }
 .tc-vox .tc-in { align-items: center; text-align: center; }
 .tc-vox .tc-over { font-family: var(--serif); font-size: max(11px, 1.7cqw); color: #E7C77C; letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 1cqw !important; }
-.tc-vox .tc-name { font-family: var(--serif); font-weight: 700; font-size: 6.8cqw; line-height: 1.04; max-width: 13ch; color: #F2DFA6; text-shadow: 0 2px 0 #3A2A10, 0 0 14px rgba(0, 0, 0, 0.6); }
+.tc-vox .tc-name { font-family: var(--serif); font-weight: 700; font-size: 6.8cqw; line-height: 1.04; max-width: 8.35em; color: #F2DFA6; text-shadow: 0 2px 0 #3A2A10, 0 0 14px rgba(0, 0, 0, 0.6); }
 .tc-vox .tc-rule { width: 28cqw; height: 12px; margin: 1.4cqw auto 0; background: linear-gradient(90deg, transparent, #D9B464 22% 78%, transparent) center / 100% 2px no-repeat, radial-gradient(circle, #F2DFA6 3px, transparent 3.6px) center / 12px 12px no-repeat; }
 .tc-vox .tc-tag { color: #EDE5CC; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.85); }
 /* small cards in the rows: the title only */
@@ -997,7 +1006,7 @@ html.js [data-reveal].in .shot { transform: none; }
 .klyop-big { width: 100%; height: auto; filter: drop-shadow(0 8px 0 rgba(0, 0, 0, 0.28)); }
 .klyop-about h2 { font-family: var(--display); font-weight: 700; font-size: 64px; line-height: 1; text-transform: uppercase; letter-spacing: 0.02em; color: var(--brass); margin-bottom: var(--s2); }
 .klyop-say { font-family: var(--serif); font-size: 26px; font-weight: 700; color: #fff; }
-.klyop-about p { max-width: 60ch; }
+.klyop-about p { max-width: 38.52em; }
 .klyop-hero .downloads a, .klyop-hero .fly-total { color: var(--duckweed); }
 .klyop-hero .fly-total { margin: 0; font-size: 15px; }
 .stickers-h { margin: var(--s5) 0 var(--s2); font-family: var(--display); font-size: 30px; text-transform: uppercase; letter-spacing: 0.03em; }
@@ -1016,7 +1025,7 @@ html.js [data-reveal].in .shot { transform: none; }
 .swamp-door-pic { display: block; }
 .swamp-door-pic img { display: block; width: 100%; height: auto; border-radius: 4px; }
 .swamp-door-name { margin: 0; font-family: var(--display); font-weight: 700; font-size: 32px; line-height: 1.1; text-transform: uppercase; letter-spacing: 0.02em; color: var(--duckweed); }
-.swamp-door-line { margin: var(--s2) 0 0; max-width: 46ch; }
+.swamp-door-line { margin: var(--s2) 0 0; max-width: 29.53em; }
 .swamp-door .actions { margin-top: var(--s3); }
 .swamp-door .more { color: var(--duckweed); }
 .swamp-door .more:hover { color: var(--on-water); }
@@ -1497,13 +1506,31 @@ body {
   html.js .top-menu, html.js .top[data-menu="open"] .top-menu { transition: none; }
 }
 
-/* ---------- Swamp Radio on phones: on screen only while it plays or is opened (the music button in the menu starts it) ---------- */
+/* ---------- phones: a fixed background repaints the whole page on every scroll step; let it scroll with the page ---------- */
 @media (max-width: 700px) {
-  html.js .radio:not(.is-playing):not([data-open="true"]) { display: none; }
-  html.js body { padding-bottom: 16px; }
-  html.js body:has(.radio.is-playing, .radio[data-open="true"]) { padding-bottom: 76px; }
-  /* a fixed background repaints the whole page on every scroll step on phones; let it scroll with the page */
   body { background-attachment: scroll; }
+}
+
+/* ---------- Swamp Radio, 12.11.2026 (owner: «the player seems to be missing, though there is room for it below»): even folded
+   it shows the track and its maker, play, next and a thin progress line; on wide screens it starts open (site.js); on
+   phones it is a full-width bar at the bottom. The clicker page keeps its own placement (swamp.css) ---------- */
+.radio .radio-info { display: block; min-width: 0; }
+.radio:not([data-open="true"]) .radio-info { flex: 0 1 220px; }
+.radio:not([data-open="true"]) .radio-name { display: none; }
+.radio:not([data-open="true"]) .r-next { display: grid; }
+.radio .r-fold { display: grid; }
+.radio:not([data-open="true"]) .r-fold svg { transform: rotate(180deg); }
+.radio-progress { display: none; position: absolute; left: 12px; right: 12px; bottom: 3px; height: 2px; overflow: hidden; border-radius: 2px; background: rgba(255, 255, 255, 0.12); pointer-events: none; }
+.radio-progress span { display: block; width: 0; height: 100%; background: var(--brass); }
+.radio:not([data-open="true"]) .radio-progress { display: block; }
+@media (max-width: 700px) {
+  html.js body:not(.page-swamp) .radio, html.js body:not(.page-swamp) .radio[data-open="true"] { left: 8px; right: 8px; bottom: 8px; width: auto; max-width: none; transform: none; }
+  .radio:not([data-open="true"]) .radio-amp { gap: 6px; padding: 4px 4px 7px; }
+  .radio:not([data-open="true"]) .radio-klyop { width: 40px; height: 40px; }
+  .radio:not([data-open="true"]) .radio-info { flex: 1 1 auto; }
+  .radio-title { font-size: 15px; }
+  .radio-credit { font-size: 12.5px; }
+  html.js body { padding-bottom: 76px; }
 }
 
 /* ---------- project page: on phones the name, the one-line summary and the download button come first, the picture after;
@@ -1684,7 +1711,49 @@ body {
 .extras summary::before { content: ""; width: 0; height: 0; border-left: 6px solid currentColor; border-top: 5px solid transparent; border-bottom: 5px solid transparent; transition: transform var(--ease); }
 .extras[open] summary::before { transform: rotate(90deg); }
 .extras summary:hover { color: var(--ink); background: var(--hover); }
-.extras > p, .extras-list { max-width: 66ch; margin: 0 var(--s2) var(--s2); font-size: 16px; }
+.extras > p, .extras-list { max-width: 42.37em; margin: 0 var(--s2) var(--s2); font-size: 16px; }
 .extras-list { padding-left: 1.1em; }
 .extras-list li + li { margin-top: 4px; }
 .extras-list:last-child { margin-bottom: var(--s3); }
+
+/* ---------- the pond, cleaned up (12.11.2026, owner: «many graphic artefacts»): the lily pad sits in the water instead of its
+   glassy rim sticking up into the air; on wide screens the pond is deep enough that the pad is not cut flat by the section
+   plates; the pads no longer slide under the fly hint; the fireflies keep to the air just above the water, so they do not
+   show through the reach box or sit between the letters ---------- */
+.hero-sky { inset: auto 0 0 0; height: 210px; }
+@media (min-width: 901px) {
+  .pond { height: 172px; }
+  .frog-home.on-lily, .frog-btn.on-lily { top: -54px; }
+  .pad-1 { left: 6%; top: 26px; }
+  .pad-2 { left: 44%; top: 40px; }
+  .pad-3 { right: 9%; top: 58px; }
+  .pond-play { bottom: 34px; }
+}
+@media (max-width: 900px) {
+  .hero-sky { height: 240px; }
+  .frog-home.on-lily, .frog-btn.on-lily { top: -46px; }
+  .pond { padding-top: 132px; }
+}
+
+/* phones: the player bar slides in after a little scroll (or stays while music plays or it is open), so it never covers
+   the first screen's buttons */
+@media (max-width: 700px) {
+  html.js body:not(.page-swamp) .radio:not(.is-playing):not([data-open="true"]) { transform: translateY(calc(100% + 12px)); transition: transform 220ms ease-out; }
+  html.js.radio-peek body:not(.page-swamp) .radio:not(.is-playing):not([data-open="true"]) { transform: none; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  html.js body:not(.page-swamp) .radio { transition: none; }
+}
+
+/* day and night switch at once: no fading of buttons and links through grey (site.js adds this for two frames) */
+html.no-trans *, html.no-trans *::before, html.no-trans *::after { transition: none !important; }
+
+/* gallery pictures are never stretched past their own size: a 403 px infographic was blown up to 554 px and blurred
+   (12.11.2026); big screenshots still fill the column */
+.gallery-cols .zoom { display: inline-block; max-width: 100%; vertical-align: top; }
+.gallery-cols .zoom img { width: var(--natw, 100%); max-width: 100%; }
+
+/* moving between pages without a reload (site.js): the old page dims a little while the next one comes, and the new
+   heading takes the focus without drawing a ring */
+html.nav-wait main#main { opacity: 0.55; transition: opacity 120ms ease-out 120ms; }
+main h1[tabindex="-1"]:focus { outline: none; }

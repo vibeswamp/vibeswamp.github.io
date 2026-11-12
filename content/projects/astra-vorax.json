@@ -1,0 +1,89 @@
+{
+  "id": "astra-vorax",
+  "order": 46,
+  "name": "Astra Vorax",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Unreal Engine",
+    "uk": "Власна гра, Unreal Engine",
+    "ru": "Собственная игра, Unreal Engine"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "Astra Vorax (working title): a single-player action slasher for PC with a sword, psionic blades, fast movement and enemies whose weak spots you have to open up.",
+    "uk": "Astra Vorax (робоча назва): одиночний екшен-слешер для ПК — меч, псіонічні клинки, швидкий рух і вороги, чиї вразливі місця треба розкрити.",
+    "ru": "Astra Vorax (рабочее название): одиночный экшен-слэшер для ПК — меч, псионические клинки, быстрое движение и враги, у которых надо вскрыть уязвимое место."
+  },
+  "details": {
+    "en": [
+      "Unreal Engine 5.8, C++. The first stage is the mission “Zero Contour”: five kinds of enemies and an elite boar, nine weapons, six encounters. For now it is a prototype and concept art; the pictures on this page are drawn by a neural network."
+    ],
+    "uk": [
+      "Unreal Engine 5.8, C++. Перший етап — місія «Нульовий контур»: п'ять видів ворогів і елітний кабан, дев'ять видів зброї, шість сутичок. Поки це прототип і концепт-арт, картинки на цій сторінці намальовані нейромережею."
+    ],
+    "ru": [
+      "Unreal Engine 5.8, C++. Первый этап — миссия «Нулевой контур»: пять видов врагов и элитный кабан, девять видов оружия, шесть встреч. Пока это прототип и концепт-арт, картинки на этой странице нарисованы нейросетью."
+    ]
+  },
+  "image": "assets/astra-vorax/01-12-gameplay-hud-v1.jpg",
+  "gallery": [
+    {
+      "file": "assets/astra-vorax/01-12-gameplay-hud-v1.jpg",
+      "caption": {
+        "en": "Concept art drawn by a neural network: a fight with an armoured boar, with the interface.",
+        "uk": "Концепт-арт, намальований нейромережею: бій із броньованим кабаном, вигляд з інтерфейсом.",
+        "ru": "Концепт-арт, нарисован нейросетью: бой с бронированным кабаном, вид с интерфейсом."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/02-08-relay-courtyard-v1.jpg",
+      "caption": {
+        "en": "Concept art drawn by a neural network: the relay courtyard.",
+        "uk": "Концепт-арт, намальований нейромережею: двір ретранслятора.",
+        "ru": "Концепт-арт, нарисован нейросетью: двор ретранслятора."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/03-combat-blades.jpg",
+      "caption": {
+        "en": "Concept: psionic blades against a beast on a wet steel deck.",
+        "uk": "Концепт: псіонічні клинки проти звіра на мокрій сталевій палубі.",
+        "ru": "Концепт: псионические клинки против зверя на мокрой стальной палубе."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/04-combat-sword.jpg",
+      "caption": {
+        "en": "Concept: a sword lunge at an armoured beast in the hangar.",
+        "uk": "Концепт: випад мечем на броньованого звіра в ангарі.",
+        "ru": "Концепт: выпад мечом на бронированного зверя в ангаре."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/05-mission-vista.jpg",
+      "caption": {
+        "en": "Concept: the way to the mission's fortress.",
+        "uk": "Концепт: дорога до фортеці місії.",
+        "ru": "Концепт: дорога к крепости миссии."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/06-enemy-guard.jpg",
+      "caption": {
+        "en": "Concept: the guard enemy from all sides.",
+        "uk": "Концепт: ворог-вартовий з усіх боків.",
+        "ru": "Концепт: враг-страж со всех сторон."
+      }
+    },
+    {
+      "file": "assets/astra-vorax/07-elite-boar.jpg",
+      "caption": {
+        "en": "Concept: the elite boar and its weak spot.",
+        "uk": "Концепт: елітний кабан і його вразливе місце.",
+        "ru": "Концепт: элитный кабан и его уязвимое место."
+      }
+    }
+  ]
+}

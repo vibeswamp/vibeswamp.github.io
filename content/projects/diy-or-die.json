@@ -1,0 +1,65 @@
+{
+  "id": "diy-or-die",
+  "order": 41,
+  "name": "DIY or DIE",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Unreal Engine",
+    "uk": "Власна гра, Unreal Engine",
+    "ru": "Собственная игра, Unreal Engine"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A VibeCorp arena: explore, loot, build weapons and fight in turn-based clashes.",
+    "ru": "Арена VibeCorp: исследование, добыча, сборка оружия и пошаговые столкновения.",
+    "uk": "Арена VibeCorp: дослідження, видобуток, збирання зброї й покрокові сутички."
+  },
+  "details": {
+    "en": [
+      "The field is flat: 126 walkable cells in six connected sectors. Three arena themes, war fog and protected exits from the base are on by default. The rules, crafting and VibeCorp satire are our own. Unreal Engine 5.8, version 0.5.0, keyboard and mouse."
+    ],
+    "ru": [
+      "Поле плоское: 126 проходимых клеток в шести связанных секторах. Три темы арен, туман войны и защищённые выходы из базы включены по умолчанию. Правила, крафт и сатира VibeCorp свои. Unreal Engine 5.8, версия 0.5.0, клавиатура и мышь."
+    ],
+    "uk": [
+      "Поле пласке: 126 прохідних клітинок у шести пов’язаних секторах. Три теми арен, туман війни й захищені виходи з бази ввімкнені за замовчуванням. Правила, крафт і сатира VibeCorp власні. Unreal Engine 5.8, версія 0.5.0, клавіатура й миша."
+    ]
+  },
+  "image": "assets/diy-or-die/01-vibehud1080.jpg",
+  "gallery": [
+    {
+      "file": "assets/diy-or-die/01-vibehud1080.jpg",
+      "caption": {
+        "en": "A shift on the arena: four employees, the grid of cells and the action log on the right.",
+        "uk": "Зміна на арені: четверо співробітників, поле з клітинок і журнал дій праворуч.",
+        "ru": "Смена на арене: четыре сотрудника, поле из клеток и журнал действий справа."
+      }
+    },
+    {
+      "file": "assets/diy-or-die/02-evolutionworkshop1080.jpg",
+      "caption": {
+        "en": "The VibeCorp workshop: a weapon is built from a frame, a core and a modifier.",
+        "uk": "Майстерня VibeCorp: зброю збирають із каркаса, ядра й модифікатора.",
+        "ru": "Мастерская VibeCorp: оружие собирается из каркаса, ядра и модификатора."
+      }
+    },
+    {
+      "file": "assets/diy-or-die/03-landscape1080.jpg",
+      "caption": {
+        "en": "Before a shift everyone picks a role: intern, courier, engineer or optimizer.",
+        "uk": "Перед зміною кожен обирає роль: стажер, кур’єр, інженер чи оптимізатор.",
+        "ru": "Перед сменой каждый выбирает роль: стажёр, курьер, инженер или оптимизатор."
+      }
+    },
+    {
+      "file": "assets/diy-or-die/04-hud-final-1080.jpg",
+      "caption": {
+        "en": "The arena field: cells, fog of war and a danger zone card on the right.",
+        "uk": "Поле арени: клітинки, туман війни й картка небезпечної зони праворуч.",
+        "ru": "Поле арены: клетки, туман войны и карточка опасной зоны справа."
+      }
+    }
+  ]
+}

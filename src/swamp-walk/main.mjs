@@ -20,15 +20,21 @@ import { preloadWalkAssets } from "./walk-assets.mjs";
 import { openWorldSave } from "./walk-world-state.mjs";
 import { addWater } from "./water.mjs";
 import { createPerfOverlay } from "./perf.mjs";
+import { PROFILE } from "./quality.mjs";
 import { markThreshold, takeThreshold, THRESHOLD } from "../swamp/threshold.mjs";
 
 const $ = (id) => document.getElementById(`swalk-${id}`);
 const STEP = 1 / 90;
 // On the first visit Klyop walks out of the shack door himself, then turns to the sunset over the lagoon.
-const DOOR_OUT_X = -0.9;
-const INTRO_SECONDS = 2.4;
+// He steps out east, walks to a spot on the pier where nothing stands between the camera and the lagoon,
+// and turns a little right of the sun, so the first frame shows him, the water and the sunset.
+const DOOR_OUT_X = -0.6;
+const VIEW_SPOT = { x: 0, z: 24.0 };
+const VIEW_HEADING = -2.7;
+const INTRO_SECONDS = 3.4;
 const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const SUNSET_HEADING = -2.42;
+// How far the evening has gone: 0 day, 1 night. Stars start to show from about 0.8.
+const DUSK = 0.9;
 // The clicker marks the door when Klyop leaves it; taken at once, because the cue lives for 90 s only.
 const arrivedThroughDoor = takeThreshold("out");
 
@@ -238,7 +244,8 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   });
   resize();
   new ResizeObserver(resize).observe(canvas);
-  if (arrivedThroughDoor && calm) reset({ ...THRESHOLD.outside, heading: SUNSET_HEADING });
+  // With reduced motion there is no walk: Klyop already stands at the view spot.
+  if (calm) reset({ ...VIEW_SPOT, heading: VIEW_HEADING });
   else reset(arrivedThroughDoor ? THRESHOLD.inside : cabin.spawn);
   if (!calm) intro = { age: 0 };
   // «← В кликер»: Klyop steps back into the door, the clicker shows him coming out of it.
@@ -252,6 +259,18 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     leaving = { age: 0, href: back.href };
   });
   addEventListener("pageshow", event => { if (event.persisted) location.reload(); });
+  // `?debug` exposes the player for automated checks (teleport into water next to each deck edge and so on).
+  if (new URLSearchParams(location.search).has("debug")) {
+    window.__walk = {
+      get player() { return player; },
+      get deckReady() { return deckReady; },
+      exits: parkour?.mantle?.exits ?? [],
+      setup: parkour?.mantle ?? null,
+      obstacles,
+      floorAt: land.floorAt,
+      teleport(x, z, heading) { reset({ x, z, heading }); },
+    };
+  }
   // The task board brightens when its text changes and goes quiet after a few seconds.
   const sortiePanel = $("sortie");
   let sortieText = "", quietAt = 0;
@@ -298,7 +317,17 @@ async function assemble(world, text, hud, setResetFacts, assets) {
           if (!wants) center();
         } else {
           intro.outside ||= player.x >= DOOR_OUT_X;
-          intent = { ...intent, x: intro.outside ? -0.45 : 0.62, z: intro.outside ? -0.5 : 0, sprint: false };
+          const dx = VIEW_SPOT.x - player.x, dz = VIEW_SPOT.z - player.z, gap = Math.hypot(dx, dz);
+          intro.there ||= intro.outside && gap < 0.2;
+          if (intro.there) intro.facing = (intro.facing ?? 0) + STEP;
+          if (intro.facing > 0.3) {
+            intro = null;
+            center();
+          } else {
+            const [x, z] = !intro.outside ? [0.62, 0] : !intro.there ? [0.62 * dx / gap, 0.62 * dz / gap]
+              : [0.3 * Math.sin(VIEW_HEADING), 0.3 * Math.cos(VIEW_HEADING)];
+            intent = { ...intent, x, z, sprint: false };
+          }
         }
       }
       const distance = advancePlayer(player, intent, land.floorAt, obstacles, STEP, parkour, exits);
@@ -345,8 +374,10 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     const floor = railFloor(parkour?.rail, land.floorAt(rendered.x, rendered.z), rendered.x, rendered.z);
     character.update(rendered, floor, dt, false, alpha, land.floorAt);
     surfaceFX.update(dt);
+    // Dusk: clouds drift, the first stars show high up. Phones skip the second cloud layer and draw fewer stars.
+    sky.userData.weather?.(elapsed, DUSK, 0, PROFILE === "phone");
     scenery.update(elapsed, camera.position, saved.radio);
-    if (!player.swimming || player.mantle || player.shoreClimb) {
+    if ((!player.swimming && !player.grounded) || player.mantle || player.shoreClimb) {
       deckReady = false;
       nextDeckCheck = elapsed;
     } else if (elapsed >= nextDeckCheck) {

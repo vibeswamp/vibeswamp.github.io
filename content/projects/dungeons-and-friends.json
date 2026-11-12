@@ -1,0 +1,65 @@
+{
+  "id": "dungeons-and-friends",
+  "order": 40,
+  "name": "Dungeons & Friends",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Unreal Engine",
+    "uk": "Власна гра, Unreal Engine",
+    "ru": "Собственная игра, Unreal Engine"
+  },
+  "status": "inprogress",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A co-op tabletop-style adventure prototype: start in a tavern, invite companions, then pick the river, the village or the catacombs.",
+    "ru": "Прототип кооперативного настольного приключения: начинаете в таверне, зовёте спутников и выбираете реку, деревню или катакомбы.",
+    "uk": "Прототип кооперативної настільної пригоди: починаєте в таверні, кличете супутників і обираєте річку, село чи катакомби."
+  },
+  "details": {
+    "en": [
+      "Pre-alpha “Fire over the River” on Unreal Engine 5.8. You can walk around the tavern, and there are three missions, a menu, saves and a Windows build."
+    ],
+    "uk": [
+      "Пре-альфа «Вогонь над річкою» на Unreal Engine 5.8. Таверною можна ходити, є три місії, меню, збереження й збірка для Windows."
+    ],
+    "ru": [
+      "Пре-альфа «Огонь над рекой» на Unreal Engine 5.8. По таверне можно ходить, есть три миссии, меню, сохранения и сборка для Windows."
+    ]
+  },
+  "image": "assets/dungeons-and-friends/01-01-hall.jpg",
+  "gallery": [
+    {
+      "file": "assets/dungeons-and-friends/01-01-hall.jpg",
+      "caption": {
+        "en": "The tavern hall where the adventure starts.",
+        "uk": "Зала таверни, звідки починається пригода.",
+        "ru": "Зал таверны, откуда начинается приключение."
+      }
+    },
+    {
+      "file": "assets/dungeons-and-friends/02-village-table.jpg",
+      "caption": {
+        "en": "The village on the game table: the heroes, the task on the left and the ways out to other places.",
+        "uk": "Село на ігровому столі: герої, завдання ліворуч і виходи в інші місця.",
+        "ru": "Деревня на игровом столе: герои, задача слева и выходы в другие места."
+      }
+    },
+    {
+      "file": "assets/dungeons-and-friends/03-tactical-view.jpg",
+      "caption": {
+        "en": "Tactical view: the party out in the field, with movement points on top.",
+        "uk": "Тактичний вигляд: загін на місцевості й очки ходу згори.",
+        "ru": "Тактический вид: отряд на местности и очки хода сверху."
+      }
+    },
+    {
+      "file": "assets/dungeons-and-friends/04-menu-hd.jpg",
+      "caption": {
+        "en": "The main menu: the adventure, playing with friends and a PvP arena.",
+        "uk": "Головне меню: пригода, гра з друзями й арена PvP.",
+        "ru": "Главное меню: приключение, игра с друзьями и арена PvP."
+      }
+    }
+  ]
+}

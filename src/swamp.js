@@ -1,7 +1,7 @@
 import { RANKS, rankOf, priceOf as buildingPrice, producerMultiplier, swampMultiplier, baseRate as calculateBaseRate,
   incomeRate, clickValue, buyBuilding, buyStage, roomOpen, startProject, finishProject, achievementProgress, badgeCount } from "./swamp/engine.mjs";
 import { freshSave, loadSave, persistSave } from "./swamp/save.mjs";
-import { createScene } from "./swamp/scene.mjs";
+import { createScene, shoreArt } from "./swamp/scene.mjs";
 import { expeditionContext, reserveExpedition, settleExpedition } from "./swamp/expedition-save.mjs";
 import { markThreshold, takeThreshold } from "./swamp/threshold.mjs";
 
@@ -89,7 +89,19 @@ function startClicker(host, textEl, lockedStorage) {
   // ---------- the page ----------
   const pic = (id) => `/brand/swamp/${id}.webp`;
   const outfitPic = (r) => (OUTFIT[r] ? `/brand/klyop/${OUTFIT[r]}.webp` : "/brand/klyop-full.webp");
-  const FLY = '<svg viewBox="0 0 16 12" aria-hidden="true"><ellipse class="fly-wing" cx="5" cy="4" rx="3.4" ry="2.2"/><ellipse class="fly-wing" cx="11" cy="4" rx="3.4" ry="2.2"/><ellipse class="fly-body" cx="8" cy="7.5" rx="3.2" ry="2.6"/></svg>';
+  const FLY = '<svg viewBox="0 0 16 14" aria-hidden="true"><g transform="rotate(-32 5.1 7.4)"><ellipse class="fly-wing" cx="5.1" cy="7.4" rx="3.9" ry="1.6"/></g><g transform="rotate(32 10.9 7.4)"><ellipse class="fly-wing" cx="10.9" cy="7.4" rx="3.9" ry="1.6"/></g><ellipse class="fly-body" cx="8" cy="8.6" rx="1.9" ry="3.2"/><circle class="fly-body" cx="8" cy="4.6" r="1.6"/></svg>';
+  // ---------- water: glints on the sun's path, ripples only where something touches the water ----------
+  // The paintings share one composition: the sun stands at about x 70%, its path runs down the water below it.
+  // Positions are in % of the painting. A glint over the hut of the furnished painting (v2-stage-3) is hidden there.
+  const inHut = (x, y) => (y < 45 ? x > 20 && x < 80 : x > 24 && x < 74.5) && y < 89;
+  // 30 along the path (denser near its middle line), 8 more where the path shows right of the furnished hut
+  const glints = Array.from({ length: 38 }, (_, i) => {
+    const t = Math.random() ** 0.8, side = i >= 30;
+    const y = side ? 46 + Math.random() * 24 : 37 + t * 34;
+    const x = side ? 75.5 + Math.random() * 4 : 70 + (Math.random() + Math.random() - 1) * (2 + t * 6);
+    const w = 0.8 + Math.random() * (1.2 + t * 2.4);
+    return `<i class="${inHut(x, y) ? "in-hut" : ""}" style="left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${w.toFixed(2)}%;--d:${(1.5 + Math.random() * 2.6).toFixed(2)}s;--o:${(0.5 + Math.random() * 0.5).toFixed(2)};--dx:${(Math.random() * 10 - 5).toFixed(1)}px;animation-delay:-${(Math.random() * 4).toFixed(2)}s"></i>`;
+  }).join("");
   host.classList.add("sw-shell");
   host.classList.toggle("sw-paused", document.hidden);
   // Layout (12.11.2026, docs/redesign/clicker-plan.md): the scene with the gauges on top of the sky and the actions
@@ -100,7 +112,7 @@ function startClicker(host, textEl, lockedStorage) {
 <div class="sw-world">
 <div class="sw-art">
 <div class="sw-backdrop" aria-hidden="true"></div>
-<div class="sw-water" aria-hidden="true"></div>
+<div class="sw-wave" aria-hidden="true">${glints}</div>
 <div class="sw-shelter" aria-hidden="true"></div>
 <div class="sw-houses" aria-hidden="true"></div>
 <button type="button" class="sw-klyop"><img class="sw-k" src="/brand/klyop-full.webp" alt="" draggable="false" decoding="async"><span class="sw-croak">${U.croak} <span class="num sw-per">+1</span></span></button>
@@ -131,7 +143,8 @@ function startClicker(host, textEl, lockedStorage) {
 <div class="sw-tabs" role="tablist" aria-label="${U.management}">${Object.entries(V.tabs).map(([id, name], i) => `<button type="button" role="tab" id="sw-tab-${id}" aria-controls="sw-panel-${id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-tab="${id}">${name}</button>`).join("")}</div>
 <div class="sw-panels">
 <div class="sw-panel" id="sw-panel-shop" role="tabpanel" aria-labelledby="sw-tab-shop" tabindex="0">
-<ol class="sw-list">${buildings.map((b) => `<li><article class="sw-buy" data-id="${b.id}" title="${b.text}"><span class="sw-pic-box"><img class="sw-pic" src="${pic(b.id)}" alt="" draggable="false" loading="lazy" decoding="async"></span><div class="sw-what"><h3 class="sw-name">${b.name}</h3><p class="sw-text">${b.text}</p><p class="sw-gain"></p></div><div class="sw-price"><button type="button" class="sw-buy-action"></button><span class="sw-own"></span></div></article></li>`).join("")}</ol>
+<ol class="sw-list">${buildings.map((b) => `<li><article class="sw-buy" data-id="${b.id}" title="${b.text}"><span class="sw-pic-box"><img class="sw-pic" src="${pic(b.id)}" alt="" draggable="false" loading="lazy" decoding="async"><span class="sw-own num"></span></span><div class="sw-what"><h3 class="sw-name">${b.name}</h3><p class="sw-text">${b.text}</p><p class="sw-gain"></p></div><div class="sw-price"><button type="button" class="sw-buy-action"></button></div></article></li>`).join("")}</ol>
+<div class="sw-howto"><h3 class="sw-panel-h">${U.howTo.title}</h3><ul>${U.howTo.lines.map((line) => `<li>${line}</li>`).join("")}</ul></div>
 </div>
 <div class="sw-panel" id="sw-panel-construction" role="tabpanel" aria-labelledby="sw-tab-construction" tabindex="0" hidden>
 <h3 class="sw-panel-h">${V.projects}</h3>
@@ -164,22 +177,27 @@ function startClicker(host, textEl, lockedStorage) {
   const meter = $(".sw-meter-bar span"), meterBox = $(".sw-meter");
   const rankImg = $(".sw-rank-img"), rankNo = $(".sw-rank-no"), rankName = $(".sw-rank-name"), rankBar = $(".sw-rank-bar"), rankNext = $(".sw-rank-next"), rankBox = $(".sw-rank"), rankBonus = $(".sw-rank-bonus");
   const construct = $(".sw-construct"), mini = $(".sw-mini"), miniNum = $(".sw-mini-num"), miniNext = $(".sw-mini-next");
-  // The next building step in the card: a dark silhouette of exactly the part that will appear (its box in the
-  // painting is in content/swamp-v2.json art.steps). A step that brings a new painting shows that painting dimmed.
+  // The next building step in the card: a small crop of the scene as it will look once the step is built (the same
+  // cut-out layers stacked on the painting), dimmed until there are flies enough. Steps without pictures show "?".
   const preview = $(".sw-stage-preview");
-  const paintPreview = (step, done) => {
-    const size = 52;
-    const box = done || step?.base ? [20, 14, 60, 76] : step?.box;
-    preview.classList.toggle("era", !!step?.base);
+  const paintPreview = () => {
+    const size = 52, next = D.stages[S.stage], step = next && D.art.steps?.[next.id];
+    const box = !next ? [20, 14, 60, 76] : step?.box;
     preview.classList.toggle("unknown", !box);
-    preview.classList.toggle("done", !!done);
     if (!box) { preview.style.removeProperty("--pv-src"); return; }
-    const src = done ? "/brand/swamp/v2-stage-3-960.webp" : step.base ? `/brand/swamp/${step.base}-960.webp` : `/brand/swamp/steps/${step.layer}-960.webp`;
-    const [x, y, w, h] = box, bw = w * 1.5 / 100, bh = h / 100, f = size / Math.max(bw, bh);
-    preview.style.setProperty("--pv-src", `url("${src}")`);
+    const after = shoreArt(next ? S.stage + 1 : S.stage, D);
+    const urls = [...after.layers].reverse().map((id) => `url("/brand/swamp/steps/${D.art.steps[id].layer}-960.webp")`);
+    if (after.dark) urls.push(`url("/brand/swamp/steps/${after.dark}-960.webp")`);
+    urls.push(`url("/brand/swamp/${after.base || "bg"}-960.webp")`);
+    // a square around the part, at least a third of the painting high, kept inside the painting (1.5 x 1 units)
+    const [x, y, w, h] = box, bw = w * 1.5 / 100, bh = h / 100, side = Math.min(1, Math.max(bw, bh, 0.34));
+    const left = Math.min(1.5 - side, Math.max(0, x * 1.5 / 100 + bw / 2 - side / 2));
+    const top = Math.min(1 - side, Math.max(0, y / 100 + bh / 2 - side / 2)), f = size / side;
+    preview.style.setProperty("--pv-src", urls.join(", "));
     preview.style.setProperty("--pv-size", `${(1.5 * f).toFixed(1)}px ${f.toFixed(1)}px`);
-    preview.style.setProperty("--pv-pos", `${(-(x / 100) * 1.5 * f + (size - bw * f) / 2).toFixed(1)}px ${(-(y / 100) * f + (size - bh * f) / 2).toFixed(1)}px`);
+    preview.style.setProperty("--pv-pos", `${(-left * f).toFixed(1)}px ${(-top * f).toFixed(1)}px`);
   };
+  const howTo = $(".sw-howto");
   const buyCards = [...host.querySelectorAll(".sw-buy")], buildBtns = [...host.querySelectorAll(".sw-build")];
   host.addEventListener("dragstart", (event) => event.preventDefault());
   // A long press on a picture must not open the phone's image menu or start a text selection.
@@ -203,6 +221,9 @@ function startClicker(host, textEl, lockedStorage) {
   };
   fit();
   addEventListener("resize", fit);
+  // the radio bar under the game folds and unfolds (52-130 px): keep the game fitted to what is left
+  const radioBar = document.querySelector(".radio");
+  if (radioBar && "ResizeObserver" in window) new ResizeObserver(fit).observe(radioBar);
 
   // Phone: once the scene scrolls away, a slim bar keeps the catch, a croak and the next step in reach.
   $(".sw-mini-croak").addEventListener("click", () => btn.click());
@@ -550,7 +571,7 @@ function startClicker(host, textEl, lockedStorage) {
     construct.classList.toggle("all", !next);
     construct.querySelector(".sw-name").textContent = next ? V.stages[next.id] : V.allBuilt;
     const previewKey = next ? next.id : "all";
-    if (preview.dataset.step !== previewKey) { preview.dataset.step = previewKey; paintPreview(next && D.art.steps?.[next.id], !next); }
+    if (preview.dataset.step !== previewKey) { preview.dataset.step = previewKey; paintPreview(); }
     $(".sw-stage-cost").textContent = next ? fmt(next.cost) : "";
     const gate = next && S.total < next.total ? fill(V.stageGate, { n: fmt(next.total - S.total) })
       : next && S.flies < next.cost ? fill(U.stageNeed, { n: fmt(next.cost - S.flies) }) : "";
@@ -625,9 +646,14 @@ function startClicker(host, textEl, lockedStorage) {
         const upgraded = { ...S, own: { ...S.own, [b.id]: own(b.id) + 1 } };
         gainLabel.textContent = fill(U.purchaseGain, { n: precise.format(calculateBaseRate(upgraded, D) - passive) });
       }
-      el.querySelector(".sw-own").textContent = own(b.id) ? `${T.owned}: ${own(b.id)}` : "";
+      // how many you have: a small count on the picture's corner, like on the scene
+      const ownLabel = own(b.id) ? `×${own(b.id)}` : "";
+      const ownEl = el.querySelector(".sw-own");
+      if (ownEl.textContent !== ownLabel) { ownEl.textContent = ownLabel; ownEl.title = own(b.id) ? `${T.owned}: ${own(b.id)}` : ""; }
       action.disabled = !seen || S.flies < price;
     });
+    const shownRows = buyCards.filter((card) => !card.parentElement.hidden).length;
+    howTo.hidden = shownRows > 3;
     builds.forEach((b, i) => {
       const el = buildBtns[i];
       const prevDone = i === 0 || S.done[builds[i - 1].id];
@@ -687,10 +713,37 @@ function startClicker(host, textEl, lockedStorage) {
     if (delivered) { S.delivered = (S.delivered || 0) + 1; rollTeaBag(); }
     kEvent(["fly"]);
   };
+  // Water zones in % of the painting: the banks left and right, and the open middle while the painting has no hut.
+  const art = $(".sw-art"), wave = $(".sw-wave");
+  const zones = () => [[3, 54, 20, 84], [80, 50, 97, 82],
+    ...(world.dataset.stageArt === "true" ? [[75, 48, 80, 82]] : [[27, 42, 73, 72]])];
+  const onWater = (x, y) => zones().some(([x0, y0, x1, y1]) => x >= x0 && x <= x1 && y >= y0 && y <= y1);
+  const dashes = () => Array.from({ length: 6 }, () => `${(8 + Math.random() * 26).toFixed(0)} ${(2 + Math.random() * 9).toFixed(0)}`).join(" ");
+  const ripple = (x, y, strong = false) => {
+    if (calm || document.hidden || world.dataset.room !== "shore" || wave.querySelectorAll(".sw-ripple").length > 5) return;
+    const r = document.createElement("span");
+    r.className = "sw-ripple";
+    const width = (strong ? 9 : 5.5) * (0.8 + Math.random() * 0.45), dur = (strong ? 2.1 : 1.7) + Math.random() * 0.8;
+    r.style.cssText = `left:${x.toFixed(1)}%;top:${y.toFixed(1)}%;width:${width.toFixed(1)}%;--rot:${(Math.random() * 6 - 3).toFixed(1)}deg;--dur:${dur.toFixed(2)}s`;
+    r.innerHTML = `<svg viewBox="-50 -13 100 26" preserveAspectRatio="none"><ellipse rx="47" ry="11" stroke-dasharray="${dashes()}"/><ellipse class="in" rx="30" ry="7" stroke-dasharray="${dashes()}"/></svg>`;
+    wave.append(r);
+    setTimeout(() => r.remove(), dur * 1000 + 300);
+  };
+  const artPoint = ({ clientX, clientY }) => {
+    const box = art.getBoundingClientRect();
+    return [(clientX - box.left) / box.width * 100, (clientY - box.top) / box.height * 100];
+  };
   world.addEventListener("pointerdown", (event) => {
-    const bounds = world.getBoundingClientRect();
-    if (event.clientY - bounds.top > bounds.height * 0.55) ring(event.clientX - bounds.left, event.clientY - bounds.top);
+    if (event.target.closest(".sw-klyop, .sw-fly, .sw-fat, .sw-rooms, .sw-hud, .sw-meter")) return;
+    const [x, y] = artPoint(event);
+    if (onWater(x, y)) ripple(x, y, true);
   });
+  // now and then something touches the water: a midge, a drop from the reeds
+  setInterval(() => {
+    if (Math.random() > 0.55) return;
+    const list = zones(), [x0, y0, x1, y1] = list[Math.floor(Math.random() * list.length)];
+    ripple(x0 + Math.random() * (x1 - x0), y0 + Math.random() * (y1 - y0));
+  }, 2600);
 
   $(".sw-activities").addEventListener("click", (event) => {
     const button = event.target.closest("[data-activity]");

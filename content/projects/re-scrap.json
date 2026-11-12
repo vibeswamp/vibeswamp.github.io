@@ -1,0 +1,30 @@
+{
+  "id": "re-scrap",
+  "order": 49,
+  "name": "RE:Scrap",
+  "kind": "game",
+  "game": {
+    "en": "My own game, C# / Godot",
+    "uk": "Власна гра, C# / Godot",
+    "ru": "Собственная игра, C# / Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "The simulation core of a scrapyard salvage and shelter management game.",
+    "ru": "Ядро симуляции игры про свалку и управление убежищем.",
+    "uk": "Ядро симуляції гри про звалище й керування сховищем."
+  },
+  "details": {
+    "en": [
+      "Pure C# without any engine references, so Godot or Unity can use it later. There is also a Godot project next to it. A prototype of the core, no finished game."
+    ],
+    "ru": [
+      "Чистый C# без ссылок на движок, поэтому подключить можно к Godot или Unity. Рядом лежит и Godot-проект. Прототип ядра, готовой игры нет."
+    ],
+    "uk": [
+      "Чистий C# без посилань на рушій, тож підключити можна до Godot чи Unity. Поруч є й Godot-проєкт. Прототип ядра, готової гри немає."
+    ]
+  }
+}

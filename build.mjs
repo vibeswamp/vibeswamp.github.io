@@ -203,7 +203,7 @@ function zoom(info, { alt, caption, group, small = false, eager = false, cls = "
   const load = eager ? ` fetchpriority="high"` : ` loading="lazy"`;
   return `<a class="zoom${cls ? ` ${cls}` : ""}" href="${esc(info.src)}" data-group="${esc(group)}" data-caption="${esc(caption)}"${
     info.w ? ` data-w="${info.w}" data-h="${info.h}"` : ""
-  }><img src="${esc(src)}"${small ? "" : srcset(info, SIZES_MAIN)} alt="${esc(alt)}"${w ? ` width="${w}" height="${h}"` : ""}${load} decoding="async">${
+  }><img src="${esc(src)}"${small ? "" : srcset(info, SIZES_MAIN)} alt="${esc(alt)}"${w ? ` width="${w}" height="${h}"` : ""}${!small && info.w ? ` style="--natw: ${info.w}px"` : ""}${load} decoding="async">${
     small ? "" : `<span class="zoom-hint">${LOUPE}</span>`
   }</a>`;
 }
@@ -342,7 +342,7 @@ function radio(lang) {
   const t = site.strings[lang];
   if (!(site.music ?? []).length) return "";
   const b = (cls, label, icon, extra = "") => `<button type="button" class="rb ${cls}" aria-label="${esc(label)}" title="${esc(label)}"${extra}>${icon}</button>`;
-  return `<aside class="radio" aria-label="${esc(t.radioName)}" data-play="${esc(t.radioPlay)}" data-pause="${esc(t.radioPause)}" data-r-off="${esc(t.radioRepeatOff)}" data-r-all="${esc(t.radioRepeatAll)}" data-r-one="${esc(t.radioRepeatOne)}">
+  return `<aside class="radio" aria-label="${esc(t.radioName)}" data-play="${esc(t.radioPlay)}" data-pause="${esc(t.radioPause)}" data-r-off="${esc(t.radioRepeatOff)}" data-r-all="${esc(t.radioRepeatAll)}" data-r-one="${esc(t.radioRepeatOne)}" data-r-open="${esc(t.radioOpen)}" data-r-fold="${esc(t.radioHide)}">
 <div class="radio-amp">
 <button type="button" class="radio-face" aria-expanded="false" aria-controls="radio-deck" title="${esc(t.radioOpen)}"><span class="radio-klyop">${KLYOP}</span><span class="radio-name">${esc(t.radioName)}</span></button>
 <span class="radio-cover" aria-hidden="true"><span class="radio-cover-name"></span></span>
@@ -354,9 +354,11 @@ function radio(lang) {
 </div>
 ${b("r-fold", t.radioHide, I.fold)}
 <span class="radio-led" aria-hidden="true"></span>
+<span class="radio-progress" aria-hidden="true"><span></span></span>
 </div>
 <ol class="radio-queue" id="radio-queue" hidden></ol>
-</aside>`;
+</aside>
+<script>(function(){try{var r=document.currentScript.previousElementSibling,s=JSON.parse(localStorage.getItem("vibeswamp-radio")||"{}");r.dataset.open=(s.v===2?!!s.open:matchMedia("(min-width: 901px)").matches)?"true":"false";}catch(e){}})();</script>`;
 }
 
 // ---------- title cards: each game's own title, drawn in the style of its menu over a real screenshot ----------

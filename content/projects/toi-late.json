@@ -55,6 +55,14 @@
   },
   "gallery": [
     {
+      "file": "assets/toi-late/main-menu.jpg",
+      "caption": {
+        "en": "The main menu: a service entrance, a leaking pipe and “The Last Flush”. The menu background is drawn by a neural network.",
+        "uk": "Головне меню: службовий вхід, протікаюча труба й «Останній змив». Фон меню намальований нейромережею.",
+        "ru": "Главное меню: служебный вход, текущая труба и «Последний смыв». Фон меню нарисован нейросетью."
+      }
+    },
+    {
       "file": "assets/toi-late/day1-forecast.jpg",
       "caption": {
         "en": "Day one. The forecast hints at what the next flush may bring, and the toilet has an opinion about it.",
@@ -63,11 +71,11 @@
       }
     },
     {
-      "file": "assets/toi-late/night3-rats.jpg",
+      "file": "assets/toi-late/day1-starter.jpg",
       "caption": {
-        "en": "Night three: hold out against the rats until morning. The only weapon so far is a wooden spear.",
-        "uk": "Ніч третя: протриматися проти щурів до ранку. Зі зброї поки лише дерев'яний спис.",
-        "ru": "Ночь третья: продержаться против крыс до утра. Из оружия пока только деревянное копьё."
+        "en": "The first flush: a starter kit on the floor, bread, water and a chest blueprint.",
+        "uk": "Перший змив: стартовий набір на підлозі, хліб, вода й креслення скрині.",
+        "ru": "Первый смыв: стартовый набор на полу, хлеб, вода и чертёж сундука."
       }
     },
     {
@@ -79,6 +87,54 @@
       }
     },
     {
+      "file": "assets/toi-late/upgrades.jpg",
+      "caption": {
+        "en": "The upgrade menu with a skill tree.",
+        "uk": "Меню покращень із деревом навичок.",
+        "ru": "Меню улучшений с деревом навыков."
+      }
+    },
+    {
+      "file": "assets/toi-late/workbench-craft.jpg",
+      "caption": {
+        "en": "Crafting at the workbench from what the toilet gave.",
+        "uk": "Крафт на верстаку з того, що віддав унітаз.",
+        "ru": "Крафт на верстаке из того, что отдал унитаз."
+      }
+    },
+    {
+      "file": "assets/toi-late/generator.jpg",
+      "caption": {
+        "en": "A light generator: one turn of the crank gives 60 seconds of light.",
+        "uk": "Генератор світла: один оберт рукоятки дає 60 секунд світла.",
+        "ru": "Генератор света: один оборот рукоятки даёт 60 секунд света."
+      }
+    },
+    {
+      "file": "assets/toi-late/day3-evening.jpg",
+      "caption": {
+        "en": "Day three, evening: the workbench is built, a spear in hand.",
+        "uk": "День третій, вечір: верстак зібрано, у руці спис.",
+        "ru": "День третий, вечер: верстак собран, в руке копьё."
+      }
+    },
+    {
+      "file": "assets/toi-late/night2.jpg",
+      "caption": {
+        "en": "Night two begins: “Hear the scratching? Keep your weapon close.”",
+        "uk": "Починається друга ніч: «Чуєш, як шкрябається? Тримай зброю під рукою».",
+        "ru": "Начинается вторая ночь: «Слышишь, как скребутся? Держи оружие под рукой»."
+      }
+    },
+    {
+      "file": "assets/toi-late/night3-rats.jpg",
+      "caption": {
+        "en": "Night three: hold out against the rats until morning. The only weapon so far is a wooden spear.",
+        "uk": "Ніч третя: протриматися проти щурів до ранку. Зі зброї поки лише дерев'яний спис.",
+        "ru": "Ночь третья: продержаться против крыс до утра. Из оружия пока только деревянное копьё."
+      }
+    },
+    {
       "file": "assets/toi-late/room-wide.jpg",
       "caption": {
         "en": "The whole room. It is a graybox prototype, so a lot of the art is temporary.",
@@ -87,22 +143,6 @@
       }
     }
   ],
-  "image": "assets/toi-late/day1-forecast.jpg",
-  "tint": "#222A26",
-  "titlecard": {
-    "style": "toi",
-    "over": "Служебный вход / объект 01",
-    "lines": [
-      "ПОСЛЕДНИЙ",
-      "СМЫВ"
-    ],
-    "rule": true,
-    "sub": "Toi-Late",
-    "tag": {
-      "en": "A night-shift horror roguelite: flush for loot, keep your sanity, get out alive.",
-      "uk": "Хорор-рогалик нічної зміни: змивай заради луту, тримай розум, виходь живим.",
-      "ru": "Хоррор-рогалик ночной смены: смывай ради лута, держи рассудок, выходи живым."
-    },
-    "bg": "assets/toi-late/room-wide.jpg"
-  }
+  "image": "assets/toi-late/main-menu.jpg",
+  "tint": "#222A26"
 }

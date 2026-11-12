@@ -1,0 +1,65 @@
+{
+  "id": "meathunt",
+  "order": 45,
+  "name": "VeganSniper MeatHunt",
+  "kind": "game",
+  "game": {
+    "en": "My own game, in the browser",
+    "uk": "Власна гра, у браузері",
+    "ru": "Собственная игра, в браузере"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A 3D browser game: four chapter-one missions from a market to a car escape, plus an arcade mode.",
+    "ru": "3D-игра в браузере: четыре миссии первой главы от рынка до автомобильного побега и аркадный режим.",
+    "uk": "3D-гра в браузері: чотири місії першого розділу від ринку до автомобільної втечі та аркадний режим."
+  },
+  "details": {
+    "en": [
+      "The first chapter has a 3D market, a delivery, a studio and a car escape. The arcade is reachable through the Nest, Arsenal and free hunting. Environment assets come from Poly Haven."
+    ],
+    "ru": [
+      "Первая глава: 3D-рынок, доставка, студия и автомобильный побег. Аркада доступна через «Гнездо → Арсенал и свободная охота». Окружение собрано из ассетов Poly Haven."
+    ],
+    "uk": [
+      "Перший розділ: 3D-ринок, доставка, студія й автомобільна втеча. Аркада доступна через «Гніздо → Арсенал і вільне полювання». Оточення зібрано з ассетів Poly Haven."
+    ]
+  },
+  "image": "assets/meathunt/01-menu-1280.jpg",
+  "gallery": [
+    {
+      "file": "assets/meathunt/01-menu-1280.jpg",
+      "caption": {
+        "en": "The MEAT HUNT main menu: start, the Nest, how to play.",
+        "uk": "Головне меню MEAT HUNT: почати гру, Гніздо, як грати.",
+        "ru": "Главное меню MEAT HUNT: начать игру, Гнездо, как играть."
+      }
+    },
+    {
+      "file": "assets/meathunt/02-case-01-transition.jpg",
+      "caption": {
+        "en": "The market in the first mission.",
+        "uk": "Ринок у першій місії.",
+        "ru": "Рынок в первой миссии."
+      }
+    },
+    {
+      "file": "assets/meathunt/03-matched-after.jpg",
+      "caption": {
+        "en": "The same market from the sniper’s position.",
+        "uk": "Той самий ринок з позиції снайпера.",
+        "ru": "Тот же рынок с позиции снайпера."
+      }
+    },
+    {
+      "file": "assets/meathunt/04-skyline-1920.jpg",
+      "caption": {
+        "en": "Rooftop parkour: the yellow awning is springy, the complaints bell is up top.",
+        "uk": "Паркур дахами: жовтий навіс пружинить, угорі дзвінок відділу скарг.",
+        "ru": "Паркур по крышам: жёлтый навес пружинит, наверху звонок отдела жалоб."
+      }
+    }
+  ]
+}

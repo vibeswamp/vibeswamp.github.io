@@ -1,0 +1,49 @@
+{
+  "id": "erudit",
+  "order": 42,
+  "name": "ERUDIT",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Unreal Engine",
+    "uk": "Власна гра, Unreal Engine",
+    "ru": "Собственная игра, Unreal Engine"
+  },
+  "status": "inprogress",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A word game on Unreal Engine: build words from letter tiles on a board, against a bot or with two players at one PC.",
+    "uk": "Гра в слова на Unreal Engine: складайте слова з фішок на дошці, з ботом або вдвох за одним комп’ютером.",
+    "ru": "Игра в слова на Unreal Engine: составляйте слова из фишек на доске, с ботом или вдвоём за одним компьютером."
+  },
+  "details": {
+    "en": [
+      "Ukrainian and Russian, two dictionaries and a 0, 60 or 120 second timer. The bot plays by the same rules as a person: a word counts only if two dictionaries have it and it has a meaning. The Windows build runs without the editor."
+    ],
+    "uk": [
+      "Українська й російська мова, два словники й таймер на 0, 60 або 120 секунд. Бот грає за тими самими правилами, що й людина: слово зараховується, лише якщо воно є у двох словниках і має значення. Готова збірка для Windows запускається без редактора."
+    ],
+    "ru": [
+      "Украинский и русский язык, два словаря и таймер на 0, 60 или 120 секунд. Бот играет по тем же правилам, что и человек: слово засчитывается, только если оно есть в двух словарях и у него есть значение. Готовая сборка для Windows запускается без редактора."
+    ]
+  },
+  "image": "assets/erudit/01-demo-turn-29.jpg",
+  "gallery": [
+    {
+      "file": "assets/erudit/01-demo-turn-29.jpg",
+      "caption": {
+        "en": "A demo game between two bots, turn 29: the bag is empty, the score is 283 : 283.",
+        "uk": "Демо-партія двох ботів, хід 29: мішок порожній, рахунок 283 : 283.",
+        "ru": "Демо-партия двух ботов, ход 29: мешок пуст, счёт 283 : 283."
+      }
+    },
+    {
+      "file": "assets/erudit/02-demo-turn-08.jpg",
+      "caption": {
+        "en": "Early in a game: the last move and its explanation on the left, pause, review and rules at the bottom.",
+        "uk": "Початок партії: ліворуч останній хід і пояснення, внизу пауза, розбір і правила.",
+        "ru": "Начало партии: слева последний ход и объяснение, внизу пауза, разбор и правила."
+      }
+    }
+  ]
+}

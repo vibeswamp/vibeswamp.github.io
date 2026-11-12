@@ -29,10 +29,14 @@ createServer(async (req, res) => {
   try {
     if ((await stat(file)).isDirectory()) file = join(file, "index.html");
     // no-cache: the browser asks again every time, so a fresh build shows up at once
+    // read before answering: dist/ is shared and may be rebuilt mid-request; a file that vanished must give a 404,
+    // not crash the server with "headers already sent"
+    const body = await readFile(file);
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream", "cache-control": "no-cache" });
-    res.end(await readFile(file));
+    res.end(body);
   } catch {
+    if (res.headersSent) return res.end();
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8" }).end("not found");
   }

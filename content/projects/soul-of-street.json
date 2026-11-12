@@ -1,0 +1,89 @@
+{
+  "id": "soul-of-street",
+  "order": 43,
+  "name": "Soul of Street",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A street fight for one or two players: the lights in the district went out, and Depot 09 asks you to come in person.",
+    "uk": "Вулична бійка на одного чи двох: у районі згасло світло, і Депо 09 просить прийти особисто.",
+    "ru": "Уличная драка на одного или двоих: в районе погас свет, и Депо 09 просит прийти лично."
+  },
+  "details": {
+    "en": [
+      "A 3D street brawler on Godot 4.8: the street, the square and the alley, with the Brigadier as the boss at the end. Moves are bought with parts collected in fights. The first version was 2D, about Sector 9 with drones and a boss named Goliath. The project is frozen for now: the fight animations are still being redone."
+    ],
+    "uk": [
+      "Вулична бійка в 3D на Godot 4.8: вулиця, площа й провулок, а наприкінці бос Бригадир. Прийоми купуються за деталі, зібрані в бою. Перша версія була 2D, про Сектор 9 з дронами й босом Goliath. Зараз проєкт заморожено: анімації бою ще переробляються."
+    ],
+    "ru": [
+      "Уличная драка в 3D на Godot 4.8: улица, площадь и переулок, а в конце босс Бригадир. Приёмы покупаются за детали, собранные в бою. Первый вариант был в 2D, про Сектор 9 с дронами и боссом Goliath. Сейчас проект заморожен: анимации боя ещё переделываются."
+    ]
+  },
+  "gallery": [
+    {
+      "file": "assets/soul-of-street/01-title-menu.jpg",
+      "caption": {
+        "en": "The title screen: “The lights in the district went out. Depot 09 asks you to come in person.”",
+        "uk": "Титульний екран: «Світло в районі згасло. Депо 09 просить прийти особисто».",
+        "ru": "Титульный экран: «Свет в районе погас. Депо 09 просит прийти лично»."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/02-street-wave.jpg",
+      "caption": {
+        "en": "The street, wave 1 of 2: Ray by the shawarma stand and the pharmacy, two thugs coming.",
+        "uk": "Вулиця, хвиля 1 з 2: Рей біля шаурми й аптеки, підходять двоє.",
+        "ru": "Улица, волна 1 из 2: Рэй у шаурмы и аптеки, подходят двое."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/03-boss-coop.jpg",
+      "caption": {
+        "en": "Two players against the Brigadier: “Now I’m the one working, not you.”",
+        "uk": "Удвох проти Бригадира: «Тепер я працюю, а не ви».",
+        "ru": "Вдвоём против Бригадира: «Теперь я работаю, а не вы»."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/04-boss-stomp.jpg",
+      "caption": {
+        "en": "The depot yard from above: the Brigadier stomps, the red circle is the danger zone.",
+        "uk": "Двір депо згори: Бригадир б’є по землі, червоне коло — зона удару.",
+        "ru": "Двор депо сверху: Бригадир бьёт по земле, красный круг — зона удара."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/05-skill-tree.jpg",
+      "caption": {
+        "en": "The move tree: arms, legs, grabs; moves are bought with parts.",
+        "uk": "Дерево прийомів: руки, ноги, захвати; прийоми купуються за деталі.",
+        "ru": "Дерево приёмов: руки, ноги, захваты; приёмы покупаются за детали."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/06-result-clear.jpg",
+      "caption": {
+        "en": "District cleared: the street, the square and the alley, with Ray’s and Mara’s stats.",
+        "uk": "Район зачищено: вулицю, площу й провулок пройдено, підсумки Рея й Мари.",
+        "ru": "Район зачищен: улица, площадь и переулок пройдены, итоги Рэя и Мары."
+      }
+    },
+    {
+      "file": "assets/soul-of-street/08-sector9-level-legacy.jpg",
+      "caption": {
+        "en": "The first, 2D version: neon Sector 9, wave 1 of 3.",
+        "uk": "Перша, 2D-версія: неоновий Сектор 9, хвиля 1 з 3.",
+        "ru": "Первый, 2D-вариант: неоновый Сектор 9, волна 1 из 3."
+      }
+    }
+  ],
+  "image": "assets/soul-of-street/01-title-menu.jpg"
+}

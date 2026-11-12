@@ -1,0 +1,30 @@
+{
+  "id": "underbone",
+  "order": 51,
+  "name": "Underbone",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A 3D prototype on Godot: levels, a character and parkour tests.",
+    "uk": "3D-прототип на Godot: рівні, персонаж і проби паркуру.",
+    "ru": "3D-прототип на Godot: уровни, персонаж и пробы паркура."
+  },
+  "details": {
+    "en": [
+      "An early experiment: levels, a character and tests of movement. There is no written design yet; concept pictures will be drawn from the notes when they exist."
+    ],
+    "ru": [
+      "Ранний эксперимент: уровни, персонаж и проверки движения. Описания пока нет, концепты нарисуем, когда будут заметки."
+    ],
+    "uk": [
+      "Ранній експеримент: рівні, персонаж і перевірки руху. Опису поки немає, концепти намалюємо, коли будуть нотатки."
+    ]
+  }
+}

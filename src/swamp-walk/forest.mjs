@@ -126,7 +126,8 @@ function forestMaterial(map, time, level) {
   const material = new T.MeshLambertMaterial({
     map, color: 0xffffff, vertexColors: true, alphaTest: .40, alphaToCoverage: true, side: T.DoubleSide,
   });
-  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v1";
+  // Level changes dither only in a 2-3 m ring, so mid-distance crowns are not hatched.
+  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v2";
   material.onBeforeCompile = shader => {
     shader.uniforms.forestTime = time;
     shader.uniforms.forestLevel = { value: level };
@@ -135,8 +136,8 @@ function forestMaterial(map, time, level) {
         "#include <begin_vertex>\n" +
         "vec2 root = instanceMatrix[3].xz;\n" +
         "float d = length(cameraPosition.xz - root);\n" +
-        "float a = 1. - smoothstep(23., 30., d);\n" +
-        "float b = 1. - smoothstep(49., 58., d);\n" +
+        "float a = 1. - smoothstep(25.5, 27.5, d);\n" +
+        "float b = 1. - smoothstep(52., 55., d);\n" +
         "forestBand = forestLevel < .5 ? vec2(0., a) : forestLevel < 1.5 ? vec2(a, b) : vec2(b, 1.);\n" +
         "float gust = sin(forestTime * 1.25 + root.x * .18 + root.y * .19 + position.y * 4.5);\n" +
         "transformed.x += gust * sway * .013;\n" +

@@ -1,0 +1,65 @@
+{
+  "id": "snowyard",
+  "order": 47,
+  "name": "SnowYard",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "inprogress",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A team snowball fight on a mountain in a winter courtyard: forts, igloos and a lot of snow.",
+    "ru": "Командная снежная заруба в зимнем дворе: крепости, иглу и много снега.",
+    "uk": "Командна сніжна бійка в зимовому дворі: фортеці, іґлу й багато снігу."
+  },
+  "details": {
+    "en": [
+      "A Godot 4.7 game where you play kids in puffy snowsuits: no blood, no weapons, no health bar. The idea: snowball physics, building snow forts and igloos, team scale and destructible cover. In active development, the pictures here are concepts and will be replaced."
+    ],
+    "ru": [
+      "Игра на Godot 4.7, где играешь детьми в дутых комбинезонах: без крови, без оружия, без полоски здоровья. Идея: физика снежков, стройка снежных крепостей и иглу, командный масштаб и разрушаемые укрытия. В активной разработке, картинки здесь — концепты, потом заменим."
+    ],
+    "uk": [
+      "Гра на Godot 4.7, де граєте дітьми в пухких комбінезонах: без крові, без зброї, без смужки здоров’я. Ідея: фізика сніжок, будівництво сніжних фортець та іґлу, командний масштаб і руйнівні укриття. В активній розробці, картинки тут — концепти, згодом замінимо."
+    ]
+  },
+  "image": "assets/snowyard/01-yard-1.jpg",
+  "gallery": [
+    {
+      "file": "assets/snowyard/01-yard-1.jpg",
+      "caption": {
+        "en": "Concept drawn by a neural network: snow forts and igloos in a block-of-flats yard.",
+        "uk": "Концепт, намальований нейромережею: снігові фортеці й іглу у дворі багатоповерхівок.",
+        "ru": "Концепт, нарисован нейросетью: снежные крепости и иглу во дворе многоэтажек."
+      }
+    },
+    {
+      "file": "assets/snowyard/02-yard-2.jpg",
+      "caption": {
+        "en": "Concept: a team holds a fort while a player peeks out of an igloo.",
+        "uk": "Концепт: команда тримає фортецю, з іглу визирає гравець.",
+        "ru": "Концепт: команда держит крепость, из иглу выглядывает игрок."
+      }
+    },
+    {
+      "file": "assets/snowyard/03-classes.jpg",
+      "caption": {
+        "en": "Concept of four kids: with a shovel, in white camouflage, with a snow blaster and with a thermos.",
+        "uk": "Концепт чотирьох героїв: з лопатою, у білому маскхалаті, зі сніговим бластером і з термосом.",
+        "ru": "Концепт четырёх героев: с лопатой, в белом маскхалате, со снежным бластером и с термосом."
+      }
+    },
+    {
+      "file": "assets/snowyard/04-snowman.jpg",
+      "caption": {
+        "en": "Concept: a snowman with a bucket on its head charges in.",
+        "uk": "Концепт: сніговик із відром на голові кидається в атаку.",
+        "ru": "Концепт: снеговик с ведром на голове бросается в атаку."
+      }
+    }
+  ]
+}

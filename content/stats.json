@@ -2,26 +2,26 @@
   "fetchedAt": "2026-11-12",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 274,
-      "lifetimeSubscriptions": 335,
+      "subscriptions": 275,
+      "lifetimeSubscriptions": 336,
       "favorited": 40,
-      "views": 1360,
+      "views": 1364,
       "created": "2026-10-18",
       "updated": "2026-11-12"
     },
     "seamless-world": {
-      "subscriptions": 209,
-      "lifetimeSubscriptions": 289,
-      "favorited": 88,
-      "views": 1556,
+      "subscriptions": 210,
+      "lifetimeSubscriptions": 290,
+      "favorited": 89,
+      "views": 1568,
       "created": "2026-10-19",
       "updated": "2026-11-12"
     },
     "trodden-trails": {
-      "subscriptions": 104,
-      "lifetimeSubscriptions": 114,
+      "subscriptions": 105,
+      "lifetimeSubscriptions": 115,
       "favorited": 15,
-      "views": 382,
+      "views": 387,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
@@ -36,15 +36,15 @@
       "subscriptions": 11,
       "lifetimeSubscriptions": 13,
       "favorited": 8,
-      "views": 103,
+      "views": 107,
       "created": "2026-10-31",
-      "updated": "2026-11-06"
+      "updated": "2026-11-12"
     },
     "ancient-obsession": {
-      "subscriptions": 8,
-      "lifetimeSubscriptions": 11,
+      "subscriptions": 9,
+      "lifetimeSubscriptions": 12,
       "favorited": 2,
-      "views": 164,
+      "views": 169,
       "created": "2026-10-31",
       "updated": "2026-11-12"
     },
@@ -52,7 +52,7 @@
       "subscriptions": 4,
       "lifetimeSubscriptions": 5,
       "favorited": 1,
-      "views": 116,
+      "views": 117,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
@@ -60,15 +60,15 @@
       "subscriptions": 10,
       "lifetimeSubscriptions": 11,
       "favorited": 2,
-      "views": 87,
+      "views": 88,
       "created": "2026-10-31",
       "updated": "2026-11-07"
     },
     "shelf-life": {
-      "subscriptions": 22,
-      "lifetimeSubscriptions": 30,
+      "subscriptions": 23,
+      "lifetimeSubscriptions": 32,
       "favorited": 4,
-      "views": 170,
+      "views": 176,
       "created": "2026-11-08",
       "updated": "2026-11-08"
     }

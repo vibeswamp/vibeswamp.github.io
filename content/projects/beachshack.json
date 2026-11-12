@@ -1,0 +1,30 @@
+{
+  "id": "beachshack",
+  "order": 48,
+  "name": "BeachShack",
+  "kind": "game",
+  "game": {
+    "en": "My own game, Godot",
+    "uk": "Власна гра, Godot",
+    "ru": "Собственная игра, Godot"
+  },
+  "status": "preparing",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A cozy beach food stall simulator where you call guests in by really shouting into the microphone.",
+    "ru": "Уютный симулятор пляжного ларька, где гостей зазываешь настоящим криком в микрофон.",
+    "uk": "Затишний симулятор пляжного ларька, де гостей зазиваєш справжнім криком у мікрофон."
+  },
+  "details": {
+    "en": [
+      "You stand behind the counter facing the sea and cook simple dishes. The louder and longer the shout, the more people turn toward the stall; the key works too. Only the idea and the design document exist so far, code is next."
+    ],
+    "ru": [
+      "Стоишь за стойкой с видом на море и готовишь простые блюда. Чем громче и дольше крик, тем больше людей сворачивает к ларьку; можно и клавишей. Пока есть только идея и диздок, дальше код."
+    ],
+    "uk": [
+      "Стоїте за стійкою з видом на море й готуєте прості страви. Чим голосніший і довший крик, тим більше людей звертає до ларька; можна й клавішею. Поки є лише ідея й диздок, далі код."
+    ]
+  }
+}

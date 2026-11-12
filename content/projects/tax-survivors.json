@@ -1,0 +1,49 @@
+{
+  "id": "tax-survivors",
+  "order": 44,
+  "name": "Tax Survivors",
+  "kind": "game",
+  "game": {
+    "en": "My own game, in the browser",
+    "uk": "Власна гра, у браузері",
+    "ru": "Собственная игра, в браузере"
+  },
+  "status": "onhold",
+  "page": true,
+  "platforms": [],
+  "summary": {
+    "en": "A satirical action game against crowds of enemies, where money is blood and bankruptcy is death.",
+    "uk": "Сатиричний екшен проти юрби ворогів, де гроші — це кров, а банкрутство — смерть.",
+    "ru": "Сатирический экшен против толп врагов, где деньги — это кровь, а банкротство — смерть."
+  },
+  "details": {
+    "en": [
+      "Tax satire, in Russian first. The weapons are a coin gatling, microloan flyers, a pyramid scheme and red tape. A playable prototype in the browser, a Godot port later."
+    ],
+    "uk": [
+      "Податкова сатира, спершу російською. Зброя — монетний гатлінг, листівки з мікропозиками, піраміда й бюрократія. У прототип уже можна грати в браузері, пізніше буде порт на Godot."
+    ],
+    "ru": [
+      "Налоговая сатира, сначала на русском. Оружие — монетная гатлинг-пушка, листовки с микрозаймами, пирамида и бюрократия. В прототип уже можно играть в браузере, позже будет порт на Godot."
+    ]
+  },
+  "image": "assets/tax-survivors/01-game-720.jpg",
+  "gallery": [
+    {
+      "file": "assets/tax-survivors/01-game-720.jpg",
+      "caption": {
+        "en": "The first district, a market: health and the debt payment on top.",
+        "uk": "Перший район, ринок: згори здоров’я й платіж за боргом.",
+        "ru": "Первый район, рынок: сверху здоровье и платёж по долгу."
+      }
+    },
+    {
+      "file": "assets/tax-survivors/02-upgrade-720.jpg",
+      "caption": {
+        "en": "Picking an upgrade on the upgrade declaration form: sign one line.",
+        "uk": "Вибір покращення в «Декларації покращень»: підпишіть один рядок.",
+        "ru": "Выбор улучшения в «Декларации улучшений»: подпишите одну строку."
+      }
+    }
+  ]
+}

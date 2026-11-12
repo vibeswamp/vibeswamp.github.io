@@ -153,7 +153,10 @@
     setTimeout(() => { if (mode !== "act") return; mode = "sleep"; showPic(P("asleep"), "sleepy"); say("z z z", 4000); }, 1700);
   };
 
+  // the site swaps pages without reloading (site.js): once his page is gone, he stops for good
+  const gone = () => !stage.isConnected;
   const tick = (now) => {
+    if (gone()) { removeEventListener("resize", place); return; }
     requestAnimationFrame(tick);
     const dt = Math.min(100, now - (last || now));
     last = now;

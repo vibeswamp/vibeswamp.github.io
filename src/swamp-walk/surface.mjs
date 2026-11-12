@@ -1,5 +1,6 @@
 import * as T from "./vendor/three.mjs";
 import { CELLS, RADIUS, WATER, random, smooth } from "./land.mjs";
+import { addNightStars, cloudTexture } from "./sky-weather.mjs";
 
 // The sun sets north-west, over the open lagoon seen from the pier. Due north it hid behind the radio hill.
 export const SUN = new T.Vector3(-0.66, 0.165, -0.73).normalize();
@@ -31,11 +32,14 @@ export function createSky(scene) {
   const fill = new T.DirectionalLight(0xcbdbfa, 0.72);
   fill.position.set(15, 15, 20);
   scene.add(fill);
+  // Clouds and stars come from the candidate C (sky-weather.mjs): one 128x64 noise texture, no extra objects.
+  const cloudState = { value: new T.Vector4() };
   const sky = new T.Mesh(new T.SphereGeometry(190, 32, 20), new T.ShaderMaterial({
     side: T.BackSide, depthWrite: false,
     uniforms: {
       sun: { value: SUN }, horizon: { value: col(0x746a69) }, highSky: { value: col(0x34445d) },
       apricot: { value: col(0xff8650) }, sunCore: { value: col(0xffbb58).multiplyScalar(1.38) },
+      cloudMap: { value: cloudTexture() }, cloudState,
     },
     vertexShader: `
       varying vec3 direction;
@@ -46,6 +50,8 @@ export function createSky(scene) {
     `,
     fragmentShader: `
       uniform vec3 sun, horizon, highSky, apricot, sunCore;
+      uniform sampler2D cloudMap;
+      uniform vec4 cloudState;
       varying vec3 direction;
       void main() {
         vec3 dir = normalize(direction);
@@ -54,6 +60,16 @@ export function createSky(scene) {
         float skirt = 1. - smoothstep(.026, .26, abs(dir.y - sun.y));
         float streak = sin(dir.y * 118. + sin(dir.x * 13. + dir.z * 4.) * 1.8) * .07;
         sky = mix(sky, apricot, pow(glow, 8.) * skirt * (.74 + streak));
+        vec2 cloudUV = dir.xz * vec2(.49, .35) / (.34 + max(dir.y, 0.));
+        float cloud = texture2D(cloudMap, cloudUV + vec2(cloudState.x, .17)).r;
+        if (cloudState.w < .5) {
+          float veil = texture2D(cloudMap, cloudUV * .63 + vec2(cloudState.x * .51, .61)).r;
+          cloud = mix(cloud, veil, .26);
+        }
+        float cloudCover = smoothstep(.45, .58, cloud + cloudState.z * .12);
+        cloudCover *= smoothstep(-.035, .11, dir.y) * (1. - smoothstep(.62, .94, dir.y));
+        vec3 overcast = mix(sky * .52, apricot * .53 + sky * .37, skirt * pow(glow, 6.) * (1. - cloudState.y));
+        sky = mix(sky, overcast, cloudCover * (.78 + cloudState.z * .18));
         sky += sunCore * (pow(glow, 92.) * .34 + smoothstep(.99933, .99986, glow) * .48);
         gl_FragColor = vec4(sky, 1.);
         #include <tonemapping_fragment>
@@ -62,6 +78,7 @@ export function createSky(scene) {
     `,
   }));
   sky.frustumCulled = false;
+  sky.userData.weather = addNightStars(sky, cloudState);
   sky.renderOrder = -10;
   scene.add(sky);
   return sky;

@@ -6,8 +6,8 @@ const ANCHORS = {
   shore: { tussock: [21, 6, 24, 7], antenna: [15, 21, 36, 3], flytrap: [79, 6, 22, 7], beaver: [81, 22, 19, 3] },
   // inside the hut the buildings stand on the floor, left and right of Klyop
   workshop: { stump: [22, 2, 42, 5], review: [76, 2, 34, 6] },
-  radio: { radio: [75, 2, 46, 5] },
-  server: { peat: [22, 2, 52, 5] },
+  radio: { radio: [75, -3, 48, 5] },
+  server: { peat: [22, -8, 56, 5] },
   office: {}
 };
 
@@ -16,7 +16,7 @@ const painting = (name) => `/brand/swamp/${name}.webp`;
 
 // What the shore shows after `count` built steps (content/swamp-v2.json art.steps, cut by scripts/swamp-steps.py):
 // the painting underneath (it changes when a step brings a new one), the dimmed room inside the hut, the built parts,
-// and the next part as a dark silhouette. Steps of later eras without pictures yet show nothing.
+// and the next step (for the card). Steps of later eras without pictures yet show nothing.
 export function shoreArt(count, data) {
   const steps = data.art.steps || {};
   const built = data.stages.slice(0, count);
@@ -60,7 +60,8 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
       const { room } = button.dataset;
       const open = roomOpen(state, data, room);
       if (open) openCount++;
-      button.classList.toggle("locked", !open);
+      // closed rooms are not shown: dark circles over the water read as stains (owner, 12.11)
+      button.hidden = !open;
       button.setAttribute("aria-pressed", String(state.room === room));
       const label = open ? text.rooms[room] : `${text.rooms[room]}: ${text.roomHints[room]}`;
       if (button.getAttribute("aria-label") !== label) { button.setAttribute("aria-label", label); button.title = label; }
@@ -103,8 +104,8 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
     lastStage = state.stage;
     shelter.innerHTML = art ? [
       art.dark ? layerHtml(art.dark, "sw-dark") : "",
-      ...art.layers.map((id) => layerHtml(steps[id].layer, id === fresh ? "new" : "")),
-      art.ghost ? layerHtml(steps[art.ghost].layer, "sw-ghost") : ""
+      // the next part is shown only as a silhouette in the "Next build" card: in the scene a grey shape read as a stub
+      ...art.layers.map((id) => layerHtml(steps[id].layer, id === fresh ? "new" : ""))
     ].join("") : "";
     // When the next step brings a new painting, fetch it now so building it shows at once.
     const coming = art?.next && steps[art.next];

@@ -1,9 +1,13 @@
 import { BODY_HEIGHT, overlapsSolid } from "./collisions.mjs";
-import { SWIM_FLOOR } from "./land.mjs";
+import { SWIM_FLOOR, WATER } from "./land.mjs";
 import { BODY_RADIUS } from "./rail.mjs";
 
 const DECK_SUPPORT = [[0, 0], [BODY_RADIUS, 0], [-BODY_RADIUS, 0], [0, BODY_RADIUS], [0, -BODY_RADIUS]];
 const MIN_RISE = 0.16;
+// From the ground Klyop pulls himself up any edge at least this high; lower edges are a normal step or jump.
+const STAND_RISE = 0.3;
+// The high clip still reads well a few centimetres above its measured reach.
+const REACH_SLACK = 0.1;
 const mix = (a, b, alpha) => a + (b - a) * alpha;
 
 export function prepareDeckClimb(exits, profiles, clipDuration) {
@@ -62,6 +66,23 @@ export function createDeckExits({ bridge }) {
   return exits;
 }
 
+// Walking to the climb point follows the ground, so only posts and walls can block it.
+function clearWalk(from, to, floorAt, obstacles) {
+  const steps = Math.ceil(Math.hypot(to.x - from.x, to.z - from.z) / .06);
+  for (let step = 1; step <= steps; step++) {
+    const t = step / steps, x = from.x + (to.x - from.x) * t, z = from.z + (to.z - from.z) * t;
+    if (obstacles.some(solid => overlapsSolid(solid, x, floorAt(x, z) + .02, z, BODY_RADIUS, BODY_HEIGHT))) return false;
+  }
+  return true;
+}
+
+function clearApproach(path, player, floorAt, obstacles) {
+  const rest = [path.entry, path.hang, path.deckExit.lip, path.exit];
+  return path.fromGround
+    ? clearWalk(player, path.entry, floorAt, obstacles) && clearDeckPath(rest, floorAt, obstacles)
+    : clearDeckPath([{ x: player.x, y: player.y, z: player.z }, ...rest], floorAt, obstacles);
+}
+
 function clearDeckPath(path, floorAt, obstacles) {
   for (let i = 1; i < path.length; i++) {
     const a = path[i - 1], b = path[i];
@@ -113,44 +134,66 @@ function positionAt(path, time) {
     z: mix(entry.z, exit.z, travel) - sin * side + cos * along, y, clipTime };
 }
 
-// The prompt and jump use the same validated trajectory.
+// Clips that can carry this rise, best fit first. Near the border between the two clips both are tried,
+// because the one that fits by numbers can still clip the deck edge on the way up.
+function programsFor(profiles, rise, standing) {
+  const lowest = profiles[0];
+  const reachable = profiles.filter(profile => rise <= profile.reach + REACH_SLACK
+    && rise >= (standing && profile === lowest ? STAND_RISE : profile.fit.minRise - REACH_SLACK));
+  const fits = profile => rise >= profile.fit.minRise && rise <= profile.reach;
+  return reachable.sort((a, b) => Number(fits(b)) - Number(fits(a)));
+}
+
+// The prompt and jump use the same validated trajectory. Klyop climbs from the water, from waist-deep water and
+// from the bank: neighbouring edge points within 0.8 m are tried when the nearest one is blocked by a post or lamp.
 export function planDeckClimb(player, setup, floorAt, obstacles) {
-  if (!setup || !player.swimming || player.mantle || player.shoreClimb || player.dodge || player.swing !== null) return null;
+  if (!setup || !(player.swimming || player.grounded) || player.mantle || player.shoreClimb || player.dodge
+      || player.swing !== null) return null;
+  if (player.swimming) return planFrom(player, setup, floorAt, obstacles, false);
+  // Chest-deep beside the deck the bottom often drops away under the edge: then climb as a swimmer would.
+  return planFrom(player, setup, floorAt, obstacles, true)
+    ?? (player.y < WATER - 0.3 ? planFrom(player, setup, floorAt, obstacles, false) : null);
+}
+
+function planFrom(player, setup, floorAt, obstacles, standing) {
   const nearby = [];
   for (const exit of setup.exits) {
     const { sin, cos, edge, yaw, prompt } = exit;
     const dx = player.x - edge.x, dz = player.z - edge.z;
     const forward = dx * sin + dz * cos, lateral = dx * cos - dz * sin;
-    if (forward < -1.10 || forward > .025 || Math.abs(lateral) > .45 || Math.cos(yaw - player.heading) < .60) continue;
+    if (forward < -1.10 || forward > .025 || Math.abs(lateral) > .8 || Math.cos(yaw - player.heading) < .60) continue;
     nearby.push({ exit, distance: Math.hypot(player.x - prompt.x, player.z - prompt.z) });
   }
   nearby.sort((a, b) => a.distance - b.distance);
   for (const { exit: deckExit, distance } of nearby) {
-    const { sin, cos, edge, yaw, prompt, hang, lip, top: exit, hands } = deckExit;
-    const rise = exit.y - player.y;
-    const program = setup.profiles.find(profile => rise >= profile.fit.minRise && rise <= profile.reach);
-    if (!program) continue;
+    const { sin, cos, edge, yaw, prompt, top: exit, hands } = deckExit;
+    if (exit.y - player.y < (standing ? STAND_RISE : MIN_RISE)) continue;
     if (DECK_SUPPORT.some(([x, z]) => Math.abs(floorAt(exit.x + x, exit.z + z) - exit.y) > .045)) continue;
-    const entry = { ...prompt, y: player.y };
-    if (!clearDeckPath([player, entry, hang, lip, exit], floorAt, obstacles)) continue;
-    const start = rootAt(program.samples, program.from), end = rootAt(program.samples, program.to);
-    if (end[1] - start[1] <= .02 || end[2] - start[2] <= .02) continue;
-    const duration = (program.to - program.from) / program.rate;
-    const path = {
-      program, start, end, sin, cos, yaw, duration, time: 0, clipTime: program.from,
-      deckExit, handTargets: hands, entry, exit, lip: edge,
-      approachDistance: .72, approach: distance > .001,
-    };
-    const checks = Math.ceil((program.to - program.from) * 60);
-    let clear = true;
-    for (let step = 0; step <= checks; step++) {
-      const { x, y, z } = positionAt(path, duration * step / checks);
-      if (y < floorAt(x, z) - .001 || obstacles.some(solid => overlapsSolid(solid, x, y + .001, z, BODY_RADIUS, BODY_HEIGHT))) {
-        clear = false;
-        break;
+    // Standing on the bottom or the bank, the path follows the ground, which often rises toward the deck.
+    const ground = point => standing ? Math.max(player.y, floorAt(point.x, point.z)) : player.y;
+    const entry = { ...prompt, y: ground(prompt) };
+    const hang = standing ? { ...deckExit.hang, y: Math.max(deckExit.hang.y, ground(deckExit.hang)) } : deckExit.hang;
+    if (!clearApproach({ entry, hang, deckExit, exit, fromGround: standing }, player, floorAt, obstacles)) continue;
+    for (const program of programsFor(setup.profiles, exit.y - entry.y, standing)) {
+      const start = rootAt(program.samples, program.from), end = rootAt(program.samples, program.to);
+      if (end[1] - start[1] <= .02 || end[2] - start[2] <= .02) continue;
+      const duration = (program.to - program.from) / program.rate;
+      const path = {
+        program, start, end, sin, cos, yaw, duration, time: 0, clipTime: program.from,
+        deckExit, hang, handTargets: hands, entry, exit, lip: edge,
+        approachDistance: .72, approach: distance > .001, fromGround: standing,
+      };
+      const checks = Math.ceil((program.to - program.from) * 60);
+      let clear = true;
+      for (let step = 0; step <= checks; step++) {
+        const { x, y, z } = positionAt(path, duration * step / checks);
+        if (y < floorAt(x, z) - .001 || obstacles.some(solid => overlapsSolid(solid, x, y + .001, z, BODY_RADIUS, BODY_HEIGHT))) {
+          clear = false;
+          break;
+        }
       }
+      if (clear) return path;
     }
-    if (clear) return path;
   }
   return null;
 }
@@ -158,11 +201,10 @@ export function planDeckClimb(player, setup, floorAt, obstacles) {
 export function advanceDeckClimb(player, dt, floorAt, obstacles) {
   const path = player.mantle;
   if (path.approach) {
-    if (!clearDeckPath([{ x: player.x, y: player.y, z: player.z }, path.entry,
-      path.deckExit.hang, path.deckExit.lip, path.exit], floorAt, obstacles)) {
+    if (!clearApproach(path, player, floorAt, obstacles)) {
       player.mantle = null;
       player.speed = 0;
-      player.pose = "float";
+      player.pose = path.fromGround ? "idle" : "float";
       return 0;
     }
     const dx = path.entry.x - player.x, dz = path.entry.z - player.z;
@@ -171,11 +213,12 @@ export function advanceDeckClimb(player, dt, floorAt, obstacles) {
       player.x += dx * travel / distance;
       player.z += dz * travel / distance;
     }
+    if (path.fromGround) player.y = Math.max(floorAt(player.x, player.z), path.entry.y - .5);
     player.heading = path.yaw;
     player.grounded = true;
-    player.swimming = true;
+    player.swimming = !path.fromGround;
     player.speed = travel / dt;
-    player.pose = "swim";
+    player.pose = path.fromGround ? "walk" : "swim";
     if (distance <= travel + 1e-8) path.approach = false;
     return 0;
   }

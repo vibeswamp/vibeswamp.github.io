@@ -157,7 +157,10 @@ export function addWater(scene, land, proxies) {
         vec2 p = point.xz;
         vec3 a = texture2D(ripples, p * vec2(.069, .142) + vec2(time*.021, -time*.018)).rgb * 2. - 1.;
         vec3 b = texture2D(ripples, mat2(.105, -.161, .166, .084) * p - vec2(time*.014, time*.027)).rgb * 2. - 1.;
-        vec2 bump = a.xy * .043 + b.yx * .027;
+        // Open water carries a slow, longer swell on top of the ripples; shallows and duckweed stay calm.
+        float open = smoothstep(.6, 2.2, waterline - (texture2D(bed, p / span + .5).r * 4.8 - 2.4));
+        vec3 swell = texture2D(ripples, p * vec2(.021, .027) + vec2(time * .011, time * .006)).rgb * 2. - 1.;
+        vec2 bump = a.xy * .043 + b.yx * .027 + swell.xy * .085 * open;
         float wake = ring(wakes[0], p) + ring(wakes[1], p) + ring(eddy, p);
         vec4 floorSample = texture2D(bed, (p + bump * 1.65) / span + .5);
         float height = floorSample.r * 4.8 - 2.4;
@@ -173,7 +176,7 @@ export function addWater(scene, land, proxies) {
         float azimuth = max(0., dot(normalize(reflectedDir.xz + vec2(.0001)), normalize(sun.xz)));
         float lane = pow(azimuth, 178.);
         vec3 reflectedSky = mix(sky * .74, amber * .75, pow(warm, 24.) * (.06 + lane * .36));
-        vec2 uv = mirrorPoint.xy / max(.01, mirrorPoint.w) * .5 + .5 + bump * .102;
+        vec2 uv = mirrorPoint.xy / max(.01, mirrorPoint.w) * .5 + .5 + bump * (.102 + open * .07);
         vec2 border = min(uv, 1. - uv);
         float inFrame = smoothstep(.0, .12, min(border.x, border.y)) * step(.01, mirrorPoint.w) * reflected;
         vec4 banks = texture2D(reflection, uv);
@@ -186,7 +189,10 @@ export function addWater(scene, land, proxies) {
         rgb += (amber * ribbon + hot * sparkle) * (1. - banks.a * inFrame * .76);
         float bankEdge = (1. - smoothstep(.022, .29, depth + a.z * .14 + b.z * .061)) * (.12 + b.z * .14);
         float rootRipples = roots * smoothstep(.25, .74, b.z + a.z * .34) * .19;
-        rgb = mix(rgb, rim, bankEdge + wake * .14 + rootRipples);
+        // A thin pale line where the water meets the bank, breathing with the ripples.
+        bankEdge *= 1.35 + .35 * sin(time * 1.3 + (p.x + p.y) * 2.3 + a.z * 3.);
+        rgb = mix(rgb, rim, min(.62, bankEdge + wake * .14 + rootRipples));
+        rgb += sky * .06 * smoothstep(.35, .9, swell.z) * open * fresnel;
         float duckweed = 0.;
         if (floorSample.g > .15) {
           float flecks = texture2D(ripples, p * vec2(.42, .48) + vec2(.16, .41) + time * vec2(.001, -.0015)).a;
