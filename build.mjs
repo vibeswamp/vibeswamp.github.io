@@ -26,36 +26,22 @@ function moduleUrl(name, dependencies) {
   return sourceAssetUrl(name, source);
 }
 const siteStyles = sourceAssetUrl("style.css");
-const clickerScript = moduleUrl("swamp.js", { "./swamp/save.mjs": sourceAssetUrl("swamp/save.mjs") });
+// The clicker (its own chat): every module is versioned so a cached copy cannot mix an old engine with a new save.
+const swampEngine = sourceAssetUrl("swamp/engine.mjs");
+const clickerScript = moduleUrl("swamp.js", {
+  "./swamp/engine.mjs": swampEngine,
+  "./swamp/save.mjs": moduleUrl("swamp/save.mjs", { "./engine.mjs": swampEngine }),
+  "./swamp/scene.mjs": moduleUrl("swamp/scene.mjs", { "./engine.mjs": swampEngine }),
+  "./swamp/expedition-save.mjs": sourceAssetUrl("swamp/expedition-save.mjs"),
+  "./swamp/threshold.mjs": sourceAssetUrl("swamp/threshold.mjs"),
+});
+const clickerStyles = sourceAssetUrl("swamp.css");
 const strollScript = sourceAssetUrl("klyop-stroll.mjs");
-const walkRail = sourceAssetUrl("swamp-walk/rail.mjs");
-const walkDeckClimb = moduleUrl("swamp-walk/deck-climb.mjs", { "./rail.mjs": walkRail });
-const walkMotion = moduleUrl("swamp-walk/motion.mjs", {
-  "./deck-climb.mjs": walkDeckClimb, "./rail.mjs": walkRail,
-});
-const walkCharacter = moduleUrl("swamp-walk/character.mjs", {
-  "./deck-climb.mjs": walkDeckClimb,
-  "./rail.mjs": walkRail,
-  "./mantle-palms.mjs": sourceAssetUrl("swamp-walk/mantle-palms.mjs"),
-  "./motion.mjs": walkMotion,
-  "./gait-contacts.mjs": sourceAssetUrl("swamp-walk/gait-contacts.mjs"),
-});
-const walkMain = moduleUrl("swamp-walk/main.mjs", {
-  "./deck-climb.mjs": walkDeckClimb,
-  "./rail.mjs": walkRail,
-  "./controls.mjs": sourceAssetUrl("swamp-walk/controls.mjs"),
-  "./encounter.mjs": sourceAssetUrl("swamp-walk/encounter.mjs"),
-  "./motion.mjs": walkMotion,
-  "./character.mjs": walkCharacter,
-  "./walk-assets.mjs": sourceAssetUrl("swamp-walk/walk-assets.mjs"),
-  "./scenery.mjs": sourceAssetUrl("swamp-walk/scenery.mjs"),
-  "./cabin.mjs": sourceAssetUrl("swamp-walk/cabin.mjs"),
-});
-const walkScript = moduleUrl("swamp-walk/walk-entry.mjs", {
-  "./main.mjs": walkMain, "./walk-hud.mjs": sourceAssetUrl("swamp-walk/walk-hud.mjs"),
-});
-const walkStyles = sourceAssetUrl("swamp-walk/style.css");
-const walkHudStyles = sourceAssetUrl("swamp-walk/walk-hud.css");
+// The 3D mode (its own chat): module versions, startup files and page markup live in src/swamp-walk/walk-build.mjs.
+const walk3d = await import("./src/swamp-walk/walk-build.mjs");
+const walkScript = walk3d.versionWalkModules(join(root, "src"), (name, source) => emittedModules.set(name, source))(
+  "swamp-walk/walk-entry.mjs");
+const walkStyles = [sourceAssetUrl("swamp-walk/style.css"), sourceAssetUrl("swamp-walk/walk-hud.css")];
 
 if (!process.argv.includes("--offline")) {
   try {
@@ -327,6 +313,8 @@ function markdown(src, group) {
 
 const ICON_MUSIC = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 17V5l10-2v12" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="6.5" cy="17" r="2.5" fill="currentColor"/><circle cx="16.5" cy="15" r="2.5" fill="currentColor"/></svg>`;
 const ICON_THEME = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path class="i-moon" d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" fill="currentColor"/><g class="i-sun" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4" fill="currentColor"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></g></svg>`;
+const ICON_MENU = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
+const ICON_CLOSE = `<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 const ICON_FX = `<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="wave1" d="M16 9a4 4 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path class="wave2" d="M18.5 6.5a7.5 7.5 0 0 1 0 11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`;
 
 // Picks the language once, before the page is drawn: a language the visitor chose on the site (remembered in the
@@ -388,7 +376,7 @@ ${c.sub ? `<p class="tc-sub">${esc(trOr(c.sub, lang))}</p>` : ""}${!small && c.t
 
 function langPick(lang, paths) {
   return `<script>document.documentElement.classList.add("js");(function(){try{var t=localStorage.getItem("vibeswamp-theme");if(t!=="dark"&&t!=="light")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t;}catch(e){}})();(function(){try{var a=${JSON.stringify(paths)},k="vibeswamp-lang",s=localStorage.getItem(k),w=a[s]?s:"";
-if(!w){var n=navigator.languages||[navigator.language||""];for(var i=0;i<n.length&&!w;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(a[c])w=c;}}
+if(!w&&"${lang}"==="en"){var n=navigator.languages||[navigator.language||""];for(var i=0;i<n.length&&!w;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(a[c])w=c;}}
 if(w&&w!=="${lang}")location.replace(a[w]+location.hash);}catch(e){}})();</script>`;
 }
 
@@ -428,12 +416,15 @@ ${image ? `<meta property="og:image" content="${site.baseUrl}/${esc(String(image
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Tektur:wdth,wght@75..100,500..800&family=Overpass:wght@400;600;800&display=swap">
 <link rel="stylesheet" href="${siteStyles}">
-${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>\n` : ""}</head>
+${page === "page-swamp" ? `<link rel="stylesheet" href="${clickerStyles}">\n` : ""}${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>\n` : ""}</head>
 <body${page ? ` class="${page}"` : ""} data-lb-prev="${esc(t.lbPrev)}" data-lb-next="${esc(t.lbNext)}" data-lb-close="${esc(t.lbClose)}" data-frog="${esc(t.frogSays)}">
 <a class="skip" href="#main">${esc(t.skip)}</a>
 <header class="top">
 <div class="wrap top-in">
 <a class="brand" href="${homeUrl(lang)}">${FROG}<span>VibeSwamp</span></a>
+<button type="button" class="menu-btn" aria-expanded="false" aria-controls="top-menu">${ICON_MENU}<span>${esc(t.menu)}</span></button>
+<div class="top-menu" id="top-menu" aria-label="${esc(t.menu)}">
+<div class="menu-head"><span class="menu-title">${esc(t.menu)}</span><button type="button" class="menu-close" aria-label="${esc(t.menuClose)}" title="${esc(t.menuClose)}">${ICON_CLOSE}</button></div>
 <span class="langs" role="group" aria-label="${esc(t.langLabel)}">${site.languages
   .map((l) =>
     l === lang
@@ -442,15 +433,18 @@ ${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(
   )
   .join("")}</span>
 <span class="sound" role="group" aria-label="${esc(t.soundLabel)}">
-<button type="button" class="snd snd-music" aria-pressed="false" aria-label="${esc(t.musicLabel)}" title="${esc(t.musicLabel)}">${ICON_MUSIC}</button>
-<button type="button" class="snd snd-fx" aria-pressed="false" aria-label="${esc(t.fxLabel)}" title="${esc(t.fxLabel)}">${ICON_FX}</button>
-<button type="button" class="snd snd-theme" aria-pressed="false" aria-label="${esc(t.themeLabel)}" title="${esc(t.themeLabel)}" data-night="${esc(t.themeNight)}" data-day="${esc(t.themeDay)}">${ICON_THEME}</button>
+<button type="button" class="snd snd-music" aria-pressed="false" aria-label="${esc(t.musicLabel)}" title="${esc(t.musicLabel)}">${ICON_MUSIC}<span class="snd-text" aria-hidden="true">${esc(t.menuMusic)}</span></button>
+<button type="button" class="snd snd-fx" aria-pressed="false" aria-label="${esc(t.fxLabel)}" title="${esc(t.fxLabel)}">${ICON_FX}<span class="snd-text" aria-hidden="true">${esc(t.menuFx)}</span></button>
+<button type="button" class="snd snd-theme" aria-pressed="false" aria-label="${esc(t.themeLabel)}" title="${esc(t.themeLabel)}" data-night="${esc(t.themeNight)}" data-day="${esc(t.themeDay)}">${ICON_THEME}<span class="snd-text" aria-hidden="true">${esc(t.menuTheme)}</span></button>
 </span>
 <nav>
 ${nav.map(([key, href, label]) => `<a href="${href}"${key === current ? ` aria-current="page"` : ""}>${esc(label)}</a>`).join("\n")}
 
 </nav>
+<a class="menu-play" href="${playUrl(lang)}"><span class="menu-play-name">${esc(t.playTitle)}</span><span class="menu-play-line">${esc(t.menuPlayLine)}</span></a>
 </div>
+</div>
+<div class="menu-shade" hidden></div>
 </header>
 ${stroll ? `<div class="klyop-trail" aria-hidden="true" hidden>
   <div class="klyop-trail-bank">
@@ -714,7 +708,7 @@ ${RIPPLES}
 <span class="frog-home${ON_LILY ? " on-lily" : ""}" aria-hidden="true">${ON_LILY ? PAD("home-pad") : ""}</span>
 ${FROG_BIG}
 <p class="fly-score" aria-live="polite" data-score="${esc(t.fliesScore)}">${esc(t.fliesHint)}</p>
-<a class="pond-play" href="${playUrl(lang)}">${esc(t.pondPlay)}</a>
+<p class="pond-play"><a class="button pond-btn" href="${playUrl(lang)}">${esc(t.playTitle)}</a><a class="pond-walk" href="${walkUrl(lang)}">3D: ${esc(SWAMP_WALK[lang].title)}</a></p>
 </div>
 <div class="flies"></div>
 </section>`;
@@ -844,6 +838,16 @@ function creativePage(lang) {
   const groups = [...new Set(tracks.map((m) => m.project))];
   const q = QUOTE[lang] ?? QUOTE.en;
   const body = `${pageHead(lang, t.navCreative, t.creativeLead)}
+<section class="wrap swamp-door" aria-labelledby="swamp-h">
+<div class="swamp-door-in">
+<a class="swamp-door-pic" href="${playUrl(lang)}" tabindex="-1" aria-hidden="true"><img src="/brand/swamp/v2-stage-2-960.webp" width="960" height="640" alt="" loading="lazy" decoding="async"></a>
+<div class="swamp-door-text">
+<h2 class="swamp-door-name" id="swamp-h">${esc(t.playTitle)}</h2>
+<p class="swamp-door-line">${esc(t.playDoor)}</p>
+<p class="actions"><a class="button" href="${playUrl(lang)}">${esc(t.playLabel)}</a><a class="more" href="${walkUrl(lang)}">3D: ${esc(SWAMP_WALK[lang].title)}</a></p>
+</div>
+</div>
+</section>
 <section class="wrap klyop-sheet" aria-labelledby="klyop-h">
 <div class="klyop-hero">
 ${petStage(lang)}
@@ -861,9 +865,6 @@ ${petStage(lang)}
 <ul class="stickers">
 ${STICKER_ORDER.map((k) => `<li class="sticker"><img src="/brand/stickers/${k}.webp" width="320" height="320" alt="${esc(`${t.klyopName}: ${STICKERS[k][lang] ?? STICKERS[k].en}`)}" loading="lazy" decoding="async"><p class="st-name">${esc(STICKERS[k][lang] ?? STICKERS[k].en)}</p><p class="st-get"><a href="/brand/stickers/${k}.png" download="klyop-${k}.png">PNG</a><button type="button" class="st-share" data-png="/brand/stickers/${k}.png" data-name="klyop-${k}.png" data-done="${esc(t.stickerCopied)}" hidden>${esc(t.stickerShare)}</button></p></li>`).join("\n")}
 </ul>
-</section>
-<section class="wrap swamp-door" aria-labelledby="swamp-h">
-<a href="${playUrl(lang)}"><span class="swamp-door-name" id="swamp-h">${esc(t.playTitle)}</span><span class="swamp-door-line">${esc(t.playDoor)}</span></a>
 </section>
 <section class="wrap cat" aria-labelledby="music-h">
 <h2 id="music-h">${esc(t.musicTitle)}</h2>
@@ -902,41 +903,6 @@ const SWAMP = existsSync(join(root, "content", "swamp.json")) ? JSON.parse(readF
 const SWAMP_V2 = await readJson("content", "swamp-v2.json");
 const SWAMP_WALK = await readJson("content", "swamp-walk.json");
 
-function walkAsset(path, group, optional = false) {
-  const file = join(pub, path.slice(1));
-  if (optional && !existsSync(file)) return null;
-  const bytes = readFileSync(file);
-  return { path, url: sourceAssetUrl(path.slice(1), bytes), group, bytes: bytes.length, optional };
-}
-
-function walkLoadingAssets(walk) {
-  const assets = [
-    walkAsset("/swamp-walk/mvp/world.json", "land"),
-    walkAsset("/swamp-walk/klyop-walk.glb", "character"),
-    walkAsset("/swamp-walk/models/landing.glb", "land"),
-    ...["landing-planks", "landing-deck", "forest-atlas"].map(name =>
-      walkAsset(`/swamp-walk/models/${name}.webp`, "textures")),
-  ];
-  if (walk.motionPack) {
-    assets.push(walkAsset(walk.motionPack, "motion", true),
-      walkAsset(new URL("klyop-kfsos-motion.glb", new URL(walk.motionPack, site.baseUrl)).pathname, "motion", true));
-  }
-  for (const pack of [walk.actionPack, walk.deckPack].filter(Boolean)) {
-    const config = walkAsset(pack, "motion", true);
-    if (config) {
-      assets.push(config);
-      try {
-        const { library } = JSON.parse(readFileSync(join(pub, pack.slice(1)), "utf8"));
-        if (typeof library === "string") {
-          assets.push(walkAsset(new URL(library, new URL(pack, site.baseUrl)).pathname, "motion", true));
-        }
-      } catch (error) {
-        warn(`3D action profile: ${error.message}`);
-      }
-    }
-  }
-  return assets.filter(Boolean);
-}
 function playPage(lang) {
   const t = site.strings[lang];
   const S = SWAMP?.[lang] ?? SWAMP?.en ?? {};
@@ -967,59 +933,10 @@ function walkPage(lang) {
   const swamp = SWAMP[lang];
   const names = list => list.map(({ id, name }) => ({ id, name }));
   const walk = { ...SWAMP_WALK[lang], deckPack: "/swamp-walk/mvp/deck-climb.json" };
-  const w = { ...walk, loadingAssets: walkLoadingAssets(walk), economyData: SWAMP_V2, shelterLabels: {
+  const w = { ...walk, loadingAssets: walk3d.walkLoadingAssets(walk, pub, warn), economyData: SWAMP_V2, shelterLabels: {
     title: SWAMP_WALK[lang].shelterLedger, producers: names(swamp.buildings), projects: names(swamp.builds),
   } };
-  return `<!doctype html>
-<html lang="${lang}">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>${esc(w.title)} · VibeSwamp</title>
-<meta name="description" content="${esc(w.lead)}">
-<link rel="icon" href="/favicon.png">
-<link rel="stylesheet" href="${walkStyles}">
-<link rel="stylesheet" href="${walkHudStyles}">
-<script type="module" src="${walkScript}"></script>
-</head>
-<body>
-<main class="swalk">
-  <canvas id="swalk-view" tabindex="0" aria-label="${esc(w.title)}" aria-describedby="swalk-help"></canvas>
-  <header class="walk-heading"><a class="walk-link" href="${playUrl(lang)}">${esc(w.back)}</a>
-    <h1>${esc(w.title)}</h1><p>${esc(w.lead)}</p>
-  </header>
-  <div class="walk-map" id="swalk-map" hidden>
-    <canvas id="swalk-chart" width="200" height="200" aria-hidden="true"></canvas>
-    <button id="swalk-reset" type="button">${esc(w.reset)}</button>
-    <button id="swalk-camera" type="button" title="V">${esc(w.camera)}</button>
-  </div>
-  <aside class="walk-sortie" id="swalk-sortie" hidden>
-    <div class="walk-sortie-title"><strong>${esc(w.sortie.title)}</strong><span id="swalk-health"></span></div>
-    <p id="swalk-objective" role="status"></p>
-    <p id="swalk-prompt" class="walk-prompt" hidden></p>
-  </aside>
-  <aside id="swalk-status" class="walk-status" role="status" hidden></aside>
-  <section class="walk-loading" id="swalk-loading" aria-label="${esc(w.loading)}">${esc(w.loading)}<noscript> · ${esc(w.error)}</noscript></section>
-  <p class="walk-help" id="swalk-help">
-    <span class="walk-help-desktop">${esc(w.controls)}</span>
-    <span class="walk-help-touch">${esc(w.touchControls)}</span>
-  </p>
-  <div class="walk-touch" id="swalk-touch" hidden>
-    <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span class="walk-stick-ring"><span class="walk-stick-knob"></span></span></div>
-    <div class="walk-touch-right">
-      <button class="walk-center" id="swalk-camera-center" type="button" aria-label="${esc(w.centerCamera)}" title="${esc(w.centerCamera)}"></button>
-      <div class="walk-touch-actions">
-        <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
-        <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>
-        <button class="walk-jump" id="swalk-dodge" type="button" hidden>${esc(w.dodge)}</button>
-        <button class="walk-jump" id="swalk-jump" type="button">${esc(w.jump)}</button>
-      </div>
-    </div>
-  </div>
-</main>
-<script type="application/json" id="swalk-text">${JSON.stringify(w).replace(/</g, "\\u003c")}</script>
-</body>
-</html>`;
+  return walk3d.walkPageHtml({ lang, w, esc, backUrl: playUrl(lang), styles: walkStyles, script: walkScript });
 }
 
 function supportPage(lang) {
@@ -1176,7 +1093,7 @@ function projectPage(lang, p) {
   const related = postsIn(lang).filter((x) => x.projects.includes(p.id));
   const body = `<section class="water water-top">
 <div class="wrap">
-<p class="crumb"><a href="${homeUrl(lang)}#projects">${esc(t.allProjects)}</a></p>
+<p class="crumb"><a href="${sectionUrl(lang, SECTION_OF_KIND[p.kind] ?? "mods")}">${esc(t[{ mods: "navMods", games: "navGames", packs: "navPacks" }[SECTION_OF_KIND[p.kind] ?? "mods"]])}</a></p>
 <div class="spread${main || p.titlecard || p.terminal ? "" : " solo"}">
 ${p.terminal ? kfPanel(lang, p, { page: true }) : p.titlecard ? `<div class="shot shot-title">${titlecard(lang, p, { eager: true })}</div>` : main ? `<figure class="shot">
 ${zoom(main.info, { alt: captionOf(lang, p, main), caption: captionText(lang, main), group: p.id, eager: true, cls: "zoom-main" })}
@@ -1193,7 +1110,7 @@ ${p.status === "onhold" ? `<p class="hold-note">${esc(t.onHoldNote)}</p>` : ""}
 </div>
 </div>
 </section>
-${(tr(p.details, lang) || []).length ? `<div class="wrap project-body"><div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${p.short ? shortVideo(lang, p) : klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}</div>` : ""}
+${(tr(p.details, lang) || []).length ? `<div class="wrap project-body">${!p.short && klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}<div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${p.short ? shortVideo(lang, p) : ""}</div>` : ""}
 ${(tr(p.plans, lang) || []).length ? `<section class="wrap plans" aria-labelledby="plans-h">
 <h2 id="plans-h"><span class="wire" aria-hidden="true"></span>${esc(t.plans)}</h2>
 <ul class="plan-list">${tr(p.plans, lang).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>
@@ -1207,6 +1124,7 @@ ${rest
   .join("\n")}
 </ul>
 </section>` : ""}
+${p.platforms.some((pl) => pl.url) ? `<div class="wrap actions-end"><p class="actions"><span class="actions-name">${esc(nameOf(p, lang))}</span>${platformButtons(lang, p)}</p></div>` : ""}
 ${related.length ? `<section class="wrap project-posts" aria-labelledby="posts-h">
 <div class="sec-head"><h2 id="posts-h">${esc(t.projectPosts)}</h2><p class="sec-links"><a href="${blogUrl(lang)}">${esc(t.allPosts)}</a></p></div>
 ${postList(lang, related, { showProjects: false })}
@@ -1402,6 +1320,7 @@ await rm(dist, { recursive: true, force: true });
 await mkdir(dist, { recursive: true });
 await cp(pub, dist, { recursive: true });
 await cp(join(root, "src", "style.css"), join(dist, "style.css"));
+await cp(join(root, "src", "swamp.css"), join(dist, "swamp.css"));
 await cp(join(root, "src", "site.js"), join(dist, "site.js"));
 await cp(join(root, "src", "swamp"), join(dist, "swamp"), { recursive: true });
 await cp(join(root, "src", "swamp-walk"), join(dist, "swamp-walk"), { recursive: true });

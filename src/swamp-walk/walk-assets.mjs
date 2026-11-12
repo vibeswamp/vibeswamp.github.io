@@ -1,3 +1,5 @@
+import { PROFILE } from "./quality.mjs";
+
 async function readFile(response, onBytes) {
   if (!response.body) {
     const blob = await response.blob();
@@ -17,7 +19,8 @@ async function readFile(response, onBytes) {
 
 export async function preloadWalkAssets(manifest, manager, report) {
   const controller = new AbortController();
-  const files = new Map(manifest.map(item => [
+  const mine = manifest.filter(item => !item.profile || item.profile === PROFILE);
+  const files = new Map(mine.map(item => [
     item.path, { ...item, loaded: 0, status: "waiting" },
   ]));
 

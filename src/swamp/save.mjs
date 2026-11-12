@@ -9,7 +9,7 @@ const dictionary = (value) => value && typeof value === "object" && !Array.isArr
 export function freshSave(pondSeen = 0, time = Date.now()) {
   return {
     v: 2, flies: 0, total: 0, clicks: 0, own: {}, done: {}, run: null, t: time, pondSeen, rank: 0,
-    stage: 0, room: "shore", ach: {}, visited: ["shore"], caught: 0, fatCaught: 0, teas: 0, teaBags: 0,
+    stage: 0, room: "shore", ach: {}, visited: ["shore"], caught: 0, fatCaught: 0, teas: 0, teaBags: 0, sinceBag: 0,
     activities: { gardenReady: 0, compileEnd: 0, compileReady: 0, teaUntil: 0, teaReady: 0, tongueReady: 0 }
   };
 }
@@ -20,6 +20,7 @@ export function migrateSave(raw, data, time = Date.now()) {
   const state = { ...freshSave(0, time), ...raw, v: 2 };
   for (const key of ["flies", "total", "clicks", "pondSeen", "caught", "fatCaught", "teas"]) state[key] = number(state[key]);
   state.teaBags = Math.floor(number(state.teaBags));
+  state.sinceBag = Math.floor(number(state.sinceBag));
   state.total = Math.max(state.total, state.flies);
   state.t = number(state.t, time);
   state.rank = rankOf(state.total);
@@ -56,4 +57,35 @@ export function persistSave(storage, state, time = Date.now()) {
   const snapshot = { ...state, t: time };
   storage.setItem(SAVE_KEY, JSON.stringify(snapshot));
   state.t = time;
+}
+
+// Which steps are built, in the order of content/swamp-v2.json. Today the save keeps a count (state.stage) of steps
+// built from the start of the list; a later save version may keep ids, so callers ask here instead of slicing.
+export function builtStages(state, data) {
+  return new Set(data.stages.slice(0, state.stage).map(({ id }) => id));
+}
+
+// What the hut holds, for the 3D swamp (src/swamp-walk) and anyone else outside the clicker. Read-only: no writes,
+// no DOM. An unreadable or unknown save gives an empty hut. `decor` is reserved for hut decorations (badges, pots);
+// it is empty until the clicker has them.
+export function readShelter(storage, data) {
+  let raw = null;
+  try {
+    raw = JSON.parse(readSaveText(storage) ?? "null");
+  } catch {
+    // a damaged record opens an empty hut
+  }
+  let state;
+  try {
+    state = migrateSave(raw, data);
+  } catch (error) {
+    if (error.message !== "unsupported-save") throw error;
+    state = migrateSave(null, data);
+  }
+  return {
+    stages: builtStages(state, data),
+    owned: Object.fromEntries(data.buildings.filter(({ id }) => state.own[id] > 0).map(({ id }) => [id, state.own[id]])),
+    projects: new Set(data.builds.filter(({ id }) => state.done[id]).map(({ id }) => id)),
+    decor: new Set(),
+  };
 }

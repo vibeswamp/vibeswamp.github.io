@@ -9,6 +9,7 @@ import { cp, mkdir, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { privateArena } from "./site-assets.mjs";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const KEEP = ["build.mjs", "content", "public", "src", "scripts", ".github", ".gitignore", "README.public.md", "DESIGN.md"];
@@ -17,6 +18,8 @@ const RENAME = { "README.public.md": "README.md" };
 const SKIP = [/(^|\/)\.claude(\/|$)/, /\.tmp$/, /-log\.txt$/, /(^|\/)node_modules(\/|$)/, /(^|\/)__pycache__(\/|$)/];
 
 async function walk(p, out) {
+  const rel = relative(root, p).replaceAll("\\", "/");
+  if (rel.startsWith("public/") && privateArena(rel.slice("public/".length))) return;
   const s = await stat(p);
   if (s.isDirectory()) for (const n of await readdir(p)) await walk(join(p, n), out);
   else out.push({ path: p, size: s.size });

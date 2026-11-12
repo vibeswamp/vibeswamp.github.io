@@ -6,8 +6,9 @@ import { createKlyopVaultStow } from "./klyop-vault-stow.mjs";
 import { JUMP_IMPULSE, waterSupportHeight } from "./motion.mjs";
 import { validRailProfile } from "./rail.mjs";
 import { applyKlyopPresentation } from "./klyop-presentation.mjs";
+import { MODELS } from "./quality.mjs";
 
-const MODEL = "/swamp-walk/klyop-walk.glb";
+const MODEL = MODELS.klyop;
 const CLIPS = {
   idle: "Idle_Loop", walk: "Walk_Loop", run: "Jog_Fwd_Loop", sprint: "Sprint_Loop", air: "Jump_Loop",
   swim: "Swim_Fwd_Loop", float: "Swim_Idle_Loop",

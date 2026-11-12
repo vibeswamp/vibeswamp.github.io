@@ -25,7 +25,8 @@ export function incomeRate(state, data, { radio = false, swarm = false, tea = fa
 
 export function clickValue(state, data, { vibe = false, storm = false } = {}) {
   const passive = baseRate(state, data);
-  const croak = (state.done.bug ? 2 : 1) + passive / 6;
+  // a croak brings a share of the passive income (content/swamp-v2.json clickShare; 1/6 before 12.11.2026)
+  const croak = (state.done.bug ? 2 : 1) + passive * (data.clickShare ?? 1 / 6);
   return (croak + (state.done.friday ? passive * 0.03 : 0)) * (vibe ? 3 : 1) * (storm ? 7 : 1);
 }
 

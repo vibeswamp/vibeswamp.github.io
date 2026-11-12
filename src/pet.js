@@ -32,11 +32,11 @@
   const warm = (list) => { for (const src of list) { const i = new Image(); i.src = src; } };
   const warmed = new Set();
   const warmAction = (name) => { if (!A || !A[name] || warmed.has(name)) return; warmed.add(name); warm(A[name].frames.map(F)); };
-  const warmAll = () => ready.then(() => { if (A) Object.keys(A).forEach(warmAction); });
+  // the eight outfits (about 440 KB) wait for the first tap too: most visitors only look at him
+  const warmAll = () => ready.then(() => { warm(OUTFITS.filter(Boolean).map(P).concat([P("grumpy")])); if (A) Object.keys(A).forEach(warmAction); });
   stage.addEventListener("pointerdown", warmAll, { once: true });
   stage.addEventListener("focusin", warmAll, { once: true });
   const preload = () => ready.then(() => {
-    warm(OUTFITS.filter(Boolean).map(P).concat([P("grumpy"), "/brand/klyop-full.webp"]));
     if (A) { warmAction("idle"); warmAction("walk"); }
     else warm(["walk-1", "walk-2", "walk-3", "walk-4", "asleep", "laugh", "yawn", "jump"].map(P)
       .concat(["smug", "wave", "fly", "vibe", "beat", "shocked"].map(S)));

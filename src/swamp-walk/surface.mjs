@@ -1,7 +1,8 @@
 import * as T from "./vendor/three.mjs";
 import { CELLS, RADIUS, WATER, random, smooth } from "./land.mjs";
 
-export const SUN = new T.Vector3(0.19, 0.086, -0.976).normalize();
+// The sun sets north-west, over the open lagoon seen from the pier. Due north it hid behind the radio hill.
+export const SUN = new T.Vector3(-0.66, 0.165, -0.73).normalize();
 export const HAZE = new T.Color(0x69716a);
 export const FOG = 0.0105;
 const col = (hex) => new T.Color(hex);

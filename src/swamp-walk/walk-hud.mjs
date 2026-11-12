@@ -132,6 +132,10 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
     legend.append(item);
   }
   tools.append(legend);
+  // The key list fades from the screen after the first steps; the map panel keeps a copy.
+  const coarse = doc.defaultView.matchMedia("(pointer: coarse)").matches;
+  const helpLine = world.querySelector(coarse ? ".walk-help-touch" : ".walk-help-desktop");
+  if (helpLine) tools.append(make("p", "walk-map-help", helpLine.textContent.trim()));
   if (resetFacts) {
     const clear = button("walk-clear-facts", copy.reset);
     const notice = make("span", "walk-clear-notice");

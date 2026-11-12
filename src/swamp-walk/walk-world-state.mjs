@@ -6,11 +6,13 @@ const landmarkIds = new Set(LANDMARKS.map(({ id }) => id));
 export function openWorldSave(storage) {
   const state = {
     seen: new Set(), trophy: false, radio: false, shortcut: false,
-    save() {
+    // save(true) stores the trophy and marks it in memory only after the write succeeded.
+    save(trophy = state.trophy) {
       try {
         storage().setItem(WALK_SAVE_KEY, JSON.stringify({
-          v: 1, seen: [...state.seen], trophy: state.trophy, radio: state.radio, shortcut: state.shortcut,
+          v: 1, seen: [...state.seen], trophy, radio: state.radio, shortcut: state.shortcut,
         }));
+        state.trophy = trophy;
         return true;
       } catch { return false; }
     },

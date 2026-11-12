@@ -1,10 +1,33 @@
+# Built pages and installed packages
 dist/
-shots/
 node_modules/
+
+# Secrets: any .env (discord/.env holds the bot token)
+.env
+.env.*
+*.env
+discord/setup-log.txt
+
+# Codex lanes, attachments and browser runs
+output/
+.codex-attachments/
+.codex-remote-attachments/
+.playwright-cli/
+debug.log
+
+# Other chats' folders and screenshots
+social/
+twitch/
+steam/
+reddit/
+shots/
+mascot/
+
+# Heavy source assets and backups that must not reach the site
+assets-src/
+
+# Local logs and temp files
 open-site-log.txt
 add-shots-log.txt
 *.tmp
-discord/.env
-discord/setup-log.txt
-.env
 .export-site

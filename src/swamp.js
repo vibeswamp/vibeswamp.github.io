@@ -3,6 +3,7 @@ import { RANKS, rankOf, priceOf as buildingPrice, producerMultiplier, swampMulti
 import { freshSave, loadSave, persistSave } from "./swamp/save.mjs";
 import { createScene } from "./swamp/scene.mjs";
 import { expeditionContext, reserveExpedition, settleExpedition } from "./swamp/expedition-save.mjs";
+import { markThreshold, takeThreshold } from "./swamp/threshold.mjs";
 
 // Klyop builds the swamp: a light clicker with the site toad. Texts come from content/swamp.json (built into the page),
 // the save lives in localStorage ("vibeswamp-swamp"). Flies caught in the pond on the home page come in here too.
@@ -91,57 +92,64 @@ function startClicker(host, textEl, lockedStorage) {
   const FLY = '<svg viewBox="0 0 16 12" aria-hidden="true"><ellipse class="fly-wing" cx="5" cy="4" rx="3.4" ry="2.2"/><ellipse class="fly-wing" cx="11" cy="4" rx="3.4" ry="2.2"/><ellipse class="fly-body" cx="8" cy="7.5" rx="3.2" ry="2.6"/></svg>';
   host.classList.add("sw-shell");
   host.classList.toggle("sw-paused", document.hidden);
-  host.innerHTML = `<div class="sw-grid">
+  // Layout (12.11.2026, docs/redesign/clicker-plan.md): the scene with the gauges on top of the sky and the actions
+  // under it, then the next building step, then the tabs. Everything the painting shows sits in .sw-art, a 3:2 box
+  // that covers the scene like the painting itself, so cut-out parts stay on the picture at any scene size.
+  host.innerHTML = `<div class="sw-game">
 <section class="sw-scene" aria-label="${T.click}">
-<div class="sw-hud">
-<div class="sw-gauge"><p class="sw-count"><span class="sw-num num">0</span> <span class="sw-unit">${T.flies}</span></p><p class="sw-rate"><span class="num sw-rate-n">0</span> ${T.perSec}</p><p class="sw-income-detail"></p></div>
-<div class="sw-rank"><img class="sw-rank-img" src="${outfitPic(0)}" alt="" decoding="async"><div class="sw-rank-txt"><p class="sw-rank-t">${T.rank} <span class="num sw-rank-no">1</span></p><p class="sw-rank-name"></p><progress class="sw-rank-bar" max="100" value="0" aria-label="${T.rank}"></progress><p class="sw-rank-next"></p><p class="sw-rank-bonus">${U.rankBonus}</p></div></div>
-</div>
 <div class="sw-world">
+<div class="sw-art">
 <div class="sw-backdrop" aria-hidden="true"></div>
-<div class="sw-sky" aria-hidden="true"><span class="sw-sun"></span><span class="sw-cloud sw-cloud-a"></span><span class="sw-cloud sw-cloud-b"></span></div>
-<div class="sw-water" aria-hidden="true"></div><div class="sw-reflection" aria-hidden="true"></div>
+<div class="sw-water" aria-hidden="true"></div>
 <div class="sw-room-wall" aria-hidden="true"></div><div class="sw-room-floor" aria-hidden="true"></div>
-<div class="sw-shelter" aria-hidden="true"></div><div class="sw-fireflies" aria-hidden="true">${Array.from({ length: 7 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>
+<div class="sw-shelter" aria-hidden="true"></div>
 <div class="sw-houses" aria-hidden="true"></div>
-<div class="sw-flies"></div>
 <button type="button" class="sw-klyop"><img class="sw-k" src="/brand/klyop-full.webp" alt="" draggable="false" decoding="async"><span class="sw-croak">${U.croak} <span class="num sw-per">+1</span></span></button>
+</div>
+<div class="sw-sky" aria-hidden="true"><span class="sw-cloud sw-cloud-a"></span><span class="sw-cloud sw-cloud-b"></span></div>
+<div class="sw-fireflies" aria-hidden="true">${Array.from({ length: 7 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>
+<div class="sw-flies"></div>
 <div class="sw-pops" aria-hidden="true"></div>
 <p class="sw-say" aria-live="polite"></p>
+<div class="sw-hud">
+<div class="sw-gauge"><p class="sw-count"><span class="sw-num num">0</span> <span class="sw-unit">${T.flies}</span></p><p class="sw-rate"><span class="num sw-rate-n">0</span> ${T.perSec}<span class="sw-income-detail"></span></p></div>
+<div class="sw-rank" title="${U.rankBonus}"><img class="sw-rank-img" src="${outfitPic(0)}" alt="" draggable="false" decoding="async"><div class="sw-rank-txt"><p class="sw-rank-t">${T.rank} <span class="num sw-rank-no">1</span><span class="sw-rank-name"></span></p><progress class="sw-rank-bar" max="100" value="0" aria-label="${T.rank}"></progress><p class="sw-rank-next"></p><p class="sw-rank-bonus">${U.rankBonus}</p></div></div>
 </div>
-<div class="sw-stage-brief"><span class="sw-stage-label"></span><button type="button" class="sw-stage-next"></button></div>
-<div class="sw-low">
-<div class="sw-meter"><span class="sw-meter-l">${T.vibe}</span><span class="sw-meter-bar" aria-hidden="true"><span></span></span></div>
-<button type="button" class="sw-room-toggle sw-compact-toggle" aria-expanded="false" aria-controls="sw-doors"><span class="sw-room-current"></span><span class="sw-compact-caret" aria-hidden="true">▾</span></button>
-<button type="button" class="sw-compact-toggle" aria-expanded="false" aria-controls="sw-action-drawer">${U.actions}</button>
-<button type="button" class="sw-compact-toggle" aria-expanded="false" aria-controls="sw-hints">${U.tips}</button>
-<div class="sw-hints" id="sw-hints"><p class="sw-hint">${T.vibeHint}</p><p class="sw-hint">${U.catchHint}</p><p class="sw-hint sw-rank-tip">${U.rankBonus}</p></div>
+<nav class="sw-rooms" aria-label="${U.locations}"></nav>
+<div class="sw-meter" title="${T.vibeHint}"><span class="sw-meter-l">${T.vibe}</span><span class="sw-meter-bar" aria-hidden="true"><span></span></span></div>
 </div>
-<nav class="sw-doors" id="sw-doors" aria-label="${U.locations}"></nav>
-<div class="sw-action-drawer" id="sw-action-drawer"><div class="sw-activities">
-<button type="button" data-activity="garden" title="${V.plant}"><span aria-hidden="true">❧</span><span class="sw-action-name">${V.garden}</span><small></small></button>
-<button type="button" data-activity="compile"><span aria-hidden="true">⌘</span><span class="sw-action-name">${V.compile}</span><small></small><progress max="10" value="0" aria-label="${V.compile}" hidden></progress></button>
-<button type="button" data-activity="tea"><span aria-hidden="true">♨</span><span class="sw-action-name">${V.tea}</span><small></small></button>
-<button type="button" data-activity="tongue"><span aria-hidden="true">↝</span><span class="sw-action-name">${V.tongue}</span><small></small></button>
+<div class="sw-activities">
+<button type="button" data-activity="garden" title="${V.plant}"><span class="sw-action-name"><span aria-hidden="true">❧</span> ${V.garden}</span><small></small></button>
+<button type="button" data-activity="tea"><span class="sw-action-name"><span aria-hidden="true">♨</span> ${V.tea}</span><small></small></button>
+<button type="button" data-activity="tongue"><span class="sw-action-name"><span aria-hidden="true">↝</span> ${U.dock.tongue}</span><small></small></button>
+<button type="button" data-activity="compile"><span class="sw-action-name"><span aria-hidden="true">⌘</span> ${V.compile}</span><small></small><progress max="10" value="0" aria-label="${V.compile}" hidden></progress></button>
+<button type="button" class="sw-radio-toggle" aria-pressed="false"><span class="sw-action-name"><span aria-hidden="true">♪</span> ${U.radio}</span><small class="sw-radio-detail"></small></button>
 </div>
-<div class="sw-radio-boost" hidden><button type="button" class="sw-radio-toggle"></button><span class="sw-radio-detail"></span></div></div>
 </section>
-<section class="sw-shop" aria-labelledby="sw-management">
-<h2 id="sw-management">${U.management}</h2>
+<section class="sw-side" aria-labelledby="sw-management">
+<h2 id="sw-management" class="sw-hidden-title">${U.management}</h2>
+<button type="button" class="sw-construct"><span class="sw-stage-preview" aria-hidden="true"></span><span class="sw-what"><span class="sw-next-l">${U.next}</span><span class="sw-name"></span><span class="sw-text sw-stage-gate"></span></span><span class="sw-price"><span class="sw-stage-cost num"></span><span class="sw-build-l">${V.buildStage}</span></span></button>
 <div class="sw-tabs" role="tablist" aria-label="${U.management}">${Object.entries(V.tabs).map(([id, name], i) => `<button type="button" role="tab" id="sw-tab-${id}" aria-controls="sw-panel-${id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-tab="${id}">${name}</button>`).join("")}</div>
+<div class="sw-panels">
 <div class="sw-panel" id="sw-panel-shop" role="tabpanel" aria-labelledby="sw-tab-shop" tabindex="0">
-<ol class="sw-list">${buildings.map((b) => `<li><article class="sw-buy" data-id="${b.id}"><img class="sw-pic" src="${pic(b.id)}" alt="" draggable="false" loading="lazy" decoding="async"><div class="sw-what"><h3 class="sw-name">${b.name}</h3><p class="sw-text">${b.text}</p><p class="sw-gain"></p><p class="sw-room-tag">${V.rooms[b.room]}</p></div><div class="sw-price"><button type="button" class="sw-buy-action"></button><span class="sw-own"></span></div></article></li>`).join("")}</ol>
+<ol class="sw-list">${buildings.map((b) => `<li><article class="sw-buy" data-id="${b.id}" title="${b.text}"><span class="sw-pic-box"><img class="sw-pic" src="${pic(b.id)}" alt="" draggable="false" loading="lazy" decoding="async"></span><div class="sw-what"><h3 class="sw-name">${b.name}</h3><p class="sw-text">${b.text}</p><p class="sw-gain"></p></div><div class="sw-price"><button type="button" class="sw-buy-action"></button><span class="sw-own"></span></div></article></li>`).join("")}</ol>
 </div>
 <div class="sw-panel" id="sw-panel-construction" role="tabpanel" aria-labelledby="sw-tab-construction" tabindex="0" hidden>
-<p class="sw-stage-progress"></p><button type="button" class="sw-construct"><span class="sw-stage-preview" aria-hidden="true">⌂</span><span class="sw-what"><span class="sw-name">${V.nextStep}</span><span class="sw-text sw-stage-gate"></span></span><span class="sw-price"><span class="sw-stage-cost num"></span><span>${V.buildStage}</span></span></button>
-<ol class="sw-stage-history"></ol><h2>${V.projects}</h2>
+<h3 class="sw-panel-h">${V.projects}</h3>
 <ol class="sw-list sw-builds">${builds.map((b) => `<li><button type="button" class="sw-build" data-id="${b.id}"><span class="sw-what"><span class="sw-name">${b.name}</span><span class="sw-text">${b.text}</span></span><span class="sw-price"><span class="num sw-cost">${fmt(b.cost)}</span><span class="sw-state"></span></span><span class="sw-bar" aria-hidden="true"><span></span></span></button></li>`).join("")}</ol>
+<h3 class="sw-panel-h sw-stage-progress"></h3><ol class="sw-stage-history"></ol>
 </div>
 <div class="sw-panel" id="sw-panel-achievements" role="tabpanel" aria-labelledby="sw-tab-achievements" tabindex="0" hidden><p class="sw-ach-count"></p><ol class="sw-ach-list">${D.achievements.map((a) => `<li class="sw-ach locked" data-ach="${a.id}"><img src="${pic(a.icon)}" alt="" draggable="false"><span><strong>${V.achievements[a.id][0]}</strong><small>${V.achievements[a.id][1]}</small><small class="sw-ach-status">${V.lockedAchievement}</small></span></li>`).join("")}</ol></div>
 <div class="sw-panel" id="sw-panel-records" role="tabpanel" aria-labelledby="sw-tab-records" tabindex="0" hidden><h2>${U.statsLocal}</h2><dl class="sw-records">${Object.entries(U.stats).map(([id, label]) => `<div><dt>${label}</dt><dd class="num" data-sw-stat="${id}"></dd></div>`).join("")}</dl></div>
-</section>
 </div>
 <p class="sw-foot"><span class="sw-stats"></span><button type="button" class="sw-reset">${T.reset}</button></p>
+</section>
+</div>
+<div class="sw-mini" aria-hidden="true" inert>
+<button type="button" class="sw-mini-croak" tabindex="-1"><img src="/brand/klyop-head.webp" alt="" draggable="false" decoding="async"><span>${U.croak}</span></button>
+<span class="sw-mini-count"><span class="num sw-mini-num"></span> ${T.flies}</span>
+<button type="button" class="sw-mini-next" tabindex="-1"></button>
+</div>
 <p class="sw-save-status" role="status" hidden></p><p class="sw-toast" role="status" hidden></p>`;
 
   const $ = (s) => host.querySelector(s);
@@ -149,35 +157,68 @@ function startClicker(host, textEl, lockedStorage) {
   const num = $(".sw-num"), rateN = $(".sw-rate-n"), per = $(".sw-per"), say = $(".sw-say"), stats = $(".sw-stats");
   const incomeDetail = $(".sw-income-detail");
   const radioControl = document.querySelector(".radio .r-play");
-  const radioToggle = $(".sw-radio-toggle"), radioDetail = $(".sw-radio-detail");
-  $(".sw-radio-boost").hidden = !radioControl;
+  const radioToggle = $(".sw-radio-toggle");
+  radioToggle.hidden = !radioControl;
   radioToggle.addEventListener("click", () => radioControl?.click());
   const records = [...host.querySelectorAll("[data-sw-stat]")];
   const btn = $(".sw-klyop"), kImg = $(".sw-k"), pops = $(".sw-pops");
   const meter = $(".sw-meter-bar span"), meterBox = $(".sw-meter");
   const rankImg = $(".sw-rank-img"), rankNo = $(".sw-rank-no"), rankName = $(".sw-rank-name"), rankBar = $(".sw-rank-bar"), rankNext = $(".sw-rank-next"), rankBox = $(".sw-rank"), rankBonus = $(".sw-rank-bonus");
-  const roomCurrent = $(".sw-room-current"), roomToggle = $(".sw-room-toggle");
-  const compactToggles = [...host.querySelectorAll(".sw-compact-toggle")];
-  for (const toggle of compactToggles) {
-    toggle.addEventListener("click", () => {
-      const open = toggle.getAttribute("aria-expanded") !== "true";
-      for (const control of compactToggles) {
-        const expanded = control === toggle && open;
-        control.setAttribute("aria-expanded", String(expanded));
-        $(`#${control.getAttribute("aria-controls")}`).toggleAttribute("data-compact-open", expanded);
-      }
-    });
-  }
+  const construct = $(".sw-construct"), mini = $(".sw-mini"), miniNum = $(".sw-mini-num"), miniNext = $(".sw-mini-next");
+  // The next building step in the card: a dark silhouette of exactly the part that will appear (its box in the
+  // painting is in content/swamp-v2.json art.steps). A step that brings a new painting shows that painting dimmed.
+  const preview = $(".sw-stage-preview");
+  const paintPreview = (step, done) => {
+    const size = 52;
+    const box = done || step?.base ? [20, 14, 60, 76] : step?.box;
+    preview.classList.toggle("era", !!step?.base);
+    preview.classList.toggle("unknown", !box);
+    preview.classList.toggle("done", !!done);
+    if (!box) { preview.style.removeProperty("--pv-src"); return; }
+    const src = done ? "/brand/swamp/v2-stage-3-960.webp" : step.base ? `/brand/swamp/${step.base}-960.webp` : `/brand/swamp/steps/${step.layer}-960.webp`;
+    const [x, y, w, h] = box, bw = w * 1.5 / 100, bh = h / 100, f = size / Math.max(bw, bh);
+    preview.style.setProperty("--pv-src", `url("${src}")`);
+    preview.style.setProperty("--pv-size", `${(1.5 * f).toFixed(1)}px ${f.toFixed(1)}px`);
+    preview.style.setProperty("--pv-pos", `${(-(x / 100) * 1.5 * f + (size - bw * f) / 2).toFixed(1)}px ${(-(y / 100) * f + (size - bh * f) / 2).toFixed(1)}px`);
+  };
   const buyCards = [...host.querySelectorAll(".sw-buy")], buildBtns = [...host.querySelectorAll(".sw-build")];
   host.addEventListener("dragstart", (event) => event.preventDefault());
+  // A long press on a picture must not open the phone's image menu or start a text selection.
+  host.addEventListener("contextmenu", (event) => { if (event.target.closest(".sw-world, .sw-pic, .sw-mini")) event.preventDefault(); });
   const producerLabels = Object.fromEntries(buildings.map(({ id, name }) => [id, name]));
-  const drawScene = createScene({ world, houses, doors: $(".sw-doors"), stageStatus: $(".sw-stage-brief"), data: D, text: V, producerLabels, onRoom: (room) => {
-    if (!roomOpen(S, D, room) || S.room === room) return;
+  const drawScene = createScene({ world, houses, rooms: $(".sw-rooms"), data: D, text: V, producerLabels, onRoom: (room) => {
+    if (!roomOpen(S, D, room)) { speak(V.roomHints[room]); return; }
+    if (S.room === room) return;
     S.room = room;
     if (!S.visited.includes(room)) S.visited.push(room);
     kEvent(["walk", "wave"]);
     drawScene(S); render(); save();
   } });
+
+  // Computer: the game takes the window's height between the header and the radio bar, nothing to scroll.
+  const game = $(".sw-game");
+  const fit = () => {
+    const top = game.getBoundingClientRect().top + scrollY;
+    const radio = document.querySelector(".radio")?.offsetHeight || 0;
+    host.style.setProperty("--sw-fit", `${Math.max(500, Math.round(innerHeight - top - radio - 14))}px`);
+  };
+  fit();
+  addEventListener("resize", fit);
+
+  // Phone: once the scene scrolls away, a slim bar keeps the catch, a croak and the next step in reach.
+  $(".sw-mini-croak").addEventListener("click", () => btn.click());
+  miniNext.addEventListener("click", () => {
+    if (!construct.disabled) construct.click();
+    else world.scrollIntoView({ behavior: calm ? "auto" : "smooth", block: "start" });
+  });
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(([entry]) => {
+      const show = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+      mini.classList.toggle("on", show);
+      mini.toggleAttribute("inert", !show);
+      mini.setAttribute("aria-hidden", String(!show));
+    }, { threshold: 0, rootMargin: "-40% 0px 0px 0px" }).observe(world);
+  }
 
   const tabs = [...host.querySelectorAll("[role=tab]")];
   const selectTab = (tab) => {
@@ -188,10 +229,6 @@ function startClicker(host, textEl, lockedStorage) {
     }
   };
   $(".sw-tabs").addEventListener("click", (event) => { const tab = event.target.closest("[role=tab]"); if (tab) selectTab(tab); });
-  $(".sw-stage-next").addEventListener("click", () => {
-    const tab = $("#sw-tab-construction");
-    selectTab(tab); tab.focus();
-  });
   $(".sw-tabs").addEventListener("keydown", (event) => {
     if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
     event.preventDefault();
@@ -363,12 +400,14 @@ function startClicker(host, textEl, lockedStorage) {
   };
   const drawFlies = () => {
     if (document.hidden || survivorsActive) return;
-    const want = Math.max(2, Math.min(10, 2 + Math.floor(Math.log2(rate() + 1) * 0.7)));
+    // A few flies at a time: ten of them covered the picture on a phone.
+    const want = Math.max(2, Math.min(6, 2 + Math.floor(Math.log2(rate() + 1) * 0.4)));
     if (now() < nextFlyAt) return;
     const count = fliesStarted ? Math.min(want, fliesEl.childElementCount + 1) : want;
     while (fliesEl.childElementCount < count) {
       const f = document.createElement("button");
-      f.type = "button"; f.className = "sw-fly"; f.setAttribute("aria-label", V.fly);
+      // the first flies wear a ring so a new player sees they can be caught
+      f.type = "button"; f.className = S.caught < 3 ? "sw-fly sw-fly-new" : "sw-fly"; f.setAttribute("aria-label", V.fly);
       f.innerHTML = FLY;
       const x = Math.random() < 0.5 ? rnd(6, 22) : rnd(68, 82);
       f.style.cssText = `left:${x.toFixed(1)}%;top:${rnd(22, 53).toFixed(1)}%;--dx:${rnd(-12, 12).toFixed(0)}px;--dy:${rnd(-20, 20).toFixed(0)}px;--d:${rnd(2.6, 6).toFixed(2)}s;animation-delay:-${rnd(0, 5).toFixed(2)}s`;
@@ -412,25 +451,30 @@ function startClicker(host, textEl, lockedStorage) {
   };
 
   const secondsLeft = (time) => Math.max(0, Math.ceil((time - Date.now()) / 1000));
+  // The action row shows short states; the full sentence goes to the button's title (hover on a computer).
+  const Dk = U.dock;
+  const status = (button, short, full = short) => {
+    const small = button.querySelector("small");
+    if (small.textContent !== short) small.textContent = short;
+    if (button.title !== full) button.title = full;
+  };
   const renderActivities = () => {
     const activities = S.activities, time = Date.now();
     const garden = $('[data-activity="garden"]');
     garden.disabled = S.stage < 1 || time < activities.gardenReady;
-    const gardenDetail = garden.querySelector("small");
-    if (S.stage < 1) gardenDetail.textContent = U.gardenLock;
-    else if (time < activities.gardenReady) gardenDetail.textContent = fill(V.growing, { n: secondsLeft(activities.gardenReady) });
-    else if (activities.gardenReady) gardenDetail.textContent = fill(U.gardenHarvest, { n: fmt(gardenReward()) });
-    else gardenDetail.textContent = fill(U.gardenPlant, { s: D.activities.garden.seconds, n: fmt(gardenReward()) });
+    if (S.stage < 1) status(garden, Dk.gardenLock, U.gardenLock);
+    else if (time < activities.gardenReady) status(garden, fill(V.growing, { n: secondsLeft(activities.gardenReady) }));
+    else if (activities.gardenReady) status(garden, fill(Dk.gardenHarvest, { n: fmt(gardenReward()) }), fill(U.gardenHarvest, { n: fmt(gardenReward()) }));
+    else status(garden, fill(Dk.gardenPlant, { s: D.activities.garden.seconds, n: fmt(gardenReward()) }), fill(U.gardenPlant, { s: D.activities.garden.seconds, n: fmt(gardenReward()) }));
 
     const compile = $('[data-activity="compile"]');
     const compiling = activities.compileEnd > 0;
     compile.disabled = S.room !== "workshop" || !own("stump") || compiling || time < activities.compileReady;
-    const compileDetail = compile.querySelector("small");
-    if (compiling) compileDetail.textContent = fill(V.compiling, { n: secondsLeft(activities.compileEnd) });
-    else if (!own("stump")) compileDetail.textContent = U.compileStump;
-    else if (S.room !== "workshop") compileDetail.textContent = U.compileRoom;
-    else if (time < activities.compileReady) compileDetail.textContent = fill(V.cooldown, { n: secondsLeft(activities.compileReady) });
-    else compileDetail.textContent = fill(U.compileReady, { n: fmt(compileReward()), s: D.activities.compile.seconds });
+    if (compiling) status(compile, fill(V.compiling, { n: secondsLeft(activities.compileEnd) }));
+    else if (!own("stump")) status(compile, Dk.compileStump, U.compileStump);
+    else if (S.room !== "workshop") status(compile, Dk.compileRoom, U.compileRoom);
+    else if (time < activities.compileReady) status(compile, fill(V.cooldown, { n: secondsLeft(activities.compileReady) }));
+    else status(compile, fill(Dk.compileReady, { n: fmt(compileReward()), s: D.activities.compile.seconds }), fill(U.compileReady, { n: fmt(compileReward()), s: D.activities.compile.seconds }));
     const progress = compile.querySelector("progress");
     progress.hidden = !compiling; progress.max = D.activities.compile.seconds;
     progress.value = D.activities.compile.seconds - secondsLeft(activities.compileEnd);
@@ -439,41 +483,41 @@ function startClicker(host, textEl, lockedStorage) {
     const teaActive = time < activities.teaUntil;
     const resting = time < activities.teaReady;
     tea.disabled = teaActive || (resting && !S.teaBags);
-    const teaPercent = Math.round((D.activities.tea.multiplier - 1) * 100);
-    const teaDetail = tea.querySelector("small");
-    if (!teaActive && resting && S.teaBags) teaDetail.textContent = fill(U.teaBagBrew, { n: fmt(S.teaBags) });
-    else {
-      const detail = teaActive ? fill(U.teaBenefit, { n: teaPercent, s: secondsLeft(activities.teaUntil) })
-        : resting ? fill(V.cooldown, { n: secondsLeft(activities.teaReady) })
-        : fill(U.teaBenefit, { n: teaPercent, s: D.activities.tea.seconds });
-      teaDetail.textContent = S.teaBags ? `${detail} · ${fill(U.teaBagStock, { n: fmt(S.teaBags) })}` : detail;
-    }
+    const p = Math.round((D.activities.tea.multiplier - 1) * 100);
+    const stock = S.teaBags ? ` · ${fill(U.teaBagStock, { n: fmt(S.teaBags) })}` : "";
+    if (!teaActive && resting && S.teaBags) status(tea, fill(Dk.teaBag, { n: fmt(S.teaBags) }), fill(U.teaBagBrew, { n: fmt(S.teaBags) }));
+    else if (teaActive) status(tea, fill(Dk.teaOn, { p, s: secondsLeft(activities.teaUntil) }), fill(U.teaBenefit, { n: p, s: secondsLeft(activities.teaUntil) }) + stock);
+    else if (resting) status(tea, fill(V.cooldown, { n: secondsLeft(activities.teaReady) }));
+    else status(tea, fill(Dk.teaIdle, { p, s: D.activities.tea.seconds }), fill(U.teaBenefit, { n: p, s: D.activities.tea.seconds }) + stock);
 
     const tongue = $('[data-activity="tongue"]');
     const count = fliesEl.childElementCount;
     tongue.disabled = time < activities.tongueReady || !count;
-    const tongueDetail = tongue.querySelector("small");
-    if (time < activities.tongueReady) tongueDetail.textContent = fill(V.cooldown, { n: secondsLeft(activities.tongueReady) });
-    else tongueDetail.textContent = count ? fill(U.swarmCatch, { c: count, n: fmt(flyReward(count)) }) : U.swarmEmpty;
+    if (time < activities.tongueReady) status(tongue, fill(V.cooldown, { n: secondsLeft(activities.tongueReady) }));
+    else if (count) status(tongue, fill(Dk.swarmReady, { c: count, n: fmt(flyReward(count)) }), fill(U.swarmCatch, { c: count, n: fmt(flyReward(count)) }));
+    else status(tongue, Dk.swarmEmpty, U.swarmEmpty);
   };
 
   // ---------- render ----------
   const render = () => {
     if (survivorsActive) return;
     checkAchievements(); renderActivities(); drawScene(S);
-    const roomName = V.rooms[S.room];
-    if (roomCurrent.textContent !== roomName) {
-      roomCurrent.textContent = roomName;
-      roomToggle.setAttribute("aria-label", `${U.locations} · ${roomName}`);
-    }
     const next = D.stages[S.stage];
     $(".sw-stage-progress").textContent = fill(V.stageProgress, { n: S.stage, max: D.stages.length });
-    const construct = $(".sw-construct");
     construct.disabled = !next || S.total < next.total || S.flies < next.cost;
     construct.classList.toggle("can", !construct.disabled);
+    construct.classList.toggle("all", !next);
     construct.querySelector(".sw-name").textContent = next ? V.stages[next.id] : V.allBuilt;
+    const previewKey = next ? next.id : "all";
+    if (preview.dataset.step !== previewKey) { preview.dataset.step = previewKey; paintPreview(next && D.art.steps?.[next.id], !next); }
     $(".sw-stage-cost").textContent = next ? fmt(next.cost) : "";
-    $(".sw-stage-gate").textContent = next && S.total < next.total ? fill(V.stageGate, { n: fmt(next.total - S.total) }) : next ? V.soon : "";
+    const gate = next && S.total < next.total ? fill(V.stageGate, { n: fmt(next.total - S.total) })
+      : next && S.flies < next.cost ? fill(U.stageNeed, { n: fmt(next.cost - S.flies) }) : "";
+    $(".sw-stage-gate").textContent = gate;
+    miniNum.textContent = fmt(S.flies);
+    const miniText = next ? `${V.stages[next.id]} · ${fmt(next.cost)}` : "";
+    if (miniNext.textContent !== miniText) miniNext.textContent = miniText;
+    miniNext.classList.toggle("can", !construct.disabled);
     if (historyStage !== S.stage) {
       historyStage = S.stage;
       $(".sw-stage-history").innerHTML = D.stages.slice(0, S.stage).reverse().map((stage) => `<li><span aria-hidden="true">✓</span> ${V.stages[stage.id]}</li>`).join("");
@@ -490,9 +534,9 @@ function startClicker(host, textEl, lockedStorage) {
     if (modifiers.swarm) incomeLines.push(U.swarmIncome);
     incomeDetail.textContent = incomeLines.join(" · ");
     incomeDetail.toggleAttribute("data-boosted", incomeLines.length > 1);
-    radioToggle.textContent = modifiers.radio ? U.radioStop : U.radioStart;
     radioToggle.setAttribute("aria-pressed", String(modifiers.radio));
-    radioDetail.textContent = fill(modifiers.radio ? U.radioIncome : U.radioBenefit, { n: vibePct() });
+    status(radioToggle, fill(modifiers.radio ? Dk.radioOn : Dk.radioOff, { n: vibePct() }),
+      `${modifiers.radio ? U.radioStop : U.radioStart} · ${fill(U.radioBenefit, { n: vibePct() })}`);
     stats.textContent = fill(T.stats, { n: fmt(S.total), c: whole.format(S.clicks) });
     // the vibe meter: fills with quick clicks, then counts the vibe down
     const t = now();
@@ -525,7 +569,16 @@ function startClicker(host, textEl, lockedStorage) {
       el.classList.toggle("can", seen && S.flies >= price);
       el.querySelector(".sw-name").textContent = seen ? b.name : T.locked;
       el.querySelector(".sw-text").textContent = seen ? b.text : "";
-      action.textContent = fill(U.buy, { n: whole.format(price) });
+      el.title = seen ? b.text : "";
+      // the full "Buy for N flies" on a computer, the price alone on a phone (the row is narrow)
+      const full = fill(U.buy, { n: whole.format(price) });
+      if (action.dataset.full !== full) {
+        action.dataset.full = full;
+        action.innerHTML = '<span class="sw-buy-full"></span><span class="sw-buy-short"></span>';
+        action.firstChild.textContent = full;
+        action.lastChild.textContent = fill(U.buyShort, { n: fmt(price) });
+        action.setAttribute("aria-label", full);
+      }
       gainLabel.hidden = !seen;
       if (seen) {
         const upgraded = { ...S, own: { ...S.own, [b.id]: own(b.id) + 1 } };
@@ -572,15 +625,18 @@ function startClicker(host, textEl, lockedStorage) {
     S.flies += value; S.total += value;
     if (message) speak(message);
   };
+  // a delivered fly brings a tea bag now and then: 8% each time, and surely by the 12th delivery without one
   const rollTeaBag = () => {
-    if (Math.random() >= 0.08) return;
+    S.sinceBag = (S.sinceBag || 0) + 1;
+    if (Math.random() >= 0.08 && S.sinceBag < 12) return;
+    S.sinceBag = 0;
     S.teaBags++;
     speak(U.teaBagDrop);
   };
   const catchFlies = (flies, delivered = false) => {
     const visible = flies.filter((fly) => fly.isConnected);
     if (!visible.length) return;
-    const value = flyReward(visible.length) * (delivered ? 2 : 1);
+    const value = flyReward(visible.length) * (delivered ? 3 : 1);
     if (visible.includes(flyDrag?.fly)) finishFlyDrag();
     const bounds = world.getBoundingClientRect();
     const position = visible[0].getBoundingClientRect();
@@ -835,8 +891,60 @@ function startClicker(host, textEl, lockedStorage) {
       if (!active) { drawFlies(); render(); }
     }
   };
+  // ---------- through the door to the 3D swamp and back ----------
+  // Klyop walks to the door, turns his back, gets smaller, the scene goes dark, then the 3D page opens. The 3D page
+  // takes the "out" cue and starts at the threshold; coming back it leaves an "in" cue and Klyop walks in here.
+  const exitLink = document.querySelector(".sw-walk-link");
+  let leaving = false;
+  const stopFrames = () => { cancelAnimationFrame(K.raf); K.raf = 0; K.seq = null; K.events.length = 0; };
+  const leave = (target) => {
+    if (leaving) return;
+    leaving = true;
+    markThreshold("out", target.pathname);
+    finishFlyDrag(); save();
+    if (calm || document.hidden) { location.href = target.href; return; }
+    btn.disabled = true;
+    world.dataset.threshold = "out";
+    kEvent(["walk"]);
+    setTimeout(() => { stopFrames(); kImg.src = "/brand/klyop/back.webp"; }, 450);
+    setTimeout(() => { location.href = target.href; }, 1250);
+  };
+  if (exitLink) {
+    exitLink.addEventListener("click", (event) => {
+      if (event.button || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      leave(new URL(exitLink.href, location.href));
+    });
+    // the 3D page's own HTML is light: fetch it as soon as the player reaches for the door
+    const prefetch = () => {
+      if (document.querySelector("link[data-sw-prefetch]")) return;
+      const link = document.createElement("link");
+      link.rel = "prefetch"; link.href = exitLink.href; link.dataset.swPrefetch = "";
+      document.head.append(link);
+    };
+    exitLink.addEventListener("pointerenter", prefetch, { once: true });
+    exitLink.addEventListener("touchstart", prefetch, { once: true, passive: true });
+    exitLink.addEventListener("focus", prefetch, { once: true });
+  }
+  // back from the 3D swamp (or the page restored from history after leaving): Klyop comes in through the door
+  addEventListener("pageshow", () => {
+    if (!leaving) return;
+    leaving = false; btn.disabled = false; delete world.dataset.threshold;
+    if (A && !K.raf && !calm) K.raf = requestAnimationFrame(kTick);
+  });
+  if (takeThreshold("in") && !calm) {
+    world.dataset.threshold = "in";
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      world.dataset.threshold = "back";
+      kEvent(["walk"]);
+      setTimeout(() => { if (world.dataset.threshold === "back") delete world.dataset.threshold; }, 1300);
+    }));
+  }
+
   document.addEventListener("vibeswamp:radio", render);
   if (note) speak(note);
+  // a new player hears once how flies work (the hint list of the old layout is gone)
+  else if (S.caught < 3) setTimeout(() => { if (S.caught < 3) speak(U.catchHint); }, 6000);
   drawHouses(); drawFlies(); render(); save();
   document.dispatchEvent(new Event("vibeswamp:clicker-ready"));
   return true;

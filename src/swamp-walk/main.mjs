@@ -19,9 +19,18 @@ import { createSurfaceFX, surfaceContactKind } from "./surface-fx.mjs";
 import { preloadWalkAssets } from "./walk-assets.mjs";
 import { openWorldSave } from "./walk-world-state.mjs";
 import { addWater } from "./water.mjs";
+import { createPerfOverlay } from "./perf.mjs";
+import { markThreshold, takeThreshold, THRESHOLD } from "../swamp/threshold.mjs";
 
 const $ = (id) => document.getElementById(`swalk-${id}`);
 const STEP = 1 / 90;
+// On the first visit Klyop walks out of the shack door himself, then turns to the sunset over the lagoon.
+const DOOR_OUT_X = -0.9;
+const INTRO_SECONDS = 2.4;
+const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const SUNSET_HEADING = -2.42;
+// The clicker marks the door when Klyop leaves it; taken at once, because the cue lives for 90 s only.
+const arrivedThroughDoor = takeThreshold("out");
 
 export async function start(world, text, hud, setResetFacts) {
   hud.phase(1);
@@ -42,6 +51,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   renderer.toneMapping = T.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  const perf = createPerfOverlay(renderer, world);
 
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(52, 1, 0.12, 230);
@@ -126,6 +136,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   let swimDistance = 0;
   let deckReady = false, nextDeckCheck = 0;
   let boom = 0, elapsed = 0, lastFrame = 0, budget = 0, chartAt = 0, noteUntil = 0;
+  let intro = null, leaving = null, moved = false;
 
   function resize() {
     const width = canvas.clientWidth, height = canvas.clientHeight;
@@ -140,9 +151,10 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     const inside = cabin.contains(pose.x, pose.z);
     const nearCabin = Math.hypot(pose.x - cabin.spawn.x, pose.z - cabin.spawn.z) < 5.7;
     const mobile = touchLayout.matches;
-    const reach = inside ? 3.72 : mobile ? 7.14 : camera.aspect < 0.8 ? 6.48 : 6.08;
+    const reach = inside ? 3.72 : mobile ? 7.6 : camera.aspect < 0.8 ? 6.48 : 6.08;
     const close = snap ? 0 : T.MathUtils.clamp((3.10 - boom) / 2.45, 0, 1);
-    const centerY = (inside ? 0.96 : mobile ? 1.24 : 1.10) - 0.22 * close;
+    // Phones aim above Klyop's head so he sits in the lower third and the far shore stays in view.
+    const centerY = inside ? 0.96 - 0.22 * close : mobile ? 1.85 - 0.75 * close : 1.10 - 0.22 * close;
     target.set(pose.x - Math.sin(yaw) * 0.43, Math.max(WATER, pose.y) + centerY,
       pose.z - Math.cos(yaw) * 0.43);
     offset.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
@@ -193,6 +205,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     player.heading = point.heading ?? Math.PI;
     previous = { ...player };
     swimDistance = 0;
+    intro = null;
     world.toggleAttribute("data-exploring", point !== cabin.spawn);
     controls.resetCamera(player.heading);
     encounter.reset();
@@ -225,7 +238,31 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   });
   resize();
   new ResizeObserver(resize).observe(canvas);
-  reset(cabin.spawn);
+  if (arrivedThroughDoor && calm) reset({ ...THRESHOLD.outside, heading: SUNSET_HEADING });
+  else reset(arrivedThroughDoor ? THRESHOLD.inside : cabin.spawn);
+  if (!calm) intro = { age: 0 };
+  // «← В кликер»: Klyop steps back into the door, the clicker shows him coming out of it.
+  const back = world.querySelector(".walk-link");
+  back?.addEventListener("click", event => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || leaving) return;
+    markThreshold("in", new URL(back.href).pathname);
+    if (calm) return;
+    event.preventDefault();
+    reset({ ...THRESHOLD.outside });
+    leaving = { age: 0, href: back.href };
+  });
+  addEventListener("pageshow", event => { if (event.persisted) location.reload(); });
+  // The task board brightens when its text changes and goes quiet after a few seconds.
+  const sortiePanel = $("sortie");
+  let sortieText = "", quietAt = 0;
+  new MutationObserver(() => {
+    const text = $("objective").textContent + "|" + ($("prompt").hidden ? "" : $("prompt").textContent);
+    if (text === sortieText) return;
+    sortieText = text;
+    sortiePanel.dataset.fresh = "";
+    clearTimeout(quietAt);
+    quietAt = setTimeout(() => delete sortiePanel.dataset.fresh, 6500);
+  }).observe(sortiePanel, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["hidden"] });
   scenery.update(0, camera.position, saved.radio);
   encounter.draw(player, 0, false);
   drawWorld();
@@ -240,7 +277,30 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     budget += dt;
     while (budget >= STEP) {
       previous = { ...player };
-      const intent = controls.sample(stamp - (budget - STEP) * 1000);
+      let intent = controls.sample(stamp - (budget - STEP) * 1000);
+      const wants = Math.hypot(intent.x, intent.z) > 0.1 || intent.jump || intent.attack || intent.interact || intent.dodge;
+      if (wants && !moved) {
+        moved = true;
+        world.dataset.moved = "";
+      }
+      if (leaving) {
+        leaving.age += STEP;
+        if (leaving.age > 0.8 && !leaving.gone) {
+          leaving.gone = true;
+          location.assign(leaving.href);
+        }
+        intent = { ...intent, x: -0.66, z: 0, sprint: false, jump: false, jumpHeld: false,
+          interact: false, attack: false, dodge: false };
+      } else if (intro) {
+        intro.age += STEP;
+        if (wants || intro.age > INTRO_SECONDS) {
+          intro = null;
+          if (!wants) center();
+        } else {
+          intro.outside ||= player.x >= DOOR_OUT_X;
+          intent = { ...intent, x: intro.outside ? -0.45 : 0.62, z: intro.outside ? -0.5 : 0, sprint: false };
+        }
+      }
       const distance = advancePlayer(player, intent, land.floorAt, obstacles, STEP, parkour, exits);
       const suppressedContact = !!(player.traversal || player.shoreClimb || player.mantle || player.swing !== null || player.hurt !== null);
       const foot = character.advanceGait(player.pose, distance, suppressedContact);
@@ -296,5 +356,6 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     encounter.draw(player, elapsed, railDirection(player, neutral, parkour, land.floorAt, obstacles),
       !deckReady && findBankExit(player, neutral, exits, land.floorAt, obstacles), deckReady);
     drawWorld();
+    perf?.frame(stamp);
   });
 }

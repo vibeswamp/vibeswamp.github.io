@@ -3,14 +3,14 @@
     "v2": {
       "tabs": {
         "shop": "Shop",
-        "construction": "Building",
+        "construction": "Projects",
         "achievements": "Badges",
         "records": "My stats"
       },
       "ui": {
         "goal": "Croak and catch flies. Spend your catch on upgrades and build up your hut.",
         "croak": "Croak",
-        "catchHint": "Tap a fly or drag it to Klyop for double the catch and a chance to find tea.",
+        "catchHint": "Tap a fly or drag it to Klyop: three times the catch and now and then a tea bag.",
         "teaBagDrop": "Tea bag!",
         "teaBagStock": "Tea bags · {n}",
         "teaBagBrew": "Brew from stock · {n}",
@@ -28,7 +28,7 @@
         "swarmIncome": "Swarm ×5",
         "rankBonus": "New rank adds 10% to income",
         "buy": "Buy for {n} flies",
-        "purchaseGain": "+{n} flies/s to base income",
+        "purchaseGain": "+{n} flies/s",
         "gardenLock": "Build the lily pads first",
         "gardenPlant": "Ready in {s}s · +{n} flies",
         "gardenHarvest": "Harvest · +{n} flies",
@@ -47,7 +47,27 @@
           "clicks": "Croaks",
           "caught": "Ordinary flies caught",
           "fatCaught": "Fat flies caught"
-        }
+        },
+        "next": "Next build",
+        "radio": "Radio",
+        "stageNeed": "{n} more flies",
+        "dock": {
+          "tongue": "Swarm",
+          "gardenLock": "Needs lily pads",
+          "gardenPlant": "+{n} in {s}s",
+          "gardenHarvest": "Harvest +{n}",
+          "compileStump": "Needs a stump",
+          "compileRoom": "In the workshop",
+          "compileReady": "+{n} in {s}s",
+          "teaIdle": "+{p}% for {s}s",
+          "teaOn": "+{p}% · {s}s",
+          "teaBag": "From stock · {n}",
+          "swarmReady": "{c} flies · +{n}",
+          "swarmEmpty": "No flies",
+          "radioOff": "+{n}% income",
+          "radioOn": "Playing · +{n}%"
+        },
+        "buyShort": "{n} flies"
       },
       "rooms": {
         "shore": "Shore",
@@ -314,14 +334,14 @@
     "v2": {
       "tabs": {
         "shop": "Покупки",
-        "construction": "Будівництво",
+        "construction": "Збірки",
         "achievements": "Досягнення",
         "records": "Підсумки"
       },
       "ui": {
         "goal": "Квакай і лови мух. Витрачай улов на споруди й добудовуй хатину.",
         "croak": "Квакнути",
-        "catchHint": "Торкнися мухи або перетягни її до Кльопи за подвійний улов і шанс знайти чай.",
+        "catchHint": "Торкнися мухи або перетягни її до Кльопи: утричі більше мух і часом пакетик чаю.",
         "teaBagDrop": "Пакетик чаю!",
         "teaBagStock": "Чай у запасі · {n}",
         "teaBagBrew": "Заварити із запасу · {n}",
@@ -339,7 +359,7 @@
         "swarmIncome": "Рій ×5",
         "rankBonus": "За новий ранг +10% до доходу",
         "buy": "Купити за {n} мух",
-        "purchaseGain": "+{n} мух/с до базового доходу",
+        "purchaseGain": "+{n} мух/с",
         "gardenLock": "Спочатку збудуй латаття біля купини",
         "gardenPlant": "Дозріє за {s} с · +{n} мух",
         "gardenHarvest": "Зібрати · +{n} мух",
@@ -358,7 +378,27 @@
           "clicks": "Квакань",
           "caught": "Звичайних мух спіймано",
           "fatCaught": "Товстих мух спіймано"
-        }
+        },
+        "next": "Далі будуємо",
+        "radio": "Радіо",
+        "stageNeed": "Ще {n} мух",
+        "dock": {
+          "tongue": "Рій",
+          "gardenLock": "Потрібне латаття",
+          "gardenPlant": "+{n} за {s} с",
+          "gardenHarvest": "Зібрати +{n}",
+          "compileStump": "Потрібен пень",
+          "compileRoom": "У майстерні",
+          "compileReady": "+{n} за {s} с",
+          "teaIdle": "+{p}% на {s} с",
+          "teaOn": "+{p}% · {s} с",
+          "teaBag": "Із запасу · {n}",
+          "swarmReady": "{c} мух · +{n}",
+          "swarmEmpty": "Мух немає",
+          "radioOff": "+{n}% до доходу",
+          "radioOn": "Грає · +{n}%"
+        },
+        "buyShort": "{n} мух"
       },
       "rooms": {
         "shore": "Берег",
@@ -625,14 +665,14 @@
     "v2": {
       "tabs": {
         "shop": "Покупки",
-        "construction": "Стройка",
+        "construction": "Сборки",
         "achievements": "Ачивки",
         "records": "Итоги"
       },
       "ui": {
         "goal": "Квакай и лови мух. Трать улов на постройки и достраивай хижину.",
         "croak": "Квакнуть",
-        "catchHint": "Тапни по мухе или перетащи её на Клёпу за двойной улов и шанс найти чай.",
+        "catchHint": "Тапни по мухе или перетащи её на Клёпу: втрое больше мух и иногда пакетик чая.",
         "teaBagDrop": "Пакетик чая!",
         "teaBagStock": "Чай в запасе · {n}",
         "teaBagBrew": "Заварить из запаса · {n}",
@@ -650,7 +690,7 @@
         "swarmIncome": "Рой ×5",
         "rankBonus": "За новый ранг +10% к доходу",
         "buy": "Купить за {n} мух",
-        "purchaseGain": "+{n} мух/с к базовому доходу",
+        "purchaseGain": "+{n} мух/с",
         "gardenLock": "Сначала построй кувшинки у кочки",
         "gardenPlant": "Созреет за {s} с · +{n} мух",
         "gardenHarvest": "Собрать · +{n} мух",
@@ -669,7 +709,27 @@
           "clicks": "Кваканий",
           "caught": "Обычных мух поймано",
           "fatCaught": "Жирных мух поймано"
-        }
+        },
+        "next": "Дальше строим",
+        "radio": "Радио",
+        "stageNeed": "Ещё {n} мух",
+        "dock": {
+          "tongue": "Рой",
+          "gardenLock": "Нужны кувшинки",
+          "gardenPlant": "+{n} за {s} с",
+          "gardenHarvest": "Собрать +{n}",
+          "compileStump": "Нужен пень",
+          "compileRoom": "В мастерской",
+          "compileReady": "+{n} за {s} с",
+          "teaIdle": "+{p}% на {s} с",
+          "teaOn": "+{p}% · {s} с",
+          "teaBag": "Из запаса · {n}",
+          "swarmReady": "{c} мух · +{n}",
+          "swarmEmpty": "Мух нет",
+          "radioOff": "+{n}% к доходу",
+          "radioOn": "Играет · +{n}%"
+        },
+        "buyShort": "{n} мух"
       },
       "rooms": {
         "shore": "Берег",

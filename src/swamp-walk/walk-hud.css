@@ -118,3 +118,137 @@
   .swalk[data-hud] .walk-heading { gap: 8px; }
   .swalk[data-hud] .walk-heading h1 { font-size: .77rem; }
 }
+
+/* ?perf=1: frame time and downloads over the scene, for screenshots from a real phone. */
+.walk-perf {
+  position: absolute;
+  z-index: 4;
+  top: calc(var(--walk-bar, 48px) + 64px);
+  right: 8px;
+  margin: 0;
+  padding: 4px 6px;
+  border-radius: 5px;
+  background: rgb(9 20 15 / .72);
+  color: #e9efc6;
+  font: 11px/1.35 ui-monospace, Consolas, monospace;
+  white-space: pre;
+  pointer-events: none;
+}
+
+/* Wet boardwalk planks and Klyop's lantern. Amber marks only what can be used right now. */
+.swalk[data-hud] {
+  --hud-board: rgb(35 28 18 / .7);
+  --hud-board-solid: #211a11;
+  --hud-edge: #8a7148;
+  --hud-edge-soft: rgb(138 113 72 / .5);
+  --hud-ink: #efe6d0;
+  --hud-ink-2: #c4b898;
+  --hud-lamp: #e8ad57;
+  --hud-moss: #b4cb7e;
+  --hud-label: "Bahnschrift SemiCondensed", "Roboto Condensed", "sans-serif-condensed", "Arial Narrow", system-ui, sans-serif;
+  --hud-grain: repeating-linear-gradient(177deg, transparent 0 4px, rgb(255 214 150 / .05) 5px, transparent 7px 11px);
+}
+.swalk[data-hud] .walk-heading {
+  background: var(--hud-grain), var(--hud-board-solid);
+  border-bottom-color: var(--hud-edge-soft);
+}
+.swalk[data-hud] .walk-heading h1 { font-family: var(--hud-label); font-weight: 600; font-size: .95rem; }
+.swalk[data-hud] .walk-link { color: var(--hud-lamp); }
+.swalk[data-hud] :is(.walk-map button, .walk-jump, .walk-center, .walk-load-retry) {
+  color: var(--hud-ink);
+  background: var(--hud-board);
+  border: 1px solid var(--hud-edge-soft);
+  font-family: var(--hud-label);
+  font-weight: 600;
+}
+.swalk[data-hud] .walk-jump { border-radius: 10px; font-size: .82rem; }
+.swalk[data-hud] .walk-center { border-radius: 50%; color: var(--hud-ink); }
+.swalk[data-hud] .walk-map-toggle { border-radius: 4px; }
+.swalk[data-hud] .walk-map-tools { background: var(--hud-grain), var(--hud-board-solid); border-color: var(--hud-edge-soft); }
+.walk-map-help { margin: 2px 0 0; color: var(--hud-ink-2); font-size: .72rem; line-height: 1.35; }
+
+/* Task board: one small plank, nailed in the corner; it lights up when the task changes, then quietens. */
+.swalk[data-hud] .walk-sortie {
+  width: min(222px, calc(58% - 18px));
+  padding: 6px 12px 7px 9px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px 3px 9px 3px;
+  background: var(--hud-grain), var(--hud-board);
+  color: var(--hud-ink);
+  font-size: .74rem;
+  line-height: 1.3;
+  opacity: .74;
+  transition: opacity .3s, border-color .3s;
+}
+.swalk[data-hud] .walk-sortie::after {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #b08f5c;
+  box-shadow: 0 0 0 1px #4a3823;
+  content: "";
+}
+.swalk[data-hud] .walk-sortie[data-fresh] { opacity: 1; border-color: var(--hud-lamp); }
+/* A hit: rust-red edge like the wrench, no glow. */
+.swalk[data-hud] .walk-sortie[data-hit="true"] { opacity: 1; border-color: #b8403e; box-shadow: none; }
+.swalk[data-hud] .walk-sortie-title strong { font: 600 .76rem/1.2 var(--hud-label); color: var(--hud-lamp); }
+.swalk[data-hud] .walk-sortie-title span { color: var(--hud-moss); letter-spacing: .08em; }
+.swalk[data-hud] .walk-sortie p { margin-top: 3px; }
+.swalk[data-hud] .walk-status {
+  padding: 5px 10px;
+  border-radius: 3px;
+  border-color: var(--hud-edge-soft);
+  background: var(--hud-grain), var(--hud-board);
+  color: var(--hud-ink);
+  font-size: .78rem;
+}
+.swalk[data-hud] .walk-status strong { font-family: var(--hud-label); font-weight: 600; color: var(--hud-moss); }
+.swalk[data-hud] .walk-loading { border-color: var(--hud-edge-soft); background: var(--hud-grain), rgb(33 26 17 / .94); }
+.swalk[data-hud] .walk-load-title { font-family: var(--hud-label); font-weight: 600; color: var(--hud-lamp); }
+.swalk[data-hud] .walk-loading .walk-load-progress { accent-color: var(--hud-lamp); }
+
+/* The key list is for the first steps only; afterwards it lives in the map panel. */
+.swalk[data-hud] .walk-help { transition: opacity .8s; }
+.swalk[data-hud][data-moved] .walk-help { opacity: 0; }
+
+@media (pointer: coarse) {
+  /* Left half of the lower screen is the stick: it starts wherever the thumb lands. */
+  .swalk[data-hud] .walk-touch:not([hidden]) { display: block; inset: var(--walk-bar) 0 0 0; }
+  .swalk[data-hud] .walk-stick { position: absolute; left: 0; bottom: 0; width: 56%; height: 55%; }
+  .swalk[data-hud] .walk-stick-ring {
+    left: var(--stick-origin-x, max(78px, calc(env(safe-area-inset-left, 0px) + 78px)));
+    top: var(--stick-origin-y, calc(100% - max(112px, calc(env(safe-area-inset-bottom, 0px) + 104px))));
+    border-color: var(--hud-edge);
+    background: rgb(35 28 18 / .42);
+    opacity: .3;
+    transition: opacity .15s;
+  }
+  .swalk[data-hud] .walk-stick[data-active] .walk-stick-ring { opacity: .9; transition: none; }
+  .swalk[data-hud] .walk-stick-knob { background: rgb(240 214 160 / .78); }
+  .swalk[data-hud] .walk-touch-right {
+    position: absolute;
+    right: var(--walk-right);
+    bottom: max(46px, calc(env(safe-area-inset-bottom, 0px) + 40px));
+    max-width: 42%;
+  }
+  /* Quiet until touched; context actions show up only when they work and glow like the lamp. */
+  .swalk[data-hud] :is(.walk-jump, .walk-center) { opacity: .46; transition: opacity .15s, border-color .15s; }
+  .swalk[data-hud] :is(.walk-jump, .walk-center):active { opacity: 1; }
+  .swalk[data-hud] :is(#swalk-interact, #swalk-attack, .walk-jump[data-deck-climb]) {
+    opacity: 1;
+    border: 2px solid var(--hud-lamp);
+    color: #ffe3b0;
+    background: rgb(58 44 24 / .82);
+  }
+  .swalk[data-hud] #swalk-dodge { opacity: .9; }
+  .swalk[data-hud] .walk-status {
+    top: calc(var(--walk-bar) + 9px);
+    bottom: auto;
+    left: auto;
+    right: var(--walk-right);
+    max-width: calc(42% - 14px);
+  }
+}

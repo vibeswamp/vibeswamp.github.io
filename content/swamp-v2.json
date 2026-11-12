@@ -11,220 +11,220 @@
   "buildings": [
     {
       "id": "tussock",
-      "cost": 10,
-      "rate": 0.54,
+      "cost": 15,
+      "rate": 0.6,
       "room": "shore"
     },
     {
       "id": "antenna",
-      "cost": 100,
-      "rate": 4.05,
+      "cost": 270,
+      "rate": 5.1,
       "room": "shore"
     },
     {
       "id": "flytrap",
-      "cost": 1100,
-      "rate": 27,
+      "cost": 4900,
+      "rate": 43.4,
       "room": "shore"
     },
     {
       "id": "stump",
-      "cost": 12000,
-      "rate": 175.5,
+      "cost": 87000,
+      "rate": 368,
       "room": "workshop"
     },
     {
       "id": "review",
-      "cost": 130000,
-      "rate": 1147.5,
+      "cost": 1600000,
+      "rate": 3130,
       "room": "workshop"
     },
     {
       "id": "beaver",
-      "cost": 1400000,
-      "rate": 7425,
+      "cost": 28000000,
+      "rate": 26600,
       "room": "shore"
     },
     {
       "id": "peat",
-      "cost": 15000000,
-      "rate": 48600,
+      "cost": 510000000,
+      "rate": 226000,
       "room": "server"
     },
     {
       "id": "radio",
-      "cost": 160000000,
-      "rate": 324000,
+      "cost": 9200000000,
+      "rate": 1920000,
       "room": "radio"
     }
   ],
   "builds": [
     {
       "id": "bug",
-      "cost": 50,
+      "cost": 60,
       "sec": 5
     },
     {
       "id": "rimworld",
-      "cost": 600,
+      "cost": 1000,
       "sec": 10
     },
     {
       "id": "seams",
-      "cost": 6000,
+      "cost": 18000,
       "sec": 15
     },
     {
       "id": "kfsos",
-      "cost": 60000,
+      "cost": 300000,
       "sec": 20
     },
     {
       "id": "friday",
-      "cost": 500000,
+      "cost": 5100000,
       "sec": 25
     },
     {
       "id": "workshop",
-      "cost": 4000000,
+      "cost": 88000000,
       "sec": 30
     },
     {
       "id": "track",
-      "cost": 30000000,
+      "cost": 1500000000,
       "sec": 40
     },
     {
       "id": "stream",
-      "cost": 200000000,
+      "cost": 26000000000,
       "sec": 50
     }
   ],
   "stages": [
     {
       "id": "pads",
-      "cost": 5,
-      "total": 10,
+      "cost": 20,
+      "total": 180,
       "part": "pads"
     },
     {
       "id": "deck",
-      "cost": 12,
-      "total": 30,
+      "cost": 95,
+      "total": 780,
       "part": "deck"
     },
     {
       "id": "plank",
-      "cost": 20,
-      "total": 60,
+      "cost": 400,
+      "total": 3300,
       "part": "plank"
     },
     {
       "id": "poles",
-      "cost": 50,
-      "total": 180,
+      "cost": 2500,
+      "total": 20000,
       "part": "poles"
     },
     {
       "id": "awning",
-      "cost": 120,
-      "total": 450,
+      "cost": 10000,
+      "total": 93000,
       "part": "awning"
     },
     {
       "id": "wall_l",
-      "cost": 300,
-      "total": 1200,
+      "cost": 40000,
+      "total": 330000,
       "part": "wall-l"
     },
     {
       "id": "wall_r",
-      "cost": 900,
-      "total": 3500,
+      "cost": 130000,
+      "total": 1000000,
       "part": "wall-r"
     },
     {
       "id": "window_hole",
-      "cost": 1800,
-      "total": 9000,
+      "cost": 350000,
+      "total": 3000000,
       "part": "window-hole"
     },
     {
       "id": "window",
-      "cost": 4500,
-      "total": 22000,
+      "cost": 1300000,
+      "total": 10000000,
       "part": "window"
     },
     {
       "id": "door",
-      "cost": 10000,
-      "total": 50000,
+      "cost": 3300000,
+      "total": 28000000,
       "part": "door"
     },
     {
       "id": "floor",
-      "cost": 25000,
-      "total": 120000,
+      "cost": 6500000,
+      "total": 55000000,
       "part": "floor"
     },
     {
       "id": "lamp",
-      "cost": 60000,
-      "total": 300000,
+      "cost": 15000000,
+      "total": 130000000,
       "part": "lamp"
     },
     {
       "id": "furniture",
-      "cost": 140000,
-      "total": 750000,
+      "cost": 33000000,
+      "total": 280000000,
       "part": "furniture"
     },
     {
       "id": "chair",
-      "cost": 350000,
-      "total": 1800000,
+      "cost": 80000000,
+      "total": 680000000,
       "part": "chair"
     },
     {
       "id": "tea_corner",
-      "cost": 900000,
-      "total": 5000000,
+      "cost": 250000000,
+      "total": 2000000000,
       "part": "tea-corner"
     },
     {
       "id": "workshop",
-      "cost": 2400000,
-      "total": 15000000,
+      "cost": 550000000,
+      "total": 4500000000,
       "part": "workshop"
     },
     {
       "id": "extension",
-      "cost": 7000000,
-      "total": 50000000,
+      "cost": 1000000000,
+      "total": 8800000000,
       "part": "extension"
     },
     {
       "id": "server_room",
-      "cost": 22000000,
-      "total": 160000000,
+      "cost": 1500000000,
+      "total": 13000000000,
       "part": "server-room"
     },
     {
       "id": "studio",
-      "cost": 65000000,
-      "total": 500000000,
+      "cost": 2000000000,
+      "total": 18000000000,
       "part": "studio"
     },
     {
       "id": "radio_room",
-      "cost": 220000000,
-      "total": 1600000000,
+      "cost": 2800000000,
+      "total": 23000000000,
       "part": "radio-room"
     },
     {
       "id": "office",
       "cost": 4000000000,
-      "total": 36000000000,
+      "total": 33000000000,
       "part": "office"
     }
   ],
@@ -327,54 +327,151 @@
   "art": {
     "background": "/brand/swamp/bg.webp",
     "mobileBackground": "/brand/swamp/bg-960.webp",
-    "stageLayers": {},
-    "stageBackgrounds": {
-      "poles": {
-        "src": "/brand/swamp/v2-stage-1.webp",
-        "covers": [
-          "pads",
-          "deck",
-          "plank",
-          "poles"
+    "steps": {
+      "pads": {
+        "layer": "pads",
+        "box": [
+          25.7,
+          82.9,
+          50.8,
+          10.3
         ]
       },
+      "deck": {
+        "layer": "deck",
+        "box": [
+          23.6,
+          69.6,
+          53.1,
+          19.1
+        ]
+      },
+      "plank": {
+        "layer": "plank",
+        "box": [
+          18.5,
+          34.5,
+          59.4,
+          42
+        ]
+      },
+      "poles": {
+        "layer": "poles",
+        "box": [
+          23.3,
+          36.3,
+          53.4,
+          39.9
+        ],
+        "hides": [
+          "plank"
+        ]
+      },
+      "awning": {
+        "layer": "awning",
+        "box": [
+          21.2,
+          16.4,
+          58,
+          26.8
+        ]
+      },
+      "wall_l": {
+        "layer": "wall_l",
+        "box": [
+          25.5,
+          40.3,
+          25.2,
+          32.2
+        ]
+      },
+      "wall_r": {
+        "layer": "wall_r",
+        "box": [
+          50.3,
+          40.1,
+          23.7,
+          32.4
+        ]
+      },
+      "window_hole": {
+        "layer": "window_hole",
+        "box": [
+          36.1,
+          41.6,
+          13.4,
+          20.2
+        ]
+      },
+      "window": {
+        "layer": "window",
+        "box": [
+          35.6,
+          41.1,
+          14.3,
+          25.5
+        ],
+        "hides": [
+          "window_hole"
+        ]
+      },
+      "door": {
+        "layer": "door",
+        "box": [
+          51.4,
+          41.7,
+          12.5,
+          28.5
+        ]
+      },
+      "floor": {
+        "layer": "floor",
+        "box": [
+          28.6,
+          59.9,
+          42.7,
+          13.1
+        ],
+        "base": "v2-stage-3",
+        "dark": "interior-dark"
+      },
       "lamp": {
-        "src": "/brand/swamp/v2-stage-2.webp",
-        "covers": [
-          "pads",
-          "deck",
-          "plank",
-          "poles",
-          "awning",
-          "wall_l",
-          "wall_r",
-          "window_hole",
-          "window",
-          "door",
-          "floor",
-          "lamp"
+        "layer": "lamp",
+        "box": [
+          31.8,
+          40,
+          45.6,
+          21.7
+        ]
+      },
+      "furniture": {
+        "layer": "furniture",
+        "box": [
+          27.9,
+          39.8,
+          14.1,
+          34.9
+        ]
+      },
+      "chair": {
+        "layer": "chair",
+        "box": [
+          60.7,
+          54.5,
+          10.9,
+          19.6
         ]
       },
       "tea_corner": {
-        "src": "/brand/swamp/v2-stage-3.webp",
-        "covers": [
-          "pads",
-          "deck",
-          "plank",
-          "poles",
-          "awning",
-          "wall_l",
-          "wall_r",
-          "window_hole",
-          "window",
-          "door",
-          "floor",
-          "lamp",
-          "furniture",
-          "chair",
-          "tea_corner"
+        "layer": "tea_corner",
+        "box": [
+          59.8,
+          39.5,
+          19.3,
+          24
         ]
       }
     }
-  }
+  },
+  "clickShare": 0.083
 }

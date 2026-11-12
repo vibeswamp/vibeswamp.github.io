@@ -413,6 +413,48 @@
   }
   for (const a of document.querySelectorAll(".top nav a")) a.addEventListener("click", () => Sound.play("tick"));
 
+  // ---------- phones: the header button opens the menu as a sheet from the bottom; Esc, the shade or ✕ closes it ----------
+  const topBar = document.querySelector(".top");
+  const menuBtn = topBar?.querySelector(".menu-btn");
+  const sheet = document.getElementById("top-menu");
+  if (menuBtn && sheet) {
+    const shade = topBar.querySelector(".menu-shade");
+    const phone = matchMedia("(max-width: 900px)");
+    const isOpen = () => topBar.dataset.menu === "open";
+    const focusables = () => [...sheet.querySelectorAll("a[href], button:not([disabled])")].filter((el) => el.getClientRects().length);
+    const setOpen = (yes, focusBack = true) => {
+      if (yes === isOpen()) return;
+      if (yes) topBar.dataset.menu = "open"; else delete topBar.dataset.menu;
+      root.classList.toggle("menu-open", yes);
+      menuBtn.setAttribute("aria-expanded", yes ? "true" : "false");
+      if (shade) shade.hidden = !yes;
+      if (yes) {
+        sheet.setAttribute("role", "dialog");
+        sheet.setAttribute("aria-modal", "true");
+        requestAnimationFrame(() => (sheet.querySelector("nav a[aria-current]") || focusables()[0])?.focus({ preventScroll: true }));
+      } else {
+        sheet.removeAttribute("role");
+        sheet.removeAttribute("aria-modal");
+        if (focusBack) menuBtn.focus({ preventScroll: true });
+      }
+      Sound.play("tick");
+    };
+    menuBtn.addEventListener("click", () => setOpen(!isOpen()));
+    sheet.querySelector(".menu-close")?.addEventListener("click", () => setOpen(false));
+    shade?.addEventListener("click", () => setOpen(false));
+    addEventListener("keydown", (e) => {
+      if (!isOpen()) return;
+      if (e.key === "Escape") { e.preventDefault(); setOpen(false); return; }
+      if (e.key !== "Tab") return;
+      const f = focusables();
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    });
+    phone.addEventListener?.("change", () => { if (!phone.matches) setOpen(false, false); });
+    addEventListener("pageshow", () => setOpen(false, false));   // back from the next page: the menu is closed
+  }
+
   // ---------- strips that scroll sideways on phones (menu, section doors, tabs): a soft fade at the edge shows there is more ----------
   for (const el of document.querySelectorAll(".top nav, .doors .door-list, .subtabs")) {
     const upd = () => {
@@ -679,13 +721,21 @@
   if (hero && layer && bigToad) {
     const flies = [];
     const W = () => hero.clientWidth, H = () => hero.clientHeight;
-    const target = (f) => { f.tx = W() * (0.42 + Math.random() * 0.54); f.ty = H() * (0.12 + Math.random() * 0.5); };
+    // on a wide screen they fly on the right, beside the text; on a phone the text takes the whole width, so they keep
+    // to the strip of air just above the pond and never cross the heading or the numbers
+    const pond = hero.querySelector(".pond");
+    const zone = () => {
+      if (W() > 900 || !pond) return { x: W() * 0.42, w: W() * 0.54, y: H() * 0.12, h: H() * 0.5 };
+      return { x: W() * 0.08, w: W() * 0.84, y: pond.offsetTop - 70, h: 56 };
+    };
+    const target = (f) => { const z = zone(); f.tx = z.x + Math.random() * z.w; f.ty = z.y + Math.random() * z.h; };
     const draw = (f) => { f.el.style.transform = `translate(${f.x.toFixed(1)}px, ${f.y.toFixed(1)}px)`; };
     const spawn = () => {
       const el = document.createElement("button");
       el.type = "button"; el.className = "fly"; el.tabIndex = -1; el.setAttribute("aria-hidden", "true");
       el.innerHTML = flySvg;
-      const f = { el, x: W() * (0.5 + Math.random() * 0.45), y: H() * (0.15 + Math.random() * 0.45), vx: 0, vy: 0, tx: 0, ty: 0, alive: true };
+      const z0 = zone();
+      const f = { el, x: z0.x + Math.random() * z0.w, y: z0.y + Math.random() * z0.h, vx: 0, vy: 0, tx: 0, ty: 0, alive: true };
       target(f);
       el.addEventListener("click", (ev) => {
         ev.preventDefault(); ev.stopPropagation();

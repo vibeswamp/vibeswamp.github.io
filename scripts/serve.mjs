@@ -16,6 +16,7 @@ const types = {
   ".webp": "image/webp",
   ".gif": "image/gif",
   ".js": "text/javascript; charset=utf-8",
+  ".mjs": "text/javascript; charset=utf-8",
   ".json": "application/json; charset=utf-8",
   ".txt": "text/plain; charset=utf-8",
   ".xml": "application/xml; charset=utf-8",
@@ -28,9 +29,11 @@ createServer(async (req, res) => {
   try {
     if ((await stat(file)).isDirectory()) file = join(file, "index.html");
     // no-cache: the browser asks again every time, so a fresh build shows up at once
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.writeHead(200, { "content-type": types[extname(file)] ?? "application/octet-stream", "cache-control": "no-cache" });
     res.end(await readFile(file));
   } catch {
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.writeHead(404, { "content-type": "text/plain; charset=utf-8" }).end("not found");
   }
-}).listen(port, () => console.log(`VibeSwamp preview: http://localhost:${port}`));
+}).listen(port, "0.0.0.0", () => console.log(`VibeSwamp preview: http://localhost:${port}`));

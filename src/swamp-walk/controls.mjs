@@ -5,9 +5,14 @@ const KEYS = new Set([
   "ShiftLeft", "ShiftRight", "Space", "KeyR", "KeyE", "Enter", "KeyF", "KeyQ", "KeyV",
 ]);
 const START_PITCH = 0.32;
-const TOUCH_PITCH = 0.42;
-const SWIPE_PAUSE = 1.15;
+// Phones look flatter from a little further back: horizon in the upper quarter, Klyop in the lower third.
+const TOUCH_PITCH = 0.30;
+// After a swipe the camera waits, then eases back behind Klyop: quickly while he runs, slowly while he stands,
+// so a player who stopped to look at the sunset is not pulled away at once.
+const FOLLOW_AFTER_MOVE = 0.9;
+const FOLLOW_AFTER_IDLE = 3.2;
 const FOLLOW_RATE = 2.1;
+const PITCH_RETURN = 1.3;
 const CENTER_RATE = 13;
 const DEADZONE = 0.10;
 const ACTIONS = { Space: "jump", TouchJump: "jump", KeyE: "interact", Enter: "interact", KeyF: "attack", KeyQ: "dodge" };
@@ -19,7 +24,7 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   let stickX = 0, stickZ = 0, currentX = 0, currentZ = 0, currentSprint = false;
   const restingPitch = () => touchLayout.matches ? TOUCH_PITCH : START_PITCH;
   const camera = { yaw: 0, pitch: restingPitch() };
-  let followDelay = 0, centerYaw = null;
+  let sinceSwipe = Infinity, centerYaw = null;
 
   function clearStick() {
     touch = null;
@@ -89,7 +94,7 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   });
   function endCameraDrag(event) {
     if (drag?.id !== event.pointerId) return;
-    if (drag.moved) followDelay = SWIPE_PAUSE;
+    if (drag.moved) sinceSwipe = 0;
     drag = null;
   }
   for (const name of ["pointerup", "pointercancel", "lostpointercapture"]) {
@@ -135,7 +140,7 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
       return;
     }
     centerYaw = heading + Math.PI;
-    followDelay = SWIPE_PAUSE;
+    sinceSwipe = Infinity;
   }
 
   function updateCamera(heading, dt) {
@@ -155,14 +160,15 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
       return;
     }
     if (drag) return;
-    followDelay = Math.max(0, followDelay - dt);
-    if (followDelay > 0) return;
-    // Camera-relative movement would keep turning the actor if we chased a sideways or backward stick.
+    sinceSwipe += dt;
     const magnitude = Math.hypot(currentX, currentZ);
+    if (sinceSwipe < (magnitude > DEADZONE ? FOLLOW_AFTER_MOVE : FOLLOW_AFTER_IDLE)) return;
+    // Camera-relative movement would keep turning the actor if we chased a sideways or backward stick.
     if (magnitude > DEADZONE && (currentZ >= 0 || Math.abs(currentX) > .07)) return;
     const delta = heading + Math.PI - camera.yaw;
     const turn = Math.atan2(Math.sin(delta), Math.cos(delta));
     camera.yaw += turn * -Math.expm1(-FOLLOW_RATE * dt);
+    camera.pitch += (restingPitch() - camera.pitch) * -Math.expm1(-PITCH_RETURN * dt);
   }
   return {
     camera,
@@ -171,7 +177,7 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
     resetCamera(heading) {
       clearInput();
       centerYaw = null;
-      followDelay = 0;
+      sinceSwipe = Infinity;
       camera.pitch = restingPitch();
       camera.yaw = heading + Math.PI;
     },

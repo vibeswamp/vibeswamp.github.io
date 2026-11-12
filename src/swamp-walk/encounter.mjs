@@ -6,6 +6,7 @@ import { createProximityActor } from "./proximity.mjs";
 import { createSortie, SORTIE_TEXT } from "./sortie.mjs";
 import { pickWalkAction, walkObjectiveHint } from "./walk-hud.mjs";
 import { LANDMARKS, WATER } from "./land.mjs";
+import { MODELS } from "./quality.mjs";
 
 const ART = "/swamp-walk/mvp/";
 const HEALTH = 3;
@@ -66,7 +67,7 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
 
   let fly, flyToken, pending = false, failed = false;
   let health = HEALTH, damageTime = 0, signature = "";
-  let carrying = false, served = false, radioNote = false;
+  let carrying = false, depositFailed = false, served = false, radioNote = false;
   let targetPlayer = null, curioNoteUntil = 0;
 
   function takeHit() {
@@ -77,7 +78,7 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
   }
   const patrol = layout.patrol && character.attack ? createProximityActor({
     create: createBeggar, THREE: T, GLTFLoader: T.GLTFLoader, scene, loadRadius: 6,
-    ...layout.patrol, url: ART + "beggar-web.glb", floorAt, canReach,
+    ...layout.patrol, url: MODELS.beggar, floorAt, canReach,
     onHit: () => {
       if (targetPlayer && clearAttack(patrol.position, targetPlayer, 0.84)) takeHit();
     },
@@ -88,7 +89,7 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     if (pending || fly || failed || !character.attack) return;
     pending = true;
     createFly({
-      THREE: T, GLTFLoader: T.GLTFLoader, scene: actors, url: ART + "fly-web.glb",
+      THREE: T, GLTFLoader: T.GLTFLoader, scene: actors, url: MODELS.fly,
       ...layout.fly, floorAt: (x, z) => Math.max(WATER, floorAt(x, z)), canReach,
       onHit: () => {
         if (targetPlayer && clearAttack(fly.position, targetPlayer, 0)) takeHit();
@@ -105,7 +106,7 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     fly?.reset();
     patrol?.reset();
     flyToken = null;
-    carrying = served = radioNote = false;
+    carrying = depositFailed = served = radioNote = false;
     curioNoteUntil = 0;
     health = HEALTH;
     damageTime = 0;
@@ -131,9 +132,11 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
   function interact(player, time) {
     const action = actionAt(player, time);
     if (action === "deposit") {
+      // The trophy counts only once the browser has stored it; otherwise Klyop keeps the salvage and may retry.
+      depositFailed = !saved.save(true);
+      if (depositFailed) return;
       carrying = false;
-      saved.trophy = prize.visible = true;
-      saved.save();
+      prize.visible = true;
       feedback("win");
     } else if (action === "tea") {
       health = HEALTH;
@@ -167,7 +170,7 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     const phase = carrying ? "carrying" : sortie.state === "complete" && saved.trophy ? "delivered"
       : sortie.state === "active" && !flyToken ? "return" : sortie.state;
     const hint = failed || !character.attack ? copy.unavailable
-      : phase === "carrying" ? copy.carry
+      : phase === "carrying" ? (depositFailed ? copy.depositFailed : copy.carry)
       : phase === "delivered" ? copy.delivered
       : phase === "return" ? copy.return
       : phase === "active" ? (distance(player, layout.fly) > 7.3 ? copy.approach : copy.fight)
@@ -184,7 +187,8 @@ export function addEncounter({ scene, layout, floorAt, character, ui, copy, cabi
     ui.objective.textContent = walkObjectiveHint(document.documentElement.lang, action, hint);
     ui.health.textContent = "●".repeat(health) + "○".repeat(HEALTH - health);
     ui.health.setAttribute("aria-label", `${copy.health} ${health} / ${HEALTH}`);
-    const label = action ? lines[action] ?? copy[action] ?? forestText[action] : "";
+    const label = action === "deposit" && depositFailed ? copy.depositRetry
+      : action ? lines[action] ?? copy[action] ?? forestText[action] : "";
     ui.prompt.textContent = traversal || label;
     ui.prompt.toggleAttribute("data-vault", Boolean(traversal));
     ui.prompt.toggleAttribute("data-deck-climb", deckReady);

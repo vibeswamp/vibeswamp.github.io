@@ -92,7 +92,7 @@ function makeWarning(THREE, floorAt) {
 }
 
 export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorAt, onHit,
-  points = [], canReach = () => true }) {
+  points = [], waterLevel = 0.08, canReach = () => true }) {
   const patrol = buildRoute(x, z, points);
   const gltf = await new GLTFLoader().loadAsync(url);
   const { mixer, actions: [idle, walk, run, attack, hit] } = makeActions(THREE, gltf);
@@ -119,7 +119,7 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
   let health, mode, age, cooldown, phase, idleTime, weights, interrupted, waypoint, direction;
 
   function stepAllowed(px, pz, py, previousY) {
-    return Number.isFinite(py) && py - previousY <= STEP_UP && previousY - py <= STEP_DOWN
+    return Number.isFinite(py) && py > waterLevel && py - previousY <= STEP_UP && previousY - py <= STEP_DOWN
       && canReach(px, pz, py);
   }
 
