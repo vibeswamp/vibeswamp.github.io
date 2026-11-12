@@ -1,6 +1,7 @@
 ---
 title: Ancient Restoration 0.7.2
 date: 2026-11-12
+time: 13:44
 projects: ancient-restoration
 image: assets/ancient-restoration/15-i-gizmos.jpg
 summary: Нове налаштування дозволяє реставрацію, навіть коли вона дорожча за нову споруду.

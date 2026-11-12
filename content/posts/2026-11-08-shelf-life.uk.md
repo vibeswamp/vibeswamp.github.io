@@ -1,6 +1,7 @@
 ---
 title: Shelf Life вийшов у Майстерні Steam
 date: 2026-11-08
+time: 16:40
 projects: shelf-life
 image: assets/shelf-life/01-header.jpg
 summary: Полиці на виріст для великих збірок. Полицю покращують на місці, до 30 стосів на клітинку.

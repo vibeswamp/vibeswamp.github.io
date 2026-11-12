@@ -250,10 +250,11 @@ async function loadPosts() {
     if (!meta.title) { warn(`${f}: no title, skipped`); continue; }
     const ids = (meta.projects ?? "").split(",").map((s) => s.trim()).filter(Boolean);
     ids.filter((id) => !byId[id]).forEach((id) => warn(`${f}: unknown project "${id}"`));
-    const post = (bySlug[slug] ??= { slug, date, projects: ids.filter((id) => byId[id]), image: meta.image || null, langs: {} });
+    const post = (bySlug[slug] ??= { slug, date, time: /^\d{2}:\d{2}$/.test(meta.time ?? "") ? meta.time : "", projects: ids.filter((id) => byId[id]), image: meta.image || null, langs: {} });
     post.langs[lang] = { title: meta.title, summary: meta.summary ?? "", body };
   }
-  return Object.values(bySlug).sort((a, b) => b.date.localeCompare(a.date) || a.slug.localeCompare(b.slug));
+  // Same day: an optional "time: HH:MM" in the front matter puts the later post first, then by name.
+  return Object.values(bySlug).sort((a, b) => b.date.localeCompare(a.date) || b.time.localeCompare(a.time) || a.slug.localeCompare(b.slug));
 }
 const postsIn = (lang, list = posts) => list.filter((p) => p.langs[lang]);
 
@@ -412,9 +413,7 @@ ${site.languages.map((l) => `<link rel="alternate" hreflang="${l}" href="${site.
 <meta property="og:url" content="${site.baseUrl}${path}">
 ${image ? `<meta property="og:image" content="${site.baseUrl}/${esc(String(image).replace(/^\/+/, ""))}">\n` : ""}<link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Tektur:wdth,wght@75..100,500..800&family=Overpass:wght@400;600;800&display=swap">
+${["overpass", "bitter"].map((f) => `<link rel="preload" href="/fonts/${f}-${lang === "en" ? "latin" : "cyrillic"}.woff2" as="font" type="font/woff2" crossorigin>`).join("\n")}
 <link rel="stylesheet" href="${siteStyles}">
 ${page === "page-swamp" ? `<link rel="stylesheet" href="${clickerStyles}">\n` : ""}${jsonld ? `<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, "\\u003c")}</script>\n` : ""}</head>
 <body${page ? ` class="${page}"` : ""} data-lb-prev="${esc(t.lbPrev)}" data-lb-next="${esc(t.lbNext)}" data-lb-close="${esc(t.lbClose)}" data-frog="${esc(t.frogSays)}">
@@ -778,7 +777,7 @@ function sectionPage(lang, key) {
   .join("")}</nav>
 <div id="mods-all"></div>
 ${families
-  .map((f) => `<section class="wrap cat fam" data-fam="${esc(f.toLowerCase())}" aria-labelledby="fam-${esc(f.toLowerCase())}"><h2 id="fam-${esc(f.toLowerCase())}">${esc(f)}</h2><ol class="crows">${mods.filter((p) => familyOf(p) === f).map((p) => catRow(lang, p)).join("\n")}</ol></section>`)
+  .map((f) => `<section class="wrap cat fam" data-fam="${esc(f.toLowerCase())}" aria-labelledby="fam-${esc(f.toLowerCase())}"><h2 id="fam-${esc(f.toLowerCase())}">${esc(f)}</h2><ol class="crows">${mods.filter((p) => familyOf(p) === f).map((p) => catRow(lang, p)).join("\n")}</ol>${extrasBlock(lang, f)}</section>`)
   .join("\n")}`;
   }
   if (key === "games") {
@@ -902,6 +901,27 @@ ${list.map(({ m, i }) => `<li class="track"><button type="button" class="play" d
 const SWAMP = existsSync(join(root, "content", "swamp.json")) ? JSON.parse(readFileSync(join(root, "content", "swamp.json"), "utf8")) : null;
 const SWAMP_V2 = await readJson("content", "swamp-v2.json");
 const SWAMP_WALK = await readJson("content", "swamp-walk.json");
+// small things around the mods that get no page of their own (helpers for the owner's modpack, experiments) and the
+// pairs of mods that work together; source: the RimWorld chat's library list, 12.11.2026
+const LIBRARY = existsSync(join(root, "content", "library.json")) ? await readJson("content", "library.json") : { pairs: [], extras: {} };
+const pairsOf = (p) => (LIBRARY.pairs ?? [])
+  .filter((pair) => pair.includes(p.id))
+  .map((pair) => byId[pair[0] === p.id ? pair[1] : pair[0]])
+  .filter((x) => x?.page)
+  .sort((a, b) => a.order - b.order);
+function pairsLine(lang, p) {
+  const list = pairsOf(p);
+  if (!list.length) return "";
+  return `<p class="pairs"><span class="pairs-h">${esc(site.strings[lang].pairsLabel)}</span> ${list.map((x) => `<a href="${projectUrl(lang, x.id)}">${esc(nameOf(x, lang))}</a>`).join(", ")}</p>`;
+}
+function extrasBlock(lang, family) {
+  const x = LIBRARY.extras?.[family];
+  if (!x) return "";
+  const li = (list) => `<ul class="extras-list">${list.map((h) => `<li><b>${esc(trOr(h.name, lang))}</b>: ${esc(tr(h.text, lang))}</li>`).join("")}</ul>`;
+  return `<details class="extras"><summary>${esc(tr(x.title, lang))}</summary>
+${x.helpers?.length ? `<p>${esc(tr(x.helpersLead, lang))}</p>${li(x.helpers)}` : ""}${x.experiments?.length ? `<p>${esc(tr(x.experimentsLead, lang))}</p>${li(x.experiments)}` : ""}
+</details>`;
+}
 
 function playPage(lang) {
   const t = site.strings[lang];
@@ -1110,7 +1130,7 @@ ${p.status === "onhold" ? `<p class="hold-note">${esc(t.onHoldNote)}</p>` : ""}
 </div>
 </div>
 </section>
-${(tr(p.details, lang) || []).length ? `<div class="wrap project-body">${!p.short && klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}<div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}</div>${p.short ? shortVideo(lang, p) : ""}</div>` : ""}
+${(tr(p.details, lang) || []).length ? `<div class="wrap project-body">${!p.short && klyopFor(p) ? klyopImg(`klyop/${klyopFor(p)}`, "proj-klyop") : ""}<div class="prose">${tr(p.details, lang).map((para) => `<p>${esc(para)}</p>`).join("\n")}${pairsLine(lang, p)}</div>${p.short ? shortVideo(lang, p) : ""}</div>` : ""}
 ${(tr(p.plans, lang) || []).length ? `<section class="wrap plans" aria-labelledby="plans-h">
 <h2 id="plans-h"><span class="wire" aria-hidden="true"></span>${esc(t.plans)}</h2>
 <ul class="plan-list">${tr(p.plans, lang).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>

@@ -3,7 +3,7 @@
 //   node scripts/swamp-pace.mjs --quiet    -> only the checks; exit code 1 if one fails
 // Active: 4 croaks a second and a fly every 8 s. Calm: 1 croak a second and a fly every 20 s. Both buy the building
 // with the best price per fly a second, build the next step as soon as it opens, and run every project they can
-// afford. No vibe, radio, tea or fat flies, so real players are a bit faster.
+// afford. Badges that can be counted give their +1%. No vibe, radio, tea or fat flies, so real players are a bit faster.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -14,10 +14,13 @@ const D = JSON.parse(readFileSync(join(root, "content/swamp-v2.json"), "utf8"));
 const quiet = process.argv.includes("--quiet");
 
 function play({ cps, flyEvery, minutes }) {
-  const S = { flies: 0, total: 0, clicks: 0, own: {}, done: {}, run: null, stage: 0, caught: 0, activities: {}, visited: ["shore"] };
+  const S = { flies: 0, total: 0, clicks: 0, own: {}, done: {}, run: null, stage: 0, caught: 0, activities: {}, visited: ["shore"], ach: {} };
   const stepAt = [], firstBuy = {}, events = [];
   const dt = 0.25;
   for (let t = 0; t < minutes * 60 && S.stage < D.stages.length; t += dt) {
+    // badges that can be counted open as they would in the game (+1% each)
+    if (t % 5 < dt / 2) for (const [id, [v, g]] of Object.entries(E.achievementProgress(S, D))) if (v >= g) S.ach[id] ||= t;
+    S.clicks += cps * dt; S.caught += flyEvery && t > 0 && t % flyEvery < dt / 2 ? 1 : 0;
     const income = E.incomeRate(S, D) * dt + E.clickValue(S, D) * cps * dt;
     S.flies += income; S.total += income;
     if (flyEvery && t > 0 && t % flyEvery < dt / 2) {

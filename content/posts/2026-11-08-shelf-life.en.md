@@ -1,6 +1,7 @@
 ---
 title: Shelf Life is out on the Steam Workshop
 date: 2026-11-08
+time: 16:40
 projects: shelf-life
 image: assets/shelf-life/01-header.jpg
 summary: Upgradeable storage for big modpacks. A shelf is upgraded where it stands, up to 30 stacks per cell.

@@ -1,6 +1,7 @@
 ---
 title: Seamless World 0.9.0
 date: 2026-11-08
+time: 12:11
 projects: seamless-world
 image: assets/seamless-world/00-keyart.jpg
 summary: Fog over the neighbors, a watchtower, the depth of new zones and levels from As Above, So Below 2.

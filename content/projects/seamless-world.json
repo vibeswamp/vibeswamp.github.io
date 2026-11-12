@@ -4,15 +4,15 @@
   "name": "Seamless World",
   "kind": "mod",
   "game": {
-    "en": "RimWorld 1.7",
-    "uk": "RimWorld 1.7",
-    "ru": "RimWorld 1.7"
+    "en": "RimWorld 1.7 and 1.6",
+    "uk": "RimWorld 1.7 і 1.6",
+    "ru": "RimWorld 1.7 и 1.6"
   },
   "status": "released",
   "version": {
-    "en": "0.9.0, beta",
-    "uk": "0.9.0, бета",
-    "ru": "0.9.0, бета"
+    "en": "0.10.0, beta",
+    "uk": "0.10.0, бета",
+    "ru": "0.10.0, бета"
   },
   "workshopId": "3823099600",
   "image": "assets/seamless-world/01.jpg",

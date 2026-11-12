@@ -1,6 +1,7 @@
 ---
 title: Ancient Restoration 0.7.1 и Ancient Obsession 0.6.2
 date: 2026-11-08
+time: 12:24
 projects: ancient-restoration, ancient-obsession
 image: assets/ancient-restoration/15-i-gizmos.jpg
 summary: Древний навигационный маяк чинится в посадочный, подсказка ремонта стала понятнее, а легенды не ломаются и в отдельном Ancient Obsession.

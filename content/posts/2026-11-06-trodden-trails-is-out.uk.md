@@ -1,6 +1,7 @@
 ---
 title: Trodden Trails з'явився в майстерні Steam
 date: 2026-11-06
+time: 23:11
 projects: trodden-trails
 image: assets/trodden-trails/keyart-en.jpg
 summary: Новий мод для RimWorld 1.7. Каравани, що ходять одним шляхом, протоптують стежку на мапі світу, і наступний похід швидший.

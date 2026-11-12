@@ -1,6 +1,7 @@
 ---
 title: Ancient Restoration 0.6.2
 date: 2026-11-08
+time: 00:22
 projects: ancient-restoration
 image: assets/ancient-restoration/00-header.jpg
 summary: A small fix release: Ukrainian, and steadier work on RimWorld 1.7.

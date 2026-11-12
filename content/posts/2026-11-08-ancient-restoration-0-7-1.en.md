@@ -1,6 +1,7 @@
 ---
 title: Ancient Restoration 0.7.1 and Ancient Obsession 0.6.2
 date: 2026-11-08
+time: 12:24
 projects: ancient-restoration, ancient-obsession
 image: assets/ancient-restoration/15-i-gizmos.jpg
 summary: Ancient nav beacons repair into landing beacons, the repair tooltip is clearer, and legends stop breaking down in the standalone Ancient Obsession too.

@@ -1,6 +1,7 @@
 ---
 title: Натоптанные тропы появились в мастерской Steam
 date: 2026-11-06
+time: 23:11
 projects: trodden-trails
 image: assets/trodden-trails/keyart-ru.jpg
 summary: Новый мод для RimWorld 1.7. Караваны, которые ходят одним путём, протаптывают тропу на карте мира, и следующий поход быстрее.

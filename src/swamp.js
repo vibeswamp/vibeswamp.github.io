@@ -1,5 +1,5 @@
 import { RANKS, rankOf, priceOf as buildingPrice, producerMultiplier, swampMultiplier, baseRate as calculateBaseRate,
-  incomeRate, clickValue, buyBuilding, buyStage, roomOpen, startProject, finishProject, achievementChecks } from "./swamp/engine.mjs";
+  incomeRate, clickValue, buyBuilding, buyStage, roomOpen, startProject, finishProject, achievementProgress, badgeCount } from "./swamp/engine.mjs";
 import { freshSave, loadSave, persistSave } from "./swamp/save.mjs";
 import { createScene } from "./swamp/scene.mjs";
 import { expeditionContext, reserveExpedition, settleExpedition } from "./swamp/expedition-save.mjs";
@@ -67,7 +67,7 @@ function startClicker(host, textEl, lockedStorage) {
   const own = (id) => S.own[id] || 0;
   const priceOf = (b) => buildingPrice(S, b, D);
   const multOf = (id) => producerMultiplier(S, id, D);
-  const swampMult = () => swampMultiplier(S);
+  const swampMult = () => swampMultiplier(S, D);
   const baseRate = () => calculateBaseRate(S, D);
   const vibePct = () => (S.done.track ? 50 : 25);
   const radioOn = () => !!VS().playing;
@@ -101,7 +101,6 @@ function startClicker(host, textEl, lockedStorage) {
 <div class="sw-art">
 <div class="sw-backdrop" aria-hidden="true"></div>
 <div class="sw-water" aria-hidden="true"></div>
-<div class="sw-room-wall" aria-hidden="true"></div><div class="sw-room-floor" aria-hidden="true"></div>
 <div class="sw-shelter" aria-hidden="true"></div>
 <div class="sw-houses" aria-hidden="true"></div>
 <button type="button" class="sw-klyop"><img class="sw-k" src="/brand/klyop-full.webp" alt="" draggable="false" decoding="async"><span class="sw-croak">${U.croak} <span class="num sw-per">+1</span></span></button>
@@ -139,7 +138,7 @@ function startClicker(host, textEl, lockedStorage) {
 <ol class="sw-list sw-builds">${builds.map((b) => `<li><button type="button" class="sw-build" data-id="${b.id}"><span class="sw-what"><span class="sw-name">${b.name}</span><span class="sw-text">${b.text}</span></span><span class="sw-price"><span class="num sw-cost">${fmt(b.cost)}</span><span class="sw-state"></span></span><span class="sw-bar" aria-hidden="true"><span></span></span></button></li>`).join("")}</ol>
 <h3 class="sw-panel-h sw-stage-progress"></h3><ol class="sw-stage-history"></ol>
 </div>
-<div class="sw-panel" id="sw-panel-achievements" role="tabpanel" aria-labelledby="sw-tab-achievements" tabindex="0" hidden><p class="sw-ach-count"></p><ol class="sw-ach-list">${D.achievements.map((a) => `<li class="sw-ach locked" data-ach="${a.id}"><img src="${pic(a.icon)}" alt="" draggable="false"><span><strong>${V.achievements[a.id][0]}</strong><small>${V.achievements[a.id][1]}</small><small class="sw-ach-status">${V.lockedAchievement}</small></span></li>`).join("")}</ol></div>
+<div class="sw-panel" id="sw-panel-achievements" role="tabpanel" aria-labelledby="sw-tab-achievements" tabindex="0" hidden><p class="sw-ach-count"></p>${Object.entries(U.achGroups).map(([group, title]) => `<h3 class="sw-panel-h">${title}</h3><ol class="sw-ach-grid">${D.achievements.filter((a) => a.group === group).map((a) => `<li class="sw-ach locked" data-ach="${a.id}"><button type="button" class="sw-ach-tile"><span class="sw-ach-icon"></span><span class="sw-ach-name"></span><span class="sw-ach-bar" aria-hidden="true"><span></span></span></button></li>`).join("")}</ol>`).join("")}</div>
 <div class="sw-panel" id="sw-panel-records" role="tabpanel" aria-labelledby="sw-tab-records" tabindex="0" hidden><h2>${U.statsLocal}</h2><dl class="sw-records">${Object.entries(U.stats).map(([id, label]) => `<div><dt>${label}</dt><dd class="num" data-sw-stat="${id}"></dd></div>`).join("")}</dl></div>
 </div>
 <p class="sw-foot"><span class="sw-stats"></span><button type="button" class="sw-reset">${T.reset}</button></p>
@@ -299,6 +298,7 @@ function startClicker(host, textEl, lockedStorage) {
     if (t < K.talkUntil) return;
     if (!K.asleep && t - K.lastInput > 45000 && (!K.seq || K.seq.base) && has("sleep")) {
       K.asleep = true;
+      grantNow("sleeper");
       playK("sleep", { order: A.sleep.down || [0, 1], then: () => startBase("sleep") });
       return;
     }
@@ -432,23 +432,64 @@ function startClicker(host, textEl, lockedStorage) {
     $(".sw-toast").textContent = message; $(".sw-toast").hidden = false;
     toastTimer = setTimeout(showToast, 2200);
   };
+  // ---------- badges: 34 of them in five groups, each open one adds 1% to the income (engine.badgeCount) ----------
+  // Icons are existing pictures: buildings (b:), Klyop's poses (k:), a crop of a building step (s:), the drawn fly.
+  const badgeIcon = (a) => {
+    const [kind, name] = a.icon.split(":");
+    if (kind === "b") return `<img src="/brand/swamp/${name}.webp" alt="" draggable="false" loading="lazy">`;
+    if (kind === "k") return `<img class="sw-ach-klyop" src="/brand/klyop/${name}.webp" alt="" draggable="false" loading="lazy">`;
+    if (kind === "s") {
+      const [x, y, w, h] = D.art.steps?.[name]?.box || [20, 14, 60, 76], size = 44, bw = w * 1.5 / 100, bh = h / 100, f = size / Math.max(bw, bh);
+      return `<span class="sw-ach-crop" style="background-image:url('/brand/swamp/steps/${name}-960.webp');background-size:${(1.5 * f).toFixed(1)}px ${f.toFixed(1)}px;background-position:${(-(x / 100) * 1.5 * f + (size - bw * f) / 2).toFixed(1)}px ${(-(y / 100) * f + (size - bh * f) / 2).toFixed(1)}px"></span>`;
+    }
+    return `<span class="sw-ach-fly${kind === "fat" ? " fat" : ""}">${FLY}</span>`;
+  };
+  const badgeTiles = new Map(D.achievements.map((a) => [a.id, $(`[data-ach="${a.id}"]`)]));
+  const drawTile = (a, open) => {
+    const tile = badgeTiles.get(a.id), hidden = a.secret && !open;
+    tile.classList.toggle("locked", !open);
+    tile.classList.toggle("secret", hidden);
+    tile.querySelector(".sw-ach-icon").innerHTML = hidden ? '<span class="sw-ach-unknown">?</span>' : badgeIcon(a);
+    tile.querySelector(".sw-ach-name").textContent = hidden ? U.secretName : V.achievements[a.id][0];
+  };
+  let badgeProgress = {};
+  const grant = (id, quiet = false) => {
+    if (S.ach[id] || !badgeTiles.has(id)) return false;
+    S.ach[id] = Date.now();
+    if (!quiet) toastQueue.push(fill(V.achieved, { name: V.achievements[id][0] }));
+    return true;
+  };
+  // event badges (night visit, Klyop asleep, a 3D trophy) are given where they happen
+  const grantNow = (id) => { if (grant(id)) { checkAchievements(); save(); } };
   const checkAchievements = () => {
     let changed = false;
-    const checks = achievementChecks(S, D);
-    for (const achievement of D.achievements) {
-      if (checks[achievement.id] && !S.ach[achievement.id]) {
-        S.ach[achievement.id] = Date.now(); changed = true;
-        if (!initialAchievements) toastQueue.push(fill(V.achieved, { name: V.achievements[achievement.id][0] }));
-      }
-      const element = $(`[data-ach="${achievement.id}"]`);
-      element.classList.toggle("locked", !S.ach[achievement.id]);
-      element.querySelector(".sw-ach-status").textContent = S.ach[achievement.id] ? T.done : V.lockedAchievement;
+    badgeProgress = achievementProgress(S, D);
+    for (const a of D.achievements) {
+      const progress = badgeProgress[a.id];
+      if (progress && progress[0] >= progress[1] && grant(a.id, initialAchievements)) changed = true;
+      const open = !!S.ach[a.id], tile = badgeTiles.get(a.id);
+      if (!tile.dataset.drawn || tile.classList.contains("locked") === open) { drawTile(a, open); tile.dataset.drawn = "1"; }
+      const share = open ? 100 : progress && !a.secret ? Math.min(99, Math.floor(100 * progress[0] / progress[1])) : 0;
+      const bar = tile.querySelector(".sw-ach-bar span"), width = `${share}%`;
+      if (bar.style.width !== width) bar.style.width = width;
     }
     initialAchievements = false;
     if (toastQueue.length && !toastTimer) showToast();
-    $(".sw-ach-count").textContent = fill(V.achievementCount, { n: D.achievements.filter((a) => S.ach[a.id]).length, max: D.achievements.length });
+    const count = badgeCount(S, D);
+    const label = fill(V.achievementCount, { n: count, max: D.achievements.length, p: count });
+    if ($(".sw-ach-count").textContent !== label) $(".sw-ach-count").textContent = label;
     if (changed) save();
   };
+  // tapping a tile: Klyop reads what it is for and how far along you are
+  $("#sw-panel-achievements").addEventListener("click", (event) => {
+    const tile = event.target.closest("[data-ach]");
+    if (!tile) return;
+    const a = D.achievements.find((item) => item.id === tile.dataset.ach), open = !!S.ach[a.id];
+    if (a.secret && !open) { speak(U.secretText); return; }
+    const progress = badgeProgress[a.id];
+    const tail = !open && progress ? ` · ${fill(U.achProgress, { v: fmt(Math.min(progress[0], progress[1])), g: fmt(progress[1]) })}` : "";
+    speak(`${V.achievements[a.id][0]}: ${V.achievements[a.id][1]}${tail}`);
+  });
 
   const secondsLeft = (time) => Math.max(0, Math.ceil((time - Date.now()) / 1000));
   // The action row shows short states; the full sentence goes to the button's title (hover on a computer).
@@ -643,7 +684,7 @@ function startClicker(host, textEl, lockedStorage) {
     visible.forEach((fly) => fly.remove());
     S.caught += visible.length;
     reward(value); pop(`+${fmt(value)}`, position.left - bounds.left + 22, position.top - bounds.top, "small");
-    if (delivered) rollTeaBag();
+    if (delivered) { S.delivered = (S.delivered || 0) + 1; rollTeaBag(); }
     kEvent(["fly"]);
   };
   world.addEventListener("pointerdown", (event) => {
@@ -657,7 +698,7 @@ function startClicker(host, textEl, lockedStorage) {
     const activity = button.dataset.activity, time = Date.now(), activities = S.activities;
     if (activity === "garden" && S.stage >= 1 && time >= activities.gardenReady) {
       if (activities.gardenReady) {
-        reward(gardenReward(), V.gardenSay); activities.gardenReady = 0; kEvent(["wave"]);
+        reward(gardenReward(), V.gardenSay); activities.gardenReady = 0; S.harvests = (S.harvests || 0) + 1; kEvent(["wave"]);
       } else activities.gardenReady = time + D.activities.garden.seconds * 1000;
     }
     if (activity === "compile" && S.room === "workshop" && own("stump") && !activities.compileEnd && time >= activities.compileReady) {
@@ -672,7 +713,7 @@ function startClicker(host, textEl, lockedStorage) {
       S.teas++; speak(V.teaSay); kEvent(["tea"]);
     }
     if (activity === "tongue" && time >= activities.tongueReady && fliesEl.childElementCount) {
-      catchFlies([...fliesEl.children]); activities.tongueReady = time + D.activities.tongue.cooldown * 1000;
+      catchFlies([...fliesEl.children]); activities.tongueReady = time + D.activities.tongue.cooldown * 1000; S.swarms = (S.swarms || 0) + 1;
     }
     render(); save();
   });
@@ -682,7 +723,7 @@ function startClicker(host, textEl, lockedStorage) {
     const t = now();
     if (t >= vibeUntil) {
       vibe = Math.min(1, vibe + 0.08);
-      if (vibe >= 1) { vibe = 0; vibeUntil = t + 8000; speak(T.vibeGo); VS().sound?.("splash"); }
+      if (vibe >= 1) { vibe = 0; vibeUntil = t + 8000; S.vibes = (S.vibes || 0) + 1; speak(T.vibeGo); VS().sound?.("splash"); }
     }
     const v = perClick();
     S.flies += v; S.total += v; S.clicks++;
@@ -767,6 +808,7 @@ function startClicker(host, textEl, lockedStorage) {
       } else if (roll < 0.75) { swarmUntil = now() + 15000; speak(T.swarm); }
       else { stormUntil = now() + 10000; speak(T.storm); }
       if (delivered) {
+        S.delivered = (S.delivered || 0) + 1;
         const bonus = flyReward(2);
         const position = kImg.getBoundingClientRect(), bounds = world.getBoundingClientRect();
         reward(bonus);
@@ -813,7 +855,7 @@ function startClicker(host, textEl, lockedStorage) {
       speak(`${T.done} · ${builds.find((b) => b.id === finished).name}`); VS().sound?.("splash"); kEvent(["tea"]); save();
     }
     if (S.activities.compileEnd && Date.now() >= S.activities.compileEnd) {
-      S.activities.compileEnd = 0;
+      S.activities.compileEnd = 0; S.compiles = (S.compiles || 0) + 1;
       reward(compileReward(), V.compileSay); kEvent(["tea"]); save();
     }
     if (!calm && !survivorsActive) {
@@ -901,6 +943,7 @@ function startClicker(host, textEl, lockedStorage) {
     if (leaving) return;
     leaving = true;
     markThreshold("out", target.pathname);
+    S.walks = (S.walks || 0) + 1;
     finishFlyDrag(); save();
     if (calm || document.hidden) { location.href = target.href; return; }
     btn.disabled = true;
@@ -942,6 +985,9 @@ function startClicker(host, textEl, lockedStorage) {
   }
 
   document.addEventListener("vibeswamp:radio", render);
+  // event badges that can be seen on opening: a night visit, a trophy brought back from the 3D swamp
+  if (new Date().getHours() < 5) grantNow("night");
+  try { if (JSON.parse(localStorage.getItem("vibeswamp-first-landing-v1") || "null")?.trophy === true) grantNow("trophy"); } catch {}
   if (note) speak(note);
   // a new player hears once how flies work (the hint list of the old layout is gone)
   else if (S.caught < 3) setTimeout(() => { if (S.caught < 3) speak(U.catchHint); }, 6000);

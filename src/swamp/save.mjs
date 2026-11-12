@@ -10,6 +10,7 @@ export function freshSave(pondSeen = 0, time = Date.now()) {
   return {
     v: 2, flies: 0, total: 0, clicks: 0, own: {}, done: {}, run: null, t: time, pondSeen, rank: 0,
     stage: 0, room: "shore", ach: {}, visited: ["shore"], caught: 0, fatCaught: 0, teas: 0, teaBags: 0, sinceBag: 0,
+    delivered: 0, harvests: 0, compiles: 0, swarms: 0, vibes: 0, walks: 0,
     activities: { gardenReady: 0, compileEnd: 0, compileReady: 0, teaUntil: 0, teaReady: 0, tongueReady: 0 }
   };
 }
@@ -18,7 +19,7 @@ export function migrateSave(raw, data, time = Date.now()) {
   if (raw == null) return freshSave(0, time);
   if (raw.v !== 1 && raw.v !== 2) throw new Error("unsupported-save");
   const state = { ...freshSave(0, time), ...raw, v: 2 };
-  for (const key of ["flies", "total", "clicks", "pondSeen", "caught", "fatCaught", "teas"]) state[key] = number(state[key]);
+  for (const key of ["flies", "total", "clicks", "pondSeen", "caught", "fatCaught", "teas", "delivered", "harvests", "compiles", "swarms", "vibes", "walks"]) state[key] = number(state[key]);
   state.teaBags = Math.floor(number(state.teaBags));
   state.sinceBag = Math.floor(number(state.sinceBag));
   state.total = Math.max(state.total, state.flies);

@@ -1,6 +1,7 @@
 ---
 title: Challenges & Wagers 0.1.2
 date: 2026-11-08
+time: 13:10
 projects: challenges-wagers
 image: assets/challenges-wagers/header.jpg
 summary: The mod now has an icon in the game's mod list.

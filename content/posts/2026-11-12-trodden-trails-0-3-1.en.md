@@ -1,6 +1,7 @@
 ---
 title: Trodden Trails 0.3.1
 date: 2026-11-12
+time: 13:54
 projects: trodden-trails
 image: assets/trodden-trails/keyart-en.jpg
 summary: The mod now has its own icon in the game's mod list.

@@ -1,6 +1,7 @@
 ---
 title: Shelf Life вышел в мастерской Steam
 date: 2026-11-08
+time: 16:40
 projects: shelf-life
 image: assets/shelf-life/01-header.jpg
 summary: Полки на вырост для больших сборок. Полку улучшают на месте, до 30 стопок на клетку.

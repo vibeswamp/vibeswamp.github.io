@@ -1,0 +1,43 @@
+{
+  "_about": "Small things around the mods that do not get a page of their own. Source: the RimWorld chat's SITE-LIBRARY-RIMWORLD.ru.md (12.11.2026). Shown folded at the end of a game's group on the Mods page, so the showcase stays clean. 'pairs': mods that work together; each pair shows on both project pages.",
+  "pairs": [
+    ["ancestral-ruins", "trodden-trails"],
+    ["ancestral-ruins", "ancient-obsession"],
+    ["ancestral-ruins", "ancient-restoration"],
+    ["ancestral-ruins", "ancient-strata"],
+    ["ancestral-ruins", "challenges-wagers"],
+    ["seamless-world", "trodden-trails"],
+    ["told-twice", "ancient-strata"],
+    ["ancient-strata", "ancient-restoration"],
+    ["ancient-strata", "seamless-world"]
+  ],
+  "extras": {
+    "RimWorld": {
+      "title": {
+        "en": "Small helpers for my own modpack, and experiments",
+        "uk": "Дрібниці для власної збірки та проби",
+        "ru": "Мелочи для своей сборки и пробы"
+      },
+      "helpersLead": {
+        "en": "These help my own modpack of about 500 mods live on RimWorld 1.7. They are not on the Steam Workshop.",
+        "uk": "Вони допомагають моїй збірці з приблизно 500 модів жити на RimWorld 1.7. У майстерні Steam їх немає.",
+        "ru": "Они помогают моей сборке примерно из 500 модов жить на RimWorld 1.7. В мастерской Steam их нет."
+      },
+      "helpers": [
+        { "name": "Caravan Adventures Compat", "text": { "en": "Caravan Adventures starts on 1.7.", "uk": "Caravan Adventures запускається на 1.7.", "ru": "Caravan Adventures запускается на 1.7." } },
+        { "name": "Tools Compat", "text": { "en": "Show Me Your Tools works on 1.7.", "uk": "Show Me Your Tools працює на 1.7.", "ru": "Show Me Your Tools работает на 1.7." } },
+        { "name": "DMS Bridge", "text": { "en": "A bridge for AncientCorps.", "uk": "Міст для AncientCorps.", "ru": "Мост для AncientCorps." } },
+        { "name": "UI Tweaks", "text": { "en": "Small fixes to the interface.", "uk": "Дрібні правки інтерфейсу.", "ru": "Мелкие правки интерфейса." } }
+      ],
+      "experimentsLead": {
+        "en": "Experiments that are not released:",
+        "uk": "Проби, які не виходять:",
+        "ru": "Пробы, которые не выходят:"
+      },
+      "experiments": [
+        { "name": "RimVision 1.7", "text": { "en": "A trial bridge for the 3D mod, for myself only. On 1.6 RimVision already works together with Seamless World.", "uk": "Пробний міст для 3D-моду, тільки для себе. На 1.6 RimVision уже працює разом із Seamless World.", "ru": "Пробный мост для 3D-мода, только для себя. На 1.6 RimVision уже работает вместе с Seamless World." } },
+        { "name": { "en": "Third person", "uk": "Третя особа", "ru": "Третье лицо" }, "text": { "en": "A trial, abandoned.", "uk": "Проба, покинута.", "ru": "Проба, заброшена." } }
+      ]
+    }
+  }
+}

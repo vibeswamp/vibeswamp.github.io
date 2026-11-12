@@ -15,9 +15,11 @@ export function producerMultiplier(state, id, data) {
   return multiplier;
 }
 
-export const swampMultiplier = (state) => (state.done.seams ? 1.5 : 1) * 1.1 ** rankOf(state.total);
+// Badges the save holds that the game still knows (data.achievements); each gives +1% to the whole swamp.
+export const badgeCount = (state, data) => (data?.achievements || []).filter((a) => state.ach?.[a.id]).length;
+export const swampMultiplier = (state, data) => (state.done.seams ? 1.5 : 1) * 1.1 ** rankOf(state.total) * (1 + 0.01 * badgeCount(state, data));
 export const baseRate = (state, data) => data.buildings.reduce((sum, building) =>
-  sum + owned(state, building.id) * building.rate * producerMultiplier(state, building.id, data), 0) * swampMultiplier(state);
+  sum + owned(state, building.id) * building.rate * producerMultiplier(state, building.id, data), 0) * swampMultiplier(state, data);
 
 export function incomeRate(state, data, { radio = false, swarm = false, tea = false } = {}) {
   return baseRate(state, data) * (radio ? (state.done.track ? 1.5 : 1.25) : 1) * (swarm ? 5 : 1) * (tea ? data.activities.tea.multiplier : 1);
@@ -77,19 +79,24 @@ export function finishProject(state, data, time) {
   return project.id;
 }
 
-export function achievementChecks(state, data) {
+// Progress of every badge that can be counted from the save: [value, goal]. Badges marked "event" in the data
+// (night visit, Klyop asleep, a 3D trophy) are given by the page when they happen.
+export function achievementProgress(state, data) {
+  const step = (id) => data.stages.findIndex((stage) => stage.id === id) + 1;
+  const counts = data.buildings.map((building) => owned(state, building.id));
+  const all = counts.reduce((sum, n) => sum + n, 0);
+  const n = (key) => state[key] || 0;
   return {
-    first: state.clicks > 0,
-    roof: hasStage(state, data, "awning"),
-    window: hasStage(state, data, "window"),
-    light: hasStage(state, data, "lamp"),
-    home: hasStage(state, data, "door"),
-    office: hasStage(state, data, "office"),
-    hundred: state.total >= 100,
-    crew: Object.values(state.own).reduce((sum, count) => sum + count, 0) >= 25,
-    rate: baseRate(state, data) >= 1000,
-    hunter: state.caught >= 25,
-    tea: state.teas > 0,
-    explorer: state.visited.length >= 3
+    first_step: [state.stage, 1], roof: [state.stage, step("awning")], window: [state.stage, step("window")],
+    home: [state.stage, step("door")], light: [state.stage, step("lamp")], tea_home: [state.stage, step("tea_corner")],
+    office: [state.stage, data.stages.length],
+    first: [n("clicks"), 1], croaks: [n("clicks"), 1000], hundred: [n("total"), 100], million: [n("total"), 1e6],
+    billion: [n("total"), 1e9], hunter: [n("caught"), 25], hunter2: [n("caught"), 250], courier: [n("delivered"), 10],
+    fat: [n("fatCaught"), 1],
+    crew: [all, 25], crew100: [all, 100], every: [counts.filter(Boolean).length, counts.length],
+    ten_each: [Math.min(...counts), 10], rate: [baseRate(state, data), 1000],
+    tea: [n("teas"), 1], tea10: [n("teas"), 10], garden: [n("harvests"), 1], compile: [n("compiles"), 1],
+    swarm: [n("swarms"), 1], explorer: [(state.visited || []).length, 3], explorer5: [(state.visited || []).length, data.rooms.length],
+    vibe10: [n("vibes"), 10], pond: [n("pondSeen") > 0 ? 1 : 0, 1], walker: [n("walks"), 1]
   };
 }

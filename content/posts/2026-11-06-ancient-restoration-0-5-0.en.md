@@ -1,6 +1,7 @@
 ---
 title: Ancient Restoration 0.5.0
 date: 2026-11-06
+time: 22:30
 projects: ancient-restoration
 image: assets/ancient-restoration/11-i-overhauls-a.jpg
 summary: From your comments. The VQE Ancients generator restores again, more finds can be restored, and what cannot be restored says why.

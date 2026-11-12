@@ -4,9 +4,10 @@ import { owned, roomOpen } from "./engine.mjs";
 // On a phone the painting is cut by about a tenth on each side, so the shore keeps its buildings within 13–87%.
 const ANCHORS = {
   shore: { tussock: [21, 6, 24, 7], antenna: [15, 21, 36, 3], flytrap: [79, 6, 22, 7], beaver: [81, 22, 19, 3] },
-  workshop: { stump: [40, 22, 34, 5], review: [66, 20, 29, 6] },
-  radio: { radio: [75, 14, 48, 5] },
-  server: { peat: [24, 12, 45, 5] },
+  // inside the hut the buildings stand on the floor, left and right of Klyop
+  workshop: { stump: [22, 2, 42, 5], review: [76, 2, 34, 6] },
+  radio: { radio: [75, 2, 46, 5] },
+  server: { peat: [22, 2, 52, 5] },
   office: {}
 };
 
@@ -73,9 +74,20 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
     world.dataset.room = state.room;
     world.dataset.stage = String(state.stage);
     const steps = data.art.steps || {};
-    const background = data.rooms.find((room) => room.id === state.room)?.background;
+    const view = data.rooms.find((room) => room.id === state.room)?.view;
+    const background = view ? painting(view.image) : null;
     const art = state.room === "shore" ? shoreArt(state.stage, data) : null;
     const source = background || (art?.base ? painting(art.base) : data.art.background);
+    // a room is a close-up of the hut painting: scale it up and move its centre into the middle of the scene
+    if (view) {
+      const at = (c) => `${((c * view.zoom - 0.5) / (view.zoom - 1) * 100).toFixed(2)}%`;
+      backdrop.style.setProperty("--sw-size", `${view.zoom * 100}% ${view.zoom * 100}%`);
+      backdrop.style.setProperty("--sw-pos", `${at(view.x)} ${at(view.y)}`);
+    } else {
+      backdrop.style.removeProperty("--sw-size");
+      backdrop.style.removeProperty("--sw-pos");
+    }
+    world.dataset.dim = String(!!view?.dim);
     const mobileSource = source.replace(/.webp$/, "-960.webp");
     // The previous painting stays underneath until the new one has loaded, so the scene never flashes empty.
     const previous = backdrop.style.getPropertyValue("--sw-background");

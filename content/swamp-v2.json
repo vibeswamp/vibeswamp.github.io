@@ -151,80 +151,80 @@
     },
     {
       "id": "window",
-      "cost": 1300000,
-      "total": 10000000,
+      "cost": 1400000,
+      "total": 11000000,
       "part": "window"
     },
     {
       "id": "door",
-      "cost": 3300000,
-      "total": 28000000,
+      "cost": 3800000,
+      "total": 32000000,
       "part": "door"
     },
     {
       "id": "floor",
-      "cost": 6500000,
-      "total": 55000000,
+      "cost": 8000000,
+      "total": 67000000,
       "part": "floor"
     },
     {
       "id": "lamp",
-      "cost": 15000000,
-      "total": 130000000,
+      "cost": 19000000,
+      "total": 170000000,
       "part": "lamp"
     },
     {
       "id": "furniture",
-      "cost": 33000000,
-      "total": 280000000,
+      "cost": 45000000,
+      "total": 390000000,
       "part": "furniture"
     },
     {
       "id": "chair",
-      "cost": 80000000,
-      "total": 680000000,
+      "cost": 120000000,
+      "total": 990000000,
       "part": "chair"
     },
     {
       "id": "tea_corner",
-      "cost": 250000000,
-      "total": 2000000000,
+      "cost": 360000000,
+      "total": 2900000000,
       "part": "tea-corner"
     },
     {
       "id": "workshop",
-      "cost": 550000000,
-      "total": 4500000000,
+      "cost": 800000000,
+      "total": 6500000000,
       "part": "workshop"
     },
     {
       "id": "extension",
-      "cost": 1000000000,
-      "total": 8800000000,
+      "cost": 1500000000,
+      "total": 13000000000,
       "part": "extension"
     },
     {
       "id": "server_room",
-      "cost": 1500000000,
-      "total": 13000000000,
+      "cost": 2200000000,
+      "total": 19000000000,
       "part": "server-room"
     },
     {
       "id": "studio",
-      "cost": 2000000000,
-      "total": 18000000000,
+      "cost": 2900000000,
+      "total": 26000000000,
       "part": "studio"
     },
     {
       "id": "radio_room",
-      "cost": 2800000000,
-      "total": 23000000000,
+      "cost": 4100000000,
+      "total": 33000000000,
       "part": "radio-room"
     },
     {
       "id": "office",
-      "cost": 4000000000,
-      "total": 33000000000,
+      "cost": 5800000000,
+      "total": 48000000000,
       "part": "office"
     }
   ],
@@ -237,22 +237,43 @@
     {
       "id": "workshop",
       "icon": "stump",
-      "background": "/brand/swamp/v2-stage-3.webp"
+      "view": {
+        "image": "v2-stage-3",
+        "x": 0.42,
+        "y": 0.56,
+        "zoom": 3
+      }
     },
     {
       "id": "radio",
       "icon": "radio",
-      "background": null
+      "view": {
+        "image": "v2-stage-3",
+        "x": 0.55,
+        "y": 0.5,
+        "zoom": 2.6
+      }
     },
     {
       "id": "server",
       "icon": "peat",
-      "background": null
+      "view": {
+        "image": "v2-stage-3",
+        "x": 0.44,
+        "y": 0.52,
+        "zoom": 2.8,
+        "dim": true
+      }
     },
     {
       "id": "office",
       "icon": "review",
-      "background": "/brand/swamp/v2-stage-3.webp"
+      "view": {
+        "image": "v2-stage-3",
+        "x": 0.5,
+        "y": 0.5,
+        "zoom": 2.1
+      }
     }
   ],
   "activities": {
@@ -276,52 +297,183 @@
   },
   "achievements": [
     {
-      "id": "first",
-      "icon": "tussock"
+      "id": "first_step",
+      "group": "build",
+      "icon": "s:deck"
     },
     {
       "id": "roof",
-      "icon": "beaver"
+      "group": "build",
+      "icon": "s:awning"
     },
     {
       "id": "window",
-      "icon": "antenna"
-    },
-    {
-      "id": "light",
-      "icon": "peat"
+      "group": "build",
+      "icon": "s:window"
     },
     {
       "id": "home",
-      "icon": "stump"
+      "group": "build",
+      "icon": "s:door"
+    },
+    {
+      "id": "light",
+      "group": "build",
+      "icon": "s:lamp"
+    },
+    {
+      "id": "tea_home",
+      "group": "build",
+      "icon": "s:tea_corner"
     },
     {
       "id": "office",
-      "icon": "review"
+      "group": "build",
+      "icon": "k:desk"
+    },
+    {
+      "id": "first",
+      "group": "flies",
+      "icon": "k:laugh"
+    },
+    {
+      "id": "croaks",
+      "group": "flies",
+      "icon": "k:front"
     },
     {
       "id": "hundred",
-      "icon": "flytrap"
-    },
-    {
-      "id": "crew",
-      "icon": "beaver"
-    },
-    {
-      "id": "rate",
-      "icon": "radio"
+      "group": "flies",
+      "icon": "fly"
     },
     {
       "id": "hunter",
-      "icon": "flytrap"
+      "group": "flies",
+      "icon": "fly"
+    },
+    {
+      "id": "hunter2",
+      "group": "flies",
+      "icon": "fly"
+    },
+    {
+      "id": "courier",
+      "group": "flies",
+      "icon": "k:three-quarter"
+    },
+    {
+      "id": "fat",
+      "group": "flies",
+      "icon": "fat"
+    },
+    {
+      "id": "million",
+      "group": "flies",
+      "icon": "b:flytrap"
+    },
+    {
+      "id": "billion",
+      "group": "flies",
+      "icon": "b:radio"
+    },
+    {
+      "id": "crew",
+      "group": "crew",
+      "icon": "b:beaver"
+    },
+    {
+      "id": "crew100",
+      "group": "crew",
+      "icon": "b:review"
+    },
+    {
+      "id": "every",
+      "group": "crew",
+      "icon": "b:peat"
+    },
+    {
+      "id": "ten_each",
+      "group": "crew",
+      "icon": "b:stump"
+    },
+    {
+      "id": "rate",
+      "group": "crew",
+      "icon": "b:antenna"
     },
     {
       "id": "tea",
-      "icon": "stump"
+      "group": "care",
+      "icon": "k:desk-chill"
+    },
+    {
+      "id": "tea10",
+      "group": "care",
+      "icon": "k:lily-sit"
+    },
+    {
+      "id": "garden",
+      "group": "care",
+      "icon": "s:pads"
+    },
+    {
+      "id": "compile",
+      "group": "care",
+      "icon": "b:tussock"
+    },
+    {
+      "id": "swarm",
+      "group": "care",
+      "icon": "k:profile-left"
     },
     {
       "id": "explorer",
-      "icon": "antenna"
+      "group": "care",
+      "icon": "k:climber"
+    },
+    {
+      "id": "explorer5",
+      "group": "care",
+      "icon": "k:lantern"
+    },
+    {
+      "id": "night",
+      "group": "secret",
+      "icon": "k:yawn",
+      "secret": true,
+      "event": true
+    },
+    {
+      "id": "sleeper",
+      "group": "secret",
+      "icon": "k:asleep",
+      "secret": true,
+      "event": true
+    },
+    {
+      "id": "vibe10",
+      "group": "secret",
+      "icon": "k:jump",
+      "secret": true
+    },
+    {
+      "id": "pond",
+      "group": "secret",
+      "icon": "k:lily",
+      "secret": true
+    },
+    {
+      "id": "walker",
+      "group": "secret",
+      "icon": "k:back",
+      "secret": true
+    },
+    {
+      "id": "trophy",
+      "group": "secret",
+      "icon": "k:night-shift",
+      "secret": true,
+      "event": true
     }
   ],
   "art": {

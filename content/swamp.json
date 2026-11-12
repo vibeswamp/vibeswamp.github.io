@@ -67,7 +67,17 @@
           "radioOff": "+{n}% income",
           "radioOn": "Playing · +{n}%"
         },
-        "buyShort": "{n} flies"
+        "buyShort": "{n} flies",
+        "achGroups": {
+          "build": "Building",
+          "flies": "Flies",
+          "crew": "Buildings",
+          "care": "Pastimes",
+          "secret": "Secret"
+        },
+        "secretName": "Secret badge",
+        "secretText": "Opens by itself when it happens.",
+        "achProgress": "{v} of {g}"
       },
       "rooms": {
         "shore": "Shore",
@@ -133,7 +143,7 @@
       "fatFly": "Catch a fat fly",
       "caught": "Flies caught · {n}",
       "achieved": "Badge earned · {name}",
-      "achievementCount": "Earned {n} of {max}",
+      "achievementCount": "{n} of {max} open · +{p}% income",
       "lockedAchievement": "Still ahead",
       "recordsSoon": "The shared leaderboard will arrive later. For now your swamp keeps records in this browser.",
       "localRecord": "Your lifetime catch · {n}",
@@ -145,8 +155,8 @@
           "Croak at least once."
         ],
         "roof": [
-          "Over your head",
-          "Build a reed awning."
+          "Roof overhead",
+          "Put a roof over the tussock."
         ],
         "window": [
           "Swamp view",
@@ -161,8 +171,8 @@
           "Fit a door into the house."
         ],
         "office": [
-          "Your own studio",
-          "Finish all 21 building steps."
+          "A studio of your own",
+          "Finish every building step."
         ],
         "hundred": [
           "Jar of flies",
@@ -187,6 +197,94 @@
         "explorer": [
           "Every door is yours",
           "Visit three locations."
+        ],
+        "first_step": [
+          "First step",
+          "Build the first step on the tussock."
+        ],
+        "tea_home": [
+          "Tea at home",
+          "Set up the tea corner."
+        ],
+        "croaks": [
+          "Voice of the swamp",
+          "Croak 1,000 times."
+        ],
+        "million": [
+          "A million flies",
+          "Catch a million flies in total."
+        ],
+        "billion": [
+          "A billion flies",
+          "Catch a billion flies in total."
+        ],
+        "hunter2": [
+          "Fly swatter",
+          "Catch 250 flying flies."
+        ],
+        "courier": [
+          "Table service",
+          "Bring 10 flies to Klyop."
+        ],
+        "fat": [
+          "Fat catch",
+          "Catch a fat fly."
+        ],
+        "crew100": [
+          "Swamp village",
+          "Buy 100 buildings in total."
+        ],
+        "every": [
+          "A bit of everything",
+          "Buy one building of every kind."
+        ],
+        "ten_each": [
+          "Ten of each",
+          "Own 10 buildings of every kind."
+        ],
+        "tea10": [
+          "Tea club",
+          "Drink tea 10 times."
+        ],
+        "garden": [
+          "Duckweed is ripe",
+          "Harvest the duckweed."
+        ],
+        "compile": [
+          "It compiled",
+          "Finish a compile at the stump."
+        ],
+        "swarm": [
+          "The whole swarm",
+          "Catch the swarm with the tongue."
+        ],
+        "explorer5": [
+          "Master of the house",
+          "Visit all five places."
+        ],
+        "night": [
+          "Can’t sleep",
+          "Visit the swamp between midnight and 5 am."
+        ],
+        "sleeper": [
+          "Shh, he’s asleep",
+          "Let Klyop fall asleep."
+        ],
+        "vibe10": [
+          "On the wave",
+          "Fill the vibe meter 10 times."
+        ],
+        "pond": [
+          "Pond flies",
+          "Catch flies in the pond on the home page."
+        ],
+        "walker": [
+          "Over the threshold",
+          "Step out of the house into the 3D swamp."
+        ],
+        "trophy": [
+          "Trophy from the pier",
+          "Bring a trophy back from a 3D trip."
         ]
       }
     },
@@ -398,7 +496,17 @@
           "radioOff": "+{n}% до доходу",
           "radioOn": "Грає · +{n}%"
         },
-        "buyShort": "{n} мух"
+        "buyShort": "{n} мух",
+        "achGroups": {
+          "build": "Будівництво",
+          "flies": "Мухи",
+          "crew": "Споруди",
+          "care": "Заняття",
+          "secret": "Таємні"
+        },
+        "secretName": "Таємна ачівка",
+        "secretText": "Відкриється сама, коли станеться.",
+        "achProgress": "{v} із {g}"
       },
       "rooms": {
         "shore": "Берег",
@@ -464,7 +572,7 @@
       "fatFly": "Спіймати товсту муху",
       "caught": "Спіймано мух · {n}",
       "achieved": "Відкрито досягнення · {name}",
-      "achievementCount": "Відкрито {n} із {max}",
+      "achievementCount": "Відкрито {n} із {max} · +{p}% до доходу",
       "lockedAchievement": "Ще попереду",
       "recordsSoon": "Спільна таблиця з'явиться пізніше. Зараз болото рахує рекорди у вашому браузері.",
       "localRecord": "Ваш улов за весь час · {n}",
@@ -477,7 +585,7 @@
         ],
         "roof": [
           "Над головою",
-          "Поставити очеретяний навіс."
+          "Поставити навіс над купиною."
         ],
         "window": [
           "Вид на болото",
@@ -492,8 +600,8 @@
           "Поставити двері до хати."
         ],
         "office": [
-          "Власна студія",
-          "Завершити всі 21 крок будівництва."
+          "Своя студія",
+          "Завершити всі кроки будівництва."
         ],
         "hundred": [
           "Банка мух",
@@ -518,6 +626,94 @@
         "explorer": [
           "Усі двері свої",
           "Побувати в трьох локаціях."
+        ],
+        "first_step": [
+          "Перший крок",
+          "Збудувати перший крок біля купини."
+        ],
+        "tea_home": [
+          "Чай як удома",
+          "Облаштувати чайний куточок."
+        ],
+        "croaks": [
+          "Голос болота",
+          "Квакнути 1000 разів."
+        ],
+        "million": [
+          "Мушиний мільйон",
+          "Наловити мільйон мух за весь час."
+        ],
+        "billion": [
+          "Мільярд мух",
+          "Наловити мільярд мух за весь час."
+        ],
+        "hunter2": [
+          "Мухобій",
+          "Спіймати 250 мух, що літають."
+        ],
+        "courier": [
+          "Доставка до столу",
+          "Донести 10 мух до Кльопи."
+        ],
+        "fat": [
+          "Жирний улов",
+          "Спіймати жирну муху."
+        ],
+        "crew100": [
+          "Болотне селище",
+          "Купити 100 споруд загалом."
+        ],
+        "every": [
+          "Усього потроху",
+          "Купити по одній споруді кожного виду."
+        ],
+        "ten_each": [
+          "По десятку",
+          "Зібрати по 10 споруд кожного виду."
+        ],
+        "tea10": [
+          "Чайний клуб",
+          "Випити чай 10 разів."
+        ],
+        "garden": [
+          "Ряска дозріла",
+          "Зібрати врожай ряски."
+        ],
+        "compile": [
+          "Зібралося",
+          "Завершити компіляцію біля пня."
+        ],
+        "swarm": [
+          "Увесь рій",
+          "Спіймати рій язиком."
+        ],
+        "explorer5": [
+          "Господар дому",
+          "Побувати в усіх п’яти локаціях."
+        ],
+        "night": [
+          "Не спиться",
+          "Зазирнути на болото між північчю та п’ятою ранку."
+        ],
+        "sleeper": [
+          "Тихо, спить",
+          "Дати Кльопі заснути."
+        ],
+        "vibe10": [
+          "На хвилі",
+          "Набрати повний вайб 10 разів."
+        ],
+        "pond": [
+          "Мухи зі ставка",
+          "Наловити мух у ставку на головній сторінці."
+        ],
+        "walker": [
+          "За поріг",
+          "Вийти з дому в 3D-болото."
+        ],
+        "trophy": [
+          "Трофей з причалу",
+          "Принести трофей з вилазки в 3D."
         ]
       }
     },
@@ -729,7 +925,17 @@
           "radioOff": "+{n}% к доходу",
           "radioOn": "Играет · +{n}%"
         },
-        "buyShort": "{n} мух"
+        "buyShort": "{n} мух",
+        "achGroups": {
+          "build": "Стройка",
+          "flies": "Мухи",
+          "crew": "Постройки",
+          "care": "Занятия",
+          "secret": "Тайные"
+        },
+        "secretName": "Тайная ачивка",
+        "secretText": "Откроется сама, когда случится.",
+        "achProgress": "{v} из {g}"
       },
       "rooms": {
         "shore": "Берег",
@@ -795,7 +1001,7 @@
       "fatFly": "Поймать жирную муху",
       "caught": "Поймано мух · {n}",
       "achieved": "Открыта ачивка · {name}",
-      "achievementCount": "Открыто {n} из {max}",
+      "achievementCount": "Открыто {n} из {max} · +{p}% к доходу",
       "lockedAchievement": "Ещё впереди",
       "recordsSoon": "Общая таблица появится позже. Сейчас болото считает рекорды в вашем браузере.",
       "localRecord": "Ваш улов за всё время · {n}",
@@ -808,7 +1014,7 @@
         ],
         "roof": [
           "Над головой",
-          "Поставить камышовый навес."
+          "Поставить навес над кочкой."
         ],
         "window": [
           "Вид на болото",
@@ -824,7 +1030,7 @@
         ],
         "office": [
           "Своя студия",
-          "Закончить все 21 шаг стройки."
+          "Закончить все шаги стройки."
         ],
         "hundred": [
           "Банка мух",
@@ -849,6 +1055,94 @@
         "explorer": [
           "Все двери свои",
           "Побывать в трёх локациях."
+        ],
+        "first_step": [
+          "Первый шаг",
+          "Построить первый шаг на кочке."
+        ],
+        "tea_home": [
+          "Чай как дома",
+          "Обустроить чайный уголок."
+        ],
+        "croaks": [
+          "Голос болота",
+          "Квакнуть 1000 раз."
+        ],
+        "million": [
+          "Мушиный миллион",
+          "Наловить миллион мух за всё время."
+        ],
+        "billion": [
+          "Миллиард мух",
+          "Наловить миллиард мух за всё время."
+        ],
+        "hunter2": [
+          "Мухобой",
+          "Поймать 250 летающих мух."
+        ],
+        "courier": [
+          "Доставка к столу",
+          "Донести 10 мух до Клёпы."
+        ],
+        "fat": [
+          "Жирный улов",
+          "Поймать жирную муху."
+        ],
+        "crew100": [
+          "Болотный посёлок",
+          "Купить 100 построек суммарно."
+        ],
+        "every": [
+          "Всего понемногу",
+          "Купить по одной постройке каждого вида."
+        ],
+        "ten_each": [
+          "По десятку",
+          "Собрать по 10 построек каждого вида."
+        ],
+        "tea10": [
+          "Чайный клуб",
+          "Выпить чай 10 раз."
+        ],
+        "garden": [
+          "Ряска созрела",
+          "Собрать урожай ряски."
+        ],
+        "compile": [
+          "Собралось",
+          "Закончить компиляцию у пня."
+        ],
+        "swarm": [
+          "Весь рой",
+          "Поймать рой языком."
+        ],
+        "explorer5": [
+          "Хозяин дома",
+          "Побывать во всех пяти локациях."
+        ],
+        "night": [
+          "Не спится",
+          "Заглянуть на болото между полуночью и пятью утра."
+        ],
+        "sleeper": [
+          "Тише, спит",
+          "Дать Клёпе уснуть."
+        ],
+        "vibe10": [
+          "На волне",
+          "Набрать полный вайб 10 раз."
+        ],
+        "pond": [
+          "Мухи с пруда",
+          "Наловить мух в пруду на главной странице."
+        ],
+        "walker": [
+          "За порог",
+          "Выйти из дома в 3D-болото."
+        ],
+        "trophy": [
+          "Трофей с причала",
+          "Принести трофей с вылазки в 3D."
         ]
       }
     },

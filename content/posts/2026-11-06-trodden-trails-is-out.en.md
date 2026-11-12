@@ -1,6 +1,7 @@
 ---
 title: Trodden Trails is on the Steam Workshop
 date: 2026-11-06
+time: 23:11
 projects: trodden-trails
 image: assets/trodden-trails/keyart-en.jpg
 summary: A new RimWorld 1.7 mod. Caravans that keep using one route wear a trail into the world map, and the next trip is faster.

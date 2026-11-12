@@ -1,0 +1,60 @@
+{
+  "id": "rinse-repeat",
+  "order": 8.2,
+  "name": {
+    "en": "Rinse & Repeat",
+    "uk": "Rinse & Repeat («Прання»)",
+    "ru": "Rinse & Repeat («Постирушки»)"
+  },
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7 and 1.6",
+    "uk": "RimWorld 1.7 і 1.6",
+    "ru": "RimWorld 1.7 и 1.6"
+  },
+  "status": "preparing",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": null
+    }
+  ],
+  "summary": {
+    "en": "Wash the dead man's shirt in the river and it is just a shirt again: laundry by hand at any water, and soap.",
+    "uk": "Виперіть сорочку небіжчика в річці, і це знову просто сорочка: прання вручну біля будь-якої води та мило.",
+    "ru": "Постирайте рубашку покойника в реке, и это снова просто рубашка: стирка вручную у любой воды и мыло."
+  },
+  "details": {
+    "en": [
+      "Colonists carry clothes worn by a corpse to any water, a river, a lake, a marsh or a hot spring, and wash the mark off: the colour and the price come back.",
+      "Water alone is slow and rough on the cloth. Soap is twice as fast, and scented soap also lifts the mood of whoever washes their own clothes. Soap is boiled from tallow and wood ash; tallow is rendered from meat, human meat included, and people have opinions about that soap. With no water on the map, soap alone still works, only slower.",
+      "A Laundry work column, and a personal habit: colonists wash what they wear in their free time. It works next to Dubs Bad Hygiene and Simple Washing Machine. It can be added to a running save."
+    ],
+    "uk": [
+      "Колоністи несуть одяг, знятий із трупа, до будь-якої води — річки, озера, болота чи гарячого джерела — і відпирають позначку: колір і ціна повертаються.",
+      "Сама вода пере повільно й шарпає тканину. З милом удвічі швидше, а ароматне мило ще й піднімає настрій тому, хто пере свій одяг. Мило варять із лою та деревного попелу; лій витоплюють із м'яса, людського теж, і про таке мило в людей є думка. Якщо води на мапі немає, мило працює й саме, тільки повільніше.",
+      "Окремий стовпчик роботи «Прання» і звичка: колоністи у вільний час перуть те, що носять. Працює поряд із Dubs Bad Hygiene і Simple Washing Machine. Можна додати в уже почату гру."
+    ],
+    "ru": [
+      "Колонисты несут одежду, снятую с трупа, к любой воде — реке, озеру, болоту или горячему источнику — и отстирывают пометку: цвет и цена возвращаются.",
+      "Одна вода стирает медленно и треплет ткань. С мылом вдвое быстрее, а душистое мыло ещё и поднимает настроение тому, кто стирает свою одежду. Мыло варят из сала и древесной золы; сало вытапливают из мяса, человеческого тоже, и об этом мыле у людей есть мнение. Если воды на карте нет, мыло работает и само, только медленнее.",
+      "Отдельный столбец работы «Стирка» и привычка: колонисты в свободное время стирают то, что носят. Работает рядом с Dubs Bad Hygiene и Simple Washing Machine. Можно добавить в уже начатую игру."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Version 0.5.1 is built.",
+      "Next: the first run in the game, then the release on the Steam Workshop. There is no date yet."
+    ],
+    "uk": [
+      "Версія 0.5.1 зібрана.",
+      "Далі перший прогін у грі, потім вихід у майстерні Steam. Дати поки немає."
+    ],
+    "ru": [
+      "Версия 0.5.1 собрана.",
+      "Дальше первый прогон в игре, потом выход в мастерской Steam. Даты пока нет."
+    ]
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "ancient-strata",
+  "order": 8.1,
+  "name": "Ancient Strata",
+  "kind": "mod",
+  "game": {
+    "en": "RimWorld 1.7",
+    "uk": "RimWorld 1.7",
+    "ru": "RimWorld 1.7"
+  },
+  "status": "preparing",
+  "page": true,
+  "ludeon": true,
+  "platforms": [
+    {
+      "name": "Steam Workshop",
+      "url": null
+    }
+  ],
+  "summary": {
+    "en": "Ground radar finds buried ancient complexes: dig down layer by layer, survive cave-ins and dead air, and bring up ancient tech no trader sells.",
+    "uk": "Георадар знаходить поховані стародавні комплекси: копайте шар за шаром, переживайте обвали й мертве повітря та піднімайте нагору стародавню техніку, якої не продасть жоден торговець.",
+    "ru": "Георадар находит погребённые древние комплексы: копайте слой за слоем, переживайте обвалы и мёртвый воздух и поднимайте наверх древнюю технику, которую не продаст ни один торговец."
+  },
+  "details": {
+    "en": [
+      "A find can lie under the colony, in the region around, or in a neighbouring zone with Seamless World. A researcher surveys the spot, then you lay out a shaft and dig into the complex layer by layer.",
+      "Each layer is a small underground map: rubble first, then a complex floor with dormant machines, then a sealed vault. A layer slowly loses stability while you are below; shoring slows it, a vent keeps the air breathable. When stability runs out, the layer caves in together with everyone still inside.",
+      "In the vault: ancient archives that push your research, rare materials and relic machines that are no longer made, such as a reactor that needs no fuel, a faster fabricator and a heavy sentry turret. With Ancient Restoration the relics can be brought back to work; without it they sell well or come apart into plasteel and advanced components.",
+      "An official add-on for Ancient Restoration that also works without it. Works without DLC."
+    ],
+    "uk": [
+      "Знахідка буває під колонією, в окрузі або, із Seamless World, у сусідній зоні. Дослідник розвідує місце, потім ви закладаєте розкоп і копаєте комплекс шар за шаром.",
+      "Кожен шар — невелика підземна мапа: спершу завал, потім поверх комплексу зі сплячими машинами, наприкінці запечатане сховище. Поки ви внизу, шар втрачає стійкість; кріплення сповільнює це, вентиляція дає дихати. Коли стійкість скінчиться, шар обвалиться разом з усіма, хто не встиг вийти.",
+      "У сховищі: стародавні архіви, що рухають дослідження, рідкісні матеріали й реліквії — машини, яких більше не роблять: реактор без пального, швидкий фабрикатор, важка турель-вартовий. З Ancient Restoration реліквії можна повернути до роботи; без нього вони добре продаються або розбираються на пласталь і просунуті компоненти.",
+      "Офіційне доповнення до Ancient Restoration, працює і без нього. Працює без доповнень гри."
+    ],
+    "ru": [
+      "Находка бывает под колонией, в округе или, с Seamless World, в соседней зоне. Исследователь разведывает место, потом вы закладываете раскоп и копаете комплекс слой за слоем.",
+      "Каждый слой — небольшая подземная карта: сначала завал, потом этаж комплекса со спящими машинами, в конце запечатанное хранилище. Пока вы внизу, слой теряет устойчивость; крепь замедляет это, вентиляция даёт дышать. Когда устойчивость кончается, слой обрушивается вместе со всеми, кто не успел выйти.",
+      "В хранилище: древние архивы, которые двигают исследования, редкие материалы и реликвии — машины, которых больше не делают: реактор без топлива, быстрый фабрикатор, тяжёлая турель-часовой. С Ancient Restoration реликвии можно вернуть к работе; без него они хорошо продаются или разбираются на пласталь и продвинутые компоненты.",
+      "Официальное дополнение к Ancient Restoration, работает и без него. Работает без дополнений игры."
+    ]
+  },
+  "plans": {
+    "en": [
+      "Version 0.3.0 is built and its Workshop page is ready.",
+      "Next: real screenshots from the game for the gallery, then the release on the Steam Workshop. There is no date yet."
+    ],
+    "uk": [
+      "Версія 0.3.0 зібрана, сторінка в майстерні готова.",
+      "Далі справжні кадри з гри для галереї, потім вихід у майстерні Steam. Дати поки немає."
+    ],
+    "ru": [
+      "Версия 0.3.0 собрана, страница в мастерской готова.",
+      "Дальше настоящие кадры из игры для галереи, потом выход в мастерской Steam. Даты пока нет."
+    ]
+  }
+}
