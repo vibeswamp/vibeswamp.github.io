@@ -1,6 +1,9 @@
 import * as T from "./vendor/three.mjs";
+import { reflectInWater } from "./water-reflection.mjs";
 import { TREE_ANCHORS } from "./forest-layout.mjs";
-import { WATER, mix, random } from "./land.mjs";
+import { MANGROVE, SHORE_TREES } from "./forest-shore.mjs";
+import { WATER, mix, onSunLine, random } from "./land.mjs";
+import { sunwardFogShader } from "./surface.mjs";
 
 export const FOREST_ATLAS = "/swamp-walk/models/forest-atlas.webp";
 const CELL = 6;
@@ -127,8 +130,9 @@ function forestMaterial(map, time, level) {
     map, color: 0xffffff, vertexColors: true, alphaTest: .40, alphaToCoverage: true, side: T.DoubleSide,
   });
   // Level changes dither only in a 2-3 m ring, so mid-distance crowns are not hatched.
-  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v2";
+  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v3";
   material.onBeforeCompile = shader => {
+    sunwardFogShader(shader);
     shader.uniforms.forestTime = time;
     shader.uniforms.forestLevel = { value: level };
     shader.vertexShader = "attribute float sway;\nuniform float forestTime, forestLevel;\nvarying vec2 forestBand;\n"
@@ -152,7 +156,37 @@ function forestMaterial(map, time, level) {
   return material;
 }
 
-export function addForest(scene, land, atlas) {
+// The Blender trees (forest-shore.mjs): GLB meshes -> the same attributes as the prototypes above, at unit height.
+// UVs go back to the atlas convention (the atlas is loaded with flipY), foliage sways, bark darkens toward the roots.
+export function shorePrototypes(gltf) {
+  const kinds = {};
+  for (const [kind, name] of [[3, "mangrove"], [4, "willow"]]) {
+    const levels = [0, 1, 2].map(level => gltf.getObjectByName(`${name}_${level}`)?.geometry);
+    if (levels.some(geometry => !geometry)) return null;
+    levels[0].computeBoundingBox();
+    const unit = 1 / levels[0].boundingBox.max.y;
+    kinds[kind] = levels.map(source => {
+      const geometry = source.clone();
+      geometry.scale(unit, unit, unit);
+      const uv = geometry.getAttribute("uv"), position = geometry.getAttribute("position");
+      const colors = new Float32Array(position.count * 3), sway = new Float32Array(position.count);
+      for (let i = 0; i < uv.count; i++) {
+        const u = uv.getX(i), v = 1 - uv.getY(i);
+        uv.setY(i, v);
+        const leaf = !(u < .5 && v > .5), height = Math.max(0, position.getY(i));
+        const shade = leaf ? .84 + .3 * height : .6 + .6 * Math.min(1, height * 1.6);
+        colors.set([shade, shade * (leaf ? 1.03 : .99), shade * (leaf ? .92 : .87)], i * 3);
+        sway[i] = leaf ? 1 : 0;
+      }
+      geometry.setAttribute("color", new T.BufferAttribute(colors, 3));
+      geometry.setAttribute("sway", new T.BufferAttribute(sway, 1));
+      return geometry;
+    });
+  }
+  return kinds;
+}
+
+export function addForest(scene, land, atlas, shore = null) {
   atlas.colorSpace = T.SRGBColorSpace;
   atlas.anisotropy = 2;
   const time = { value: 0 }, seed = random(69173);
@@ -173,19 +207,33 @@ export function addForest(scene, land, atlas) {
     transform.updateMatrix();
     tint.setRGB(.78 + .22 * seed(), .82 + .19 * seed(), .77 + .23 * seed());
     return { sourceX, sourceZ, x, y, z, h: size, radius, kind, yaw, matrix: transform.matrix.clone(), color: tint.clone() };
-  }).filter(({ x, z, radius }) => !land.beaver?.occupied(x, z, radius + .24));
+  }).filter(({ x, z, radius }) => !land.beaver?.occupied(x, z, radius + .24) && !onSunLine(x, z));
+  // Mangroves stand in the water on their roots (the mud under them), willows on the bank.
+  if (shore) for (const [x, z, h, radius, kind] of SHORE_TREES) {
+    const ground = land.heightAt(x, z);
+    const y = kind === MANGROVE ? Math.max(WATER - 1.05, ground) : ground;
+    const yaw = seed() * 6.283, size = h * mix(.95, 1.06, seed());
+    transform.position.set(x, y, z);
+    transform.rotation.set(0, yaw, .02 * Math.sin(x + z));
+    transform.scale.set(size, size, size);
+    transform.updateMatrix();
+    tint.setRGB(.84 + .16 * seed(), .86 + .14 * seed(), .8 + .2 * seed());
+    anchors.push({ sourceX: x, sourceZ: z, x, y, z, h: size, radius, kind, yaw, matrix: transform.matrix.clone(), color: tint.clone() });
+  }
   const ranges = [[0, 0, 35], [1, 18, 63], [2, 44, 158]];
-  const meshes = STYLES.map((_, kind) => {
+  const kinds = shore ? 5 : STYLES.length;
+  const meshes = Array.from({ length: kinds }, (_, kind) => {
     const capacity = anchors.filter(anchor => anchor.kind === kind).length;
     return [0, 1, 2].map(level => {
-      const mesh = new T.InstancedMesh(prototype(kind, level), forestMaterial(atlas, time, level), capacity);
+      const geometry = kind < STYLES.length ? prototype(kind, level) : shore[kind][level];
+      const mesh = new T.InstancedMesh(geometry, forestMaterial(atlas, time, level), Math.max(1, capacity));
       mesh.name = "SwampTree-" + kind + "-" + level;
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
       if (capacity) mesh.setColorAt(0, tint);
       mesh.instanceColor?.setUsage(T.DynamicDrawUsage);
       mesh.frustumCulled = false;
       mesh.count = 0;
-      scene.add(mesh);
+      scene.add(reflectInWater(mesh));
       return mesh;
     });
   });
@@ -194,7 +242,8 @@ export function addForest(scene, land, atlas) {
   return {
     anchors,
     stats() {
-      const rows = batches.map(mesh => ({ name: mesh.name, instances: mesh.count, triangles: mesh.geometry.index.count / 3 }));
+      const rows = batches.map(mesh => ({ name: mesh.name, instances: mesh.count,
+        triangles: (mesh.geometry.index?.count ?? mesh.geometry.getAttribute("position").count) / 3 }));
       return { anchors: anchors.length, repacks, batches: rows, submitted: rows.reduce((sum, row) => sum + row.instances * row.triangles, 0) };
     },
     update(elapsed, eye) {
@@ -217,6 +266,8 @@ export function addForest(scene, land, atlas) {
         }
       }
       for (const mesh of batches) {
+        // An empty batch is skipped outright, so it costs no draw call (here or in the water reflection).
+        mesh.visible = mesh.count > 0;
         if (!mesh.count) continue;
         for (const attribute of [mesh.instanceMatrix, mesh.instanceColor]) {
           attribute.clearUpdateRanges();

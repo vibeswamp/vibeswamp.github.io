@@ -4,6 +4,7 @@
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { join, posix } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const hash = content => createHash("sha256").update(content).digest("hex").slice(0, 12);
 const IMPORT = /(\bfrom\s*|\bimport\s*\(\s*|\bimport\s+)(["'])(\.{1,2}\/[^"'?]+\.mjs)\2/g;
@@ -66,7 +67,12 @@ export function walkLoadingAssets(walk, publicRoot, warn = console.warn) {
   return assets.filter(Boolean);
 }
 
-export function walkPageHtml({ lang, w, esc, backUrl, styles, script }) {
+// Texts of the game day (sortie board, bag, night waves) live in content/first-landing.json, next to swamp-walk.json.
+const FIRST_LANDING = JSON.parse(readFileSync(fileURLToPath(new URL("../../content/first-landing.json", import.meta.url)), "utf8"));
+
+export function walkPageHtml({ lang, w: walk, esc, backUrl, styles, script }) {
+  const w = { ...walk, expedition: FIRST_LANDING[lang] ?? FIRST_LANDING.en };
+  const day = w.expedition;
   return `<!doctype html>
 <html lang="${lang}">
 <head>
@@ -88,22 +94,34 @@ ${styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n")}
     <canvas id="swalk-chart" width="200" height="200" aria-hidden="true"></canvas>
     <button id="swalk-reset" type="button">${esc(w.reset)}</button>
     <button id="swalk-camera" type="button" title="V">${esc(w.camera)}</button>
+    ${w.room ? `<button id="swalk-room" class="walk-room-toggle" type="button">${esc(w.room.button)}</button>` : ""}
   </div>
   <aside class="walk-sortie" id="swalk-sortie" hidden>
-    <div class="walk-sortie-title"><strong>${esc(w.sortie.title)}</strong><span id="swalk-health"></span></div>
+    <div class="walk-sortie-title"><strong id="swalk-phase">${esc(day.phases.free)}</strong><span id="swalk-health"></span></div>
     <p id="swalk-objective" role="status"></p>
+    <p id="swalk-bag" class="walk-ledger" hidden></p>
+    <p id="swalk-stock" class="walk-ledger" hidden></p>
+    <p id="swalk-result" class="walk-result" hidden></p>
     <p id="swalk-prompt" class="walk-prompt" hidden></p>
   </aside>
+  <dialog id="swalk-dialog" class="walk-decision" aria-labelledby="swalk-dialogTitle" aria-describedby="swalk-dialogBody">
+    <h2 id="swalk-dialogTitle"></h2><p id="swalk-dialogBody"></p>
+    <div id="swalk-supply" hidden></div>
+    <div id="swalk-options"></div>
+  </dialog>
   <aside id="swalk-status" class="walk-status" role="status" hidden></aside>
   <section class="walk-loading" id="swalk-loading" aria-label="${esc(w.loading)}">${esc(w.loading)}<noscript> · ${esc(w.error)}</noscript></section>
   <p class="walk-help" id="swalk-help">
-    <span class="walk-help-desktop">${esc(w.controls)}</span>
+    <span class="walk-help-desktop">${esc(w.controls)} · I — ${esc(day.bag.toLowerCase())}</span>
     <span class="walk-help-touch">${esc(w.touchControls)}</span>
   </p>
   <div class="walk-touch" id="swalk-touch" hidden>
     <div class="walk-stick" id="swalk-stick" role="img" aria-label="${esc(w.move)}"><span class="walk-stick-ring"><span class="walk-stick-knob"></span></span></div>
     <div class="walk-touch-right">
-      <button class="walk-center" id="swalk-camera-center" type="button" aria-label="${esc(w.centerCamera)}" title="${esc(w.centerCamera)}"></button>
+      <div class="walk-touch-tools">
+        <button class="walk-jump walk-bag" id="swalk-inventory" type="button" hidden>${esc(day.bag)}</button>
+        <button class="walk-center" id="swalk-camera-center" type="button" aria-label="${esc(w.centerCamera)}" title="${esc(w.centerCamera)}"></button>
+      </div>
       <div class="walk-touch-actions">
         <button class="walk-jump walk-interact" id="swalk-interact" type="button" hidden></button>
         <button class="walk-jump" id="swalk-attack" type="button" hidden>${esc(w.attack)}</button>

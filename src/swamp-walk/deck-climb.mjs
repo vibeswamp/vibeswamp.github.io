@@ -5,7 +5,7 @@ import { BODY_RADIUS } from "./rail.mjs";
 const DECK_SUPPORT = [[0, 0], [BODY_RADIUS, 0], [-BODY_RADIUS, 0], [0, BODY_RADIUS], [0, -BODY_RADIUS]];
 const MIN_RISE = 0.16;
 // From the ground Klyop pulls himself up any edge at least this high; lower edges are a normal step or jump.
-const STAND_RISE = 0.3;
+const STAND_RISE = 0.25;
 // The high clip still reads well a few centimetres above its measured reach.
 const REACH_SLACK = 0.1;
 const mix = (a, b, alpha) => a + (b - a) * alpha;

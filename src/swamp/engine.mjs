@@ -17,19 +17,120 @@ export function producerMultiplier(state, id, data) {
 
 // Badges the save holds that the game still knows (data.achievements); each gives +1% to the whole swamp.
 export const badgeCount = (state, data) => (data?.achievements || []).filter((a) => state.ach?.[a.id]).length;
-export const swampMultiplier = (state, data) => (state.done.seams ? 1.5 : 1) * 1.1 ** rankOf(state.total) * (1 + 0.01 * badgeCount(state, data));
+
+// ---------- planks, resin and amber (docs/design/economy.md, approved 13.11.2026) ----------
+// One warehouse for the clicker and the 3D swamp: block `expedition3d` of the save. Planks and resin are spent, amber
+// stays on the shelf. Tolya sells planks and resin for flies, amber only up to what the next step asks for.
+// The steps' materials, Tolya's stall and the gear are on only with data.homeMaterials === true: the owner's fly
+// courier (13.11) reworks them, so they wait for the new economy.md. Amber on the shelf and the calm night work anyway.
+export const materialsOn = (data) => data?.homeMaterials === true;
+const LEDGER_VERSION = 1;
+const whole = (value) => (Number.isSafeInteger(value) && value >= 0 ? value : 0);
+export const emptyLedger = () => ({ version: LEDGER_VERSION, amber: 0, extraDash: false, receipt: null, best: null });
+export const ledgerOf = (state) => (state.expedition3d?.version === LEDGER_VERSION ? state.expedition3d : emptyLedger());
+export const materialsOf = (state) => {
+  const ledger = ledgerOf(state);
+  return { wood: whole(ledger.warehouse?.wood), resin: whole(ledger.warehouse?.resin), amber: whole(ledger.amber) };
+};
+// every amber on the shelf adds to the whole swamp, up to a limit
+export const shelfBonus = (state, data) => (data?.expedition?.shelf?.bonus ?? 0) * Math.min(materialsOf(state).amber, data?.expedition?.shelf?.max ?? 0);
+// "Спокойная ночь": after a night won in 3D the swamp earns more for a while (until this time, ms)
+export const calmUntil = (state) => (Number.isFinite(ledgerOf(state).calmUntil) ? ledgerOf(state).calmUntil : 0);
+export const calmBoost = (data) => 1 + (data?.expedition?.calm?.bonus ?? 0);
+
+export const swampMultiplier = (state, data) => (state.done.seams ? 1.5 : 1) * 1.1 ** rankOf(state.total) * (1 + 0.01 * badgeCount(state, data))
+  * (1 + shelfBonus(state, data));
 export const baseRate = (state, data) => data.buildings.reduce((sum, building) =>
   sum + owned(state, building.id) * building.rate * producerMultiplier(state, building.id, data), 0) * swampMultiplier(state, data);
 
-export function incomeRate(state, data, { radio = false, swarm = false, tea = false } = {}) {
-  return baseRate(state, data) * (radio ? (state.done.track ? 1.5 : 1.25) : 1) * (swarm ? 5 : 1) * (tea ? data.activities.tea.multiplier : 1);
+export function incomeRate(state, data, { radio = false, swarm = false, tea = false, calm = false } = {}) {
+  return baseRate(state, data) * (radio ? (state.done.track ? 1.5 : 1.25) : 1) * (swarm ? 5 : 1) * (tea ? data.activities.tea.multiplier : 1)
+    * (calm ? calmBoost(data) : 1);
 }
 
-export function clickValue(state, data, { vibe = false, storm = false } = {}) {
+export function clickValue(state, data, { vibe = false, storm = false, calm = false } = {}) {
   const passive = baseRate(state, data);
   // a croak brings a share of the passive income (content/swamp-v2.json clickShare; 1/6 before 12.11.2026)
   const croak = (state.done.bug ? 2 : 1) + passive * (data.clickShare ?? 1 / 6);
-  return (croak + (state.done.friday ? passive * 0.03 : 0)) * (vibe ? 3 : 1) * (storm ? 7 : 1);
+  return (croak + (state.done.friday ? passive * 0.03 : 0)) * (vibe ? 3 : 1) * (storm ? 7 : 1) * (calm ? calmBoost(data) : 1);
+}
+
+// What the next step asks for besides flies, and what of it is still missing.
+export function stageNeeds(state, data) {
+  const next = data.stages[state.stage];
+  if (!next) return null;
+  const have = materialsOf(state), on = materialsOn(data);
+  const need = { wood: on ? next.wood || 0 : 0, resin: on ? next.resin || 0 : 0, amber: on ? next.amber || 0 : 0 };
+  return { next, need, miss: { wood: Math.max(0, need.wood - have.wood), resin: Math.max(0, need.resin - have.resin), amber: Math.max(0, need.amber - have.amber) } };
+}
+
+// Tolya's price: seconds of the swamp's income, never below a floor, so the stall neither ruins a young swamp nor
+// gets cheap late in the game.
+export function marketPrice(state, data, item) {
+  const market = data.market;
+  if (!materialsOn(data) || !market?.[item]) return Infinity;
+  const floor = { wood: market.floorWood, resin: market.floorResin, amber: market.floorAmber }[item] ?? 0;
+  return Math.max(floor, Math.ceil(market[item] * baseRate(state, data)));
+}
+
+// The price of everything the next step lacks (0 when nothing is missing).
+export function missingPrice(state, data) {
+  const needs = stageNeeds(state, data);
+  if (!needs) return 0;
+  return ["wood", "resin", "amber"].reduce((sum, item) => sum + (needs.miss[item] ? needs.miss[item] * marketPrice(state, data, item) : 0), 0);
+}
+
+const withLedger = (state, change) => {
+  const ledger = ledgerOf(state);
+  state.expedition3d = { ...ledger, ...change(materialsOf(state)) };
+};
+
+// Buy `count` of an item from Tolya. Amber only up to what the next step still lacks.
+export function buyMaterial(state, data, item, count = 1) {
+  if (!["wood", "resin", "amber"].includes(item) || !Number.isSafeInteger(count) || count < 1) return false;
+  if (item === "amber" && count > (stageNeeds(state, data)?.miss.amber ?? 0)) return false;
+  const price = marketPrice(state, data, item) * count;
+  if (!Number.isFinite(price) || state.flies < price) return false;
+  state.flies -= price;
+  withLedger(state, (have) => (item === "amber" ? { amber: have.amber + count } : { warehouse: { wood: have.wood, resin: have.resin, [item]: have[item] + count } }));
+  state.market = { wood: 0, resin: 0, amber: 0, ...state.market, [item]: (state.market?.[item] || 0) + count };
+  return true;
+}
+
+// Everything the next step lacks, in one purchase.
+export function buyMissing(state, data) {
+  const needs = stageNeeds(state, data);
+  const price = missingPrice(state, data);
+  if (!needs || !price || state.flies < price) return false;
+  for (const item of ["wood", "resin", "amber"]) if (needs.miss[item]) buyMaterial(state, data, item, needs.miss[item]);
+  return true;
+}
+
+// ---------- gear for the 3D swamp, bought in the clicker: a stronger wrench, a bigger bag, a lantern ----------
+export const gearOf = (state) => ({
+  wrench: Math.min(3, whole(state.gear?.wrench)), bag: Math.min(2, whole(state.gear?.bag)), lantern: state.gear?.lantern === true
+});
+// "owned"; "open" when its step is built and the level before it is owned; otherwise "closed"
+export function gearStatus(state, data, item) {
+  const gear = gearOf(state);
+  const level = data.gear.filter((other) => other.kind === item.kind).indexOf(item) + 1;
+  const have = item.kind === "lantern" ? Number(gear.lantern) : gear[item.kind];
+  if (have >= level) return "owned";
+  return have === level - 1 && hasStage(state, data, item.after) ? "open" : "closed";
+}
+export const gearPrice = (state, data, item) => Math.max(1, Math.ceil(item.seconds * baseRate(state, data)));
+
+export function buyGear(state, data, id) {
+  if (!materialsOn(data)) return false;
+  const item = data.gear.find((other) => other.id === id);
+  if (!item || gearStatus(state, data, item) !== "open") return false;
+  const have = materialsOf(state), price = gearPrice(state, data, item);
+  if (state.flies < price || have.wood < item.wood || have.resin < item.resin) return false;
+  state.flies -= price;
+  withLedger(state, (stock) => ({ warehouse: { wood: stock.wood - item.wood, resin: stock.resin - item.resin } }));
+  const gear = gearOf(state);
+  state.gear = { ...gear, [item.kind]: item.kind === "lantern" ? true : gear[item.kind] + 1 };
+  return true;
 }
 
 export function roomOpen(state, data, id) {
@@ -53,10 +154,18 @@ export function buyBuilding(state, data, id) {
   return true;
 }
 
+// A step takes its flies and its planks and resin from the warehouse; amber only has to be on the shelf.
+export function canBuildStage(state, data) {
+  const needs = stageNeeds(state, data);
+  return Boolean(needs) && state.total >= needs.next.total && state.flies >= needs.next.cost
+    && !needs.miss.wood && !needs.miss.resin && !needs.miss.amber;
+}
+
 export function buyStage(state, data) {
-  const next = data.stages[state.stage];
-  if (!next || state.total < next.total || state.flies < next.cost) return false;
+  if (!canBuildStage(state, data)) return false;
+  const { next, need } = stageNeeds(state, data);
   state.flies -= next.cost;
+  if (need.wood || need.resin) withLedger(state, (have) => ({ warehouse: { wood: have.wood - need.wood, resin: have.resin - need.resin } }));
   state.stage++;
   return true;
 }

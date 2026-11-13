@@ -48,7 +48,8 @@ export function createChart(canvas, land, text, route = []) {
       ctx.stroke();
       ctx.setLineDash([]);
     }
-    if (target) path(route, "#ffd58cb0", [2.4, 2.7]);
+    if (target) path(target.route ?? route, "#ffd58cb0", [2.4, 2.7]);
+    if (target?.waterRoute) path(target.waterRoute, "#a4f4da", [2.1, 2.4]);
     drawWorldGeography(ctx, land, loc);
     if (player.swimming) for (const { points } of WATER_EXITS) path(points, "#a4f4da");
     drawWalkMarkers(ctx, loc, LANDMARKS, discovered, target, player);

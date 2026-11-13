@@ -57,7 +57,8 @@ export function applyKlyopPresentation(T, rig) {
       `)
       .replace("#include <roughnessmap_fragment>", `
         #include <roughnessmap_fragment>
-        roughnessFactor *= mix(1.0 - .37 * klyopClothWetness, .67, skinCoverage);
+        // Dry skin is matte; it turns glossy only in the water or the rain.
+        roughnessFactor *= mix(1.0 - .37 * klyopClothWetness, mix(.93, .62, klyopClothWetness), skinCoverage);
       `)
       .replace("#include <normal_fragment_maps>", `
         #include <normal_fragment_maps>
@@ -66,10 +67,10 @@ export function applyKlyopPresentation(T, rig) {
       `)
       .replace("#include <lights_physical_fragment>", `
         #include <lights_physical_fragment>
-        float gloss = mix(.18 + .56 * klyopClothWetness, .74, skinCoverage);
+        float gloss = mix(.18 + .56 * klyopClothWetness, mix(.36, .80, klyopClothWetness), skinCoverage);
         material.specularColor *= gloss;
         material.specularColorBlended *= gloss;
-        material.specularF90 *= mix(.32 + .40 * klyopClothWetness, .84, skinCoverage);
+        material.specularF90 *= mix(.32 + .40 * klyopClothWetness, mix(.52, .88, klyopClothWetness), skinCoverage);
       `)
       .replace("#include <opaque_fragment>", `
         float duskEdge = pow(1.0 - clamp(abs(dot(nonPerturbedNormal, normalize(vViewPosition))), 0.0, 1.0), 3.8);

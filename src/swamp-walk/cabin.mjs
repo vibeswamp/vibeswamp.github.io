@@ -1,7 +1,11 @@
+import { reflectTreeInWater } from "./water-reflection.mjs";
 import { addCabinLedger } from "./cabin-ledger.mjs";
 
 const X = -4.45, Z = 25.55, FLOOR = 1.04;
 const HX = 2.05, HZ = 1.65;
+// Where the shack stands and how big its plot is (local x runs from the back wall at -HX to the door at +HX,
+// local z from the north wall at -HZ to the south wall at +HZ). clicker-world.mjs furnishes it from the save.
+export const CABIN = { x: X, z: Z, floor: FLOOR, hx: HX, hz: HZ };
 const WALL = 0.15, EAVE = 2.18, DOOR_HALF = 0.69;
 const PLANKS = "/swamp-walk/models/landing-planks.webp";
 export const onCabinPlot = (x, z) => x >= X - HX && x <= X + HX && z >= Z - HZ && z <= Z + HZ;
@@ -166,33 +170,38 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
     }
     box(g, colors.leaf, 0, EAVE + roofRise + 0.073, 0, 4.52, 0.105, 0.17);
   }
+  // The window looks out over the lagoon to the sunset (owner, 13.11: the sunset right from the house), so it is cut
+  // into the north wall above the desk; when the window is cut, the back wall closes. North is "wall_l".
+  const back = -HX + WALL / 2, north = -(HZ - WALL / 2);
+  const sill = 0.86, lintel = 1.79, windowHalf = 0.75, windowX = -0.95;
+  const cut = has("window_hole") || has("window");
   for (const [id, sign] of [["wall_l", -1], ["wall_r", 1]]) {
-    if (!has(id)) continue;
+    if (!has(id) && !(sign < 0 && cut)) continue;
     const g = layer("Cabin/" + id), z = sign * (HZ - WALL / 2);
-    plankWall(g, 0, z, 2 * HX - 0.03, WALL, 0, EAVE);
+    if (sign < 0 && cut) {
+      plankWall(g, 0, z, 2 * HX - 0.03, WALL, 0, sill);
+      plankWall(g, 0, z, 2 * HX - 0.03, WALL, lintel, EAVE);
+      for (const [a, b] of [[-HX + 0.015, windowX - windowHalf], [windowX + windowHalf, HX - 0.015]]) {
+        plankWall(g, (a + b) / 2, z, b - a, WALL, sill, lintel);
+      }
+    } else {
+      plankWall(g, 0, z, 2 * HX - 0.03, WALL, 0, EAVE);
+    }
+    // A walkable route always uses the door. The window is clear to the eye only.
     block(0, EAVE / 2, z, 2 * HX, EAVE, WALL);
   }
-
-  const back = -HX + WALL / 2;
-  const sill = 0.86, lintel = 1.79, windowHalf = 0.75;
-  if (has("window_hole") || has("window")) {
+  if (cut) {
     const g = layer("Cabin/window_hole");
-    plankWall(g, back, 0, WALL, 2 * HZ, 0, sill);
-    plankWall(g, back, 0, WALL, 2 * HZ, lintel, EAVE);
-    const wing = HZ - windowHalf;
-    for (const sign of [-1, 1]) {
-      plankWall(g, back, sign * (windowHalf + wing / 2), WALL, wing, sill, lintel);
-    }
-    // A walkable route always uses the door. The opening is clear to the eye.
+    plankWall(g, back, 0, WALL, 2 * HZ, 0, EAVE);
     block(back, EAVE / 2, 0, WALL, EAVE, 2 * HZ);
   }
   if (has("window")) {
     const g = layer("Cabin/window");
-    for (const y of [sill, lintel]) box(g, colors.end, back, y, 0, 0.24, 0.09, 1.66);
-    for (const z of [-windowHalf, 0, windowHalf]) {
-      box(g, colors.frame, back + 0.018, (sill + lintel) / 2, z, 0.19, lintel - sill, 0.069);
+    for (const y of [sill, lintel]) box(g, colors.end, windowX, y, north, 1.66, 0.09, 0.24);
+    for (const dx of [-windowHalf, 0, windowHalf]) {
+      box(g, colors.frame, windowX + dx, (sill + lintel) / 2, north + 0.018, 0.069, lintel - sill, 0.19);
     }
-    box(g, colors.end, back + 0.018, 1.23, 0, 0.20, 0.049, 1.45);
+    box(g, colors.end, windowX, 1.23, north + 0.018, 1.45, 0.049, 0.20);
   }
   if (has("door")) {
     const g = layer("Cabin/door"), front = HX - WALL / 2;
@@ -278,8 +287,8 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
     box(g, colors.iron, 1.39, 1.41, 1.34, 0.43, 0.32, 0.19);
     box(g, colors.paper, 1.39, 1.41, 1.23, 0.35, 0.25, 0.04);
   }
-  if (has("radio_room") || bought("antenna")) {
-    const g = layer(has("radio_room") ? "Cabin/radio_room" : "Cabin/owned-antenna");
+  if (has("radio_room")) {
+    const g = layer("Cabin/radio_room");
     const baseY = has("awning") ? 2.60 : 0;
     box(g, colors.iron, -1.40, baseY + 0.46, 0.61, 0.058, 0.92, 0.058);
     box(g, colors.brass, -1.40, baseY + 0.85, 0.61, 0.57, 0.048, 0.050);
@@ -294,22 +303,12 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
     for (const x of [0.58, 0.82, 1.04]) box(g, colors.paper, x, 1.27, 1.46, 0.145, 0.21, 0.023);
   }
 
-  const ownedAccents = [
-    ["tussock", colors.leaf, 1.68, 0.07, -1.39, .20, .14, .18],
-    ["flytrap", colors.olive, -1.73, has("extension") ? 0.825 : 0.10, -1.43, .22, .20, .21],
-    ["stump", colors.timber, -1.53, 0.12, 0.84, .20, .24, .20],
-    ["review", colors.paper, -1.08, desk ? 0.784 : 0.015, -1.33, .19, .03, .24],
-    ["beaver", colors.end, 1.74, 0.08, 1.39, .25, .16, .13],
-    ["peat", colors.green, -1.72, has("server_room") ? 1.065 : 0.029, 1.20, .13, .058, .12],
-    ["radio", colors.iron, desk ? -0.34 : 1.64, desk ? 0.86 : 0.10, -1.39, .24, .20, .18],
-  ];
-  for (const [id, material, ...placement] of ownedAccents) {
-    if (bought(id)) box(layer("Cabin/owned-" + id), material, ...placement);
-  }
+  // What the player bought in the clicker stands in and around the shack: clicker-world.mjs (it needs the landing models).
 
   if (labels) addCabinLedger(THREE, root, owned, projects, labels, has("wall_l"));
-  scene.add(root);
+  scene.add(reflectTreeInWater(root));
   return {
+    root, block, has, desk,
     spawn: { x: X - 0.22, z: Z, heading: Math.PI / 2 },
     floorAt: (x, z) => onCabinPlot(x, z) ? FLOOR : -Infinity,
     solids,

@@ -99,6 +99,11 @@ function planLamps(deck, pier) {
     return { x, y, z, height };
   });
   lamps.push({ x: pier.x + 2.16, y: pier.y, z: pier.z - .85, height: 1.36 });
+  if (deck.fishing) {
+    const [a, b, c, d] = deck.fishing.quads[0];
+    const [x, y, z] = between(between(a, c, .78), between(b, d, .78), 1.018);
+    lamps.push({ x, y, z, height: .69 });
+  }
   return lamps;
 }
 
@@ -150,7 +155,7 @@ function addLanterns(T, parent, land, lamps, wood) {
 }
 
 function deckSupports(T, parent, land, spans, pier, water, material, solids) {
-  const timber = [], wet = [];
+  const timber = [], wet = [], straps = [];
   for (const span of spans) {
     const [a, b, c, d] = span;
     for (const at of [.26, .77]) {
@@ -167,7 +172,13 @@ function deckSupports(T, parent, land, spans, pier, water, material, solids) {
         timber.push({ a: [x, wetLine - .03, z], b: [x, y + .046, z], size: [.14, 1, .14], color: 0x75553d });
         const [ox, oy, oz] = side ? p : q;
         const brace = Math.max(a[1] + .15, wetLine - .38);
-        timber.push({ a: [x, brace, z], b: [ox, oy - .045, oz], size: [.067, 1, .067], color: 0x826747 });
+        const braceStart = [x, brace, z], braceEnd = [ox, oy - .045, oz];
+        timber.push({ a: braceStart, b: braceEnd, size: [.067, 1, .067], color: 0x826747 });
+        straps.push(
+          { a: [x, y - .036, z], size: [.149, .072, .149], color: 0x667071 },
+          { a: between(braceStart, braceEnd, .033), b: between(braceStart, braceEnd, .063),
+            size: [.073, 1, .073], color: 0x555c58 },
+        );
       }
     }
   }
@@ -183,6 +194,10 @@ function deckSupports(T, parent, land, spans, pier, water, material, solids) {
   const beam = new T.CylinderGeometry(.84, 1, 1, 7);
   instances(T, parent, "Crossed braces and bearing beams", beam, material, timber);
   instances(T, parent, "Wet pile and gate footings", beam, material, wet);
+  const strapProfile = [[.82, -.5], [1, -.5], [1, .5], [.82, .5], [.82, -.5]];
+  const strap = new T.LatheGeometry(strapProfile.map(([radius, height]) => new T.Vector2(radius, height)), 7);
+  const iron = new T.MeshStandardMaterial({ roughness: .74, metalness: .38 });
+  instances(T, parent, "Pile and brace straps", strap, iron, straps);
 }
 
 export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
@@ -192,6 +207,7 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const lamps = planLamps(deck, pier);
   const bridge = deck.bridge.quads.flatMap(staggeredRows);
   const spans = [deck.pier.panels, bridge, deck.shortcut.quads.flatMap(staggeredRows)];
+  if (deck.fishing) spans.push(deck.fishing.quads.flatMap(staggeredRows));
   const bounds = new T.Box3().setFromPoints(spans.flat(2).map(p => new T.Vector3(...p)));
   const lightUV = (x, z) => [(x - bounds.min.x) / (bounds.max.x - bounds.min.x),
     (z - bounds.min.z) / (bounds.max.z - bounds.min.z)];
@@ -200,6 +216,16 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
     map: atlas, vertexColors: true, roughness: .72, emissive: 0xffb265,
     emissiveMap: lampMap(T, bounds, lamps), emissiveIntensity: .25,
   });
+  material.onBeforeCompile = shader => {
+    // Calm the two lengthwise tiles around their existing linear color. The endgrain stays intact.
+    const grain = T.ShaderChunk.map_fragment.replace("diffuseColor *= sampledDiffuseColor;", `
+      float lengthwise = 1. - step(2. / 3., vMapUv.x);
+      vec3 timberMean = mix(vec3(.205, .093, .031), vec3(.082, .040, .019), step(1. / 3., vMapUv.x));
+      sampledDiffuseColor.rgb = mix(sampledDiffuseColor.rgb, timberMean, .32 * lengthwise);
+      diffuseColor *= sampledDiffuseColor;
+    `);
+    shader.fragmentShader = shader.fragmentShader.replace("#include <map_fragment>", grain);
+  };
   const mesh = (panels, name) => {
     const node = new T.Mesh(plankGeometry(T, panels, deck.thickness, lightUV), material);
     node.name = name;
@@ -209,10 +235,11 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const main = mesh(bridge, "Mitred boardwalk");
   const pad = mesh(spans[0], "Round landing");
   const shortcut = mesh(spans[2], "Shortcut boards");
+  const fishing = deck.fishing ? mesh(spans[3], "Fishing pier boards") : null;
   const reflectionMaterial = new T.MeshBasicMaterial({ color: 0x68503c, vertexColors: true });
   let shortcutProxy;
   if (reflection) {
-    for (const part of [main, pad, shortcut]) {
+    for (const part of [main, pad, shortcut, fishing].filter(Boolean)) {
       const proxy = new T.Mesh(part.geometry, reflectionMaterial);
       reflection.add(proxy);
       if (part === shortcut) shortcutProxy = proxy;
@@ -221,7 +248,8 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const timber = new T.MeshStandardMaterial({ roughness: .87 });
   const solids = lamps.map(({ x, y, z, height }) =>
     ({ id: "lantern", x, z, radius: 0.10, minY: Math.min(land.heightAt(x, z), y), top: y + height + 0.24 }));
-  deckSupports(T, group, land, deck.bridge.quads, pier, water, timber, solids);
+  const supports = deck.fishing ? [...deck.bridge.quads, ...deck.fishing.quads] : deck.bridge.quads;
+  deckSupports(T, group, land, supports, pier, water, timber, solids);
   addLanterns(T, group, land, lamps, timber);
   scene.add(group);
   const update = () => {
@@ -229,5 +257,5 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
     if (shortcutProxy) shortcutProxy.visible = shortcut.visible;
   };
   update();
-  return { group, main, pad, shortcut, lamps, solids, update };
+  return { group, main, pad, shortcut, fishing, lamps, solids, update };
 }

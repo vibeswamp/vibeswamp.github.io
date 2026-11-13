@@ -244,6 +244,10 @@
     background: rgb(58 44 24 / .82);
   }
   .swalk[data-hud] #swalk-dodge { opacity: .9; }
+  /* A roll on its way back: the button stays, only quieter. */
+  .swalk[data-hud] #swalk-dodge[data-cooling] { opacity: .42; }
+  /* Focus: as quiet as the other tools until a target is held, then lit with the lamp's thin edge. */
+  .swalk[data-hud] .walk-focus[aria-pressed="true"] { opacity: .9; border-color: var(--hud-lamp); color: #ffe3b0; }
   .swalk[data-hud] .walk-status {
     top: calc(var(--walk-bar) + 9px);
     bottom: auto;
@@ -252,3 +256,131 @@
     max-width: calc(42% - 14px);
   }
 }
+
+/* The game day on the task board: phase and clock in the title, bag and stock as small figures under the task. */
+.swalk[data-hud] .walk-sortie-title strong { font-variant-numeric: tabular-nums; }
+.swalk[data-hud] .walk-sortie[data-phase="night"] .walk-sortie-title strong { color: var(--hud-moss); }
+.swalk[data-hud] .walk-ledger { color: var(--hud-ink-2); font-size: .7rem; font-variant-numeric: tabular-nums; }
+.swalk[data-hud] .walk-ledger + .walk-ledger { margin-top: 0; }
+.swalk[data-hud] .walk-result { color: var(--hud-lamp); font-size: .7rem; }
+
+/* Decisions (board, pads, stump, bag): a larger plank of the same wood; the first choice is lit like the lamp. */
+.swalk[data-hud] .walk-decision {
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(84dvh, 520px);
+  box-sizing: border-box;
+  padding: 13px 15px 15px;
+  border: 1px solid var(--hud-edge);
+  border-radius: 3px 3px 12px 3px;
+  background: var(--hud-grain), var(--hud-board-solid);
+  color: var(--hud-ink);
+  font: .84rem/1.42 system-ui, sans-serif;
+  box-shadow: 0 12px 36px rgb(4 10 7 / .55);
+}
+.swalk[data-hud] .walk-decision::backdrop { background: rgb(8 14 10 / .45); }
+.swalk[data-hud] .walk-decision h2 { margin: 0 0 5px; font: 600 1.02rem/1.2 var(--hud-label); color: var(--hud-lamp); }
+.swalk[data-hud] .walk-decision p { margin: 0; white-space: pre-line; }
+.swalk[data-hud] .walk-decision p:empty { display: none; }
+.swalk[data-hud] #swalk-options { display: grid; gap: 6px; margin-top: 12px; }
+.swalk[data-hud] .walk-decision button {
+  min-height: 44px;
+  padding: 7px 11px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px 3px 8px 3px;
+  background: rgb(58 44 24 / .55);
+  color: var(--hud-ink);
+  font: 600 .84rem/1.25 var(--hud-label);
+  text-align: start;
+  cursor: pointer;
+}
+.swalk[data-hud] .walk-decision button:first-child:not(:last-child) { border-color: var(--hud-lamp); }
+.swalk[data-hud] .walk-decision button:last-child { background: transparent; color: var(--hud-ink-2); }
+.swalk[data-hud] .walk-decision button:is(:hover, :focus-visible):not(:disabled) { border-color: var(--hud-lamp); color: #ffe3b0; }
+.swalk[data-hud] .walk-decision button:disabled { opacity: .45; cursor: default; }
+.swalk[data-hud] .walk-decision small { display: block; margin-top: 2px; color: var(--hud-ink-2); font: 400 .74rem/1.3 system-ui, sans-serif; }
+
+/* Bag slots: eight pockets for planks and resin, one apart for amber. */
+.walk-supply-art { display: flex; align-items: center; gap: 8px; margin-top: 9px; }
+.walk-supply-grid { display: grid; grid-template-columns: repeat(4, 32px); gap: 3px; }
+.walk-supply-slot {
+  display: block;
+  box-sizing: border-box;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px;
+  background: rgb(20 16 10 / .6);
+}
+.walk-supply-slot img { display: block; width: 30px; height: 30px; object-fit: contain; }
+.walk-supply-amber { border-color: var(--hud-lamp); }
+
+.walk-touch-tools { display: flex; align-items: center; gap: 7px; }
+.swalk[data-hud] .walk-bag { min-width: 0; min-height: 44px; padding: 5px 11px; }
+
+@media (pointer: coarse) {
+  /* On a phone the bag button opens bag and stock; the board keeps only the task. */
+  .swalk[data-hud] .walk-sortie .walk-ledger { display: none; }
+  .swalk[data-hud] .walk-bag { opacity: .74; }
+}
+
+/* A room (neighbours): nicknames over their heads as small plank tags, the pouch colour as a dot before the name. */
+.swalk[data-hud] .walk-nameplates { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.swalk[data-hud] .walk-nameplate {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 7px 2px 6px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px 3px 7px 3px;
+  background: var(--hud-board);
+  color: var(--hud-ink);
+  font: 600 .74rem/1.2 var(--hud-label);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+}
+.swalk[data-hud] .walk-nameplate::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--pouch); }
+.swalk[data-hud] .walk-nameplate[data-ghost] { opacity: .55; }
+.swalk[data-hud] .walk-room-toggle[data-room] { border-color: var(--hud-moss); }
+
+/* The room window: the nickname and the pouch colour on the decisions' plank. */
+.swalk[data-hud] .walk-room-form { display: grid; gap: 10px; margin-top: 11px; }
+.swalk[data-hud] .walk-room-form[hidden], .swalk[data-hud] .walk-room-link[hidden] { display: none; }
+.swalk[data-hud] .walk-room-field { display: grid; gap: 4px; color: var(--hud-ink-2); font: 600 .76rem/1.2 var(--hud-label); }
+.swalk[data-hud] .walk-room-field input {
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 7px 10px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px;
+  background: rgb(14 11 7 / .62);
+  color: var(--hud-ink);
+  font: 500 .92rem/1.2 system-ui, sans-serif;
+}
+.swalk[data-hud] .walk-room-field input:focus-visible { outline: 2px solid var(--hud-lamp); outline-offset: 1px; }
+.swalk[data-hud] .walk-room-swatches { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; border: 0; }
+.swalk[data-hud] .walk-room-swatches legend { margin-bottom: 4px; padding: 0; color: var(--hud-ink-2); font: 600 .76rem/1.2 var(--hud-label); }
+.swalk[data-hud] .walk-swatch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 40px;
+  padding: 0 11px 0 9px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 3px 3px 8px 3px;
+  color: var(--hud-ink-2);
+  font: 600 .82rem/1 var(--hud-label);
+  cursor: pointer;
+}
+.swalk[data-hud] .walk-swatch::before { content: ""; width: 12px; height: 12px; border-radius: 50%; background: var(--pouch); box-shadow: inset 0 0 0 1px rgb(0 0 0 / .3); }
+.swalk[data-hud] .walk-swatch input { position: absolute; opacity: 0; pointer-events: none; }
+.swalk[data-hud] .walk-swatch:has(input:checked) { border-color: var(--hud-lamp); color: var(--hud-ink); }
+.swalk[data-hud] .walk-swatch:has(input:focus-visible) { outline: 2px solid var(--hud-lamp); outline-offset: 1px; }
+.swalk[data-hud] .walk-room-error:empty, .swalk[data-hud] .walk-room-status[hidden] { display: none; }
+.swalk[data-hud] .walk-room-error { color: #f0b39a; font-size: .78rem; }
+.swalk[data-hud] .walk-room-status { margin-top: 10px; color: var(--hud-moss); }
+.swalk[data-hud] .walk-room-link { display: grid; gap: 6px; margin-top: 10px; }
+.swalk[data-hud] .walk-room-link input { font-size: .8rem; }
+.swalk[data-hud] .walk-room-options { display: grid; gap: 6px; margin-top: 12px; }
+.swalk[data-hud] .walk-room-options button[hidden], .swalk[data-hud] .walk-room-link button[hidden] { display: none; }

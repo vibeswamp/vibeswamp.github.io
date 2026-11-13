@@ -46,6 +46,9 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
   left: calc((100cqw - var(--w)) / 2); top: calc((100cqh - var(--w) / 1.5) * 0.78); }
 .sw-backdrop { position: absolute; inset: 0; z-index: -3; background: no-repeat; background-size: var(--sw-size, 100% 100%); background-position: var(--sw-pos, center);
   background-image: var(--sw-background, url('/brand/swamp/bg.webp')), var(--sw-previous, none); }
+/* the living backdrop: a WebGL canvas over the still picture, shown once its first frame is drawn */
+.sw-backdrop-gl { position: absolute; inset: 0; z-index: -3; display: block; width: 100%; height: 100%; pointer-events: none; }
+.sw-world.gl-live .sw-cloud { display: none; }
 .sw-world::after { content: ""; position: absolute; inset: 0; z-index: 10; pointer-events: none; transition: background-color 400ms;
   background: linear-gradient(180deg, rgba(10, 14, 8, 0.38) 0%, transparent 22%, transparent 80%, rgba(10, 14, 8, 0.42) 100%); }
 .sw-scene.vibing .sw-world::after { background-color: rgba(232, 176, 74, 0.1); }
@@ -62,6 +65,13 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
   animation: sw-glint var(--d, 2s) ease-in-out infinite; }
 @keyframes sw-glint { 0%, 100% { opacity: 0; transform: translateX(-50%); } 45% { opacity: var(--o, .6); } 60% { opacity: calc(var(--o, .6) * .6); transform: translateX(calc(-50% + var(--dx, 3px))); } }
 .sw-world[data-stage-art='true'] .sw-wave i.in-hut, .sw-world:not([data-room='shore']) .sw-wave { display: none; }
+.sw-bird, .sw-dragonfly { position: absolute; transform-origin: 50% 50%; will-change: transform, opacity; }
+.sw-bird { width: 1.6%; aspect-ratio: 20 / 8; }
+.sw-bird svg, .sw-dragonfly svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.sw-bird .wing { animation: sw-flap .42s ease-in-out infinite alternate; transform-origin: 50% 60%; transform-box: fill-box; }
+@keyframes sw-flap { to { transform: scaleY(-.55); } }
+.sw-dragonfly { width: 2.6%; aspect-ratio: 26 / 12; }
+.sw-dragonfly .wings { animation: sw-wing 45ms linear infinite alternate; transform-origin: 50% 50%; transform-box: fill-box; }
 .sw-ripple { position: absolute; aspect-ratio: 100 / 26; opacity: 0; transform: translate(-50%, -50%) rotate(var(--rot, 0deg)) scale(.12);
   animation: sw-ripple var(--dur, 2s) cubic-bezier(.2, .6, .35, 1) forwards; }
 .sw-ripple svg { display: block; width: 100%; height: 100%; overflow: visible; }
@@ -86,8 +96,15 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 
 /* buildings stand on their spots in the painting; a small brass count when there are several */
 .sw-houses { position: absolute; inset: 0; z-index: 4; }
+/* buildings that stand behind the hut (only their top shows over the roof) */
+.sw-houses.sw-houses-back { z-index: 1; }
 .sw-house { position: absolute; transform: translateX(-50%); transform-origin: 50% 100%; pointer-events: none; }
-.sw-house img { position: relative; z-index: 1; display: block; height: 100%; width: auto; filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.4)); }
+/* in the evening light of the painting: a touch warmer and darker than the cut-out, no dark halo around it */
+.sw-house img { position: relative; z-index: 1; display: block; height: 100%; width: auto; filter: brightness(.94) saturate(1.04) sepia(.08); }
+.sw-house.indoor img { filter: brightness(.9) sepia(.2) saturate(1.08); }
+/* standing on the deck or the floor: a soft contact shadow under it */
+.sw-house.ground::before { content: ''; position: absolute; left: 50%; bottom: -2%; z-index: 0; width: 78%; height: 9%; transform: translateX(-50%); border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(14, 10, 6, .55), rgba(14, 10, 6, 0) 70%); }
 .sw-house.new { animation: sw-rise 520ms cubic-bezier(.3, 1.5, .5, 1); }
 @keyframes sw-rise { from { transform: translateX(-50%) translateY(30%) scale(0.3); opacity: 0; } }
 .sw-house.work img { animation: sw-work 420ms ease-out; }
@@ -96,7 +113,14 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
   color: #F4DFA9; font-size: 11px; font-weight: 700; line-height: 1.5; white-space: nowrap; }
 
 /* ---------- Klyop ---------- */
-.sw-klyop { position: absolute; left: 50%; bottom: 15%; z-index: 16; height: 57%; padding: 0; border: 0; background: none; cursor: pointer; transform: translateX(-50%); touch-action: manipulation; }
+/* Klyop's height is in % of the painting and follows what stands around him: about the height of the door in the hut
+   (door 28%, desk 17% of the painting), larger on the open tussock. A phone shows him 30% larger (owner, 11.11). */
+.sw-world { --k-scale: 1; --k-h: 40%; --k-b: 13%; }
+.sw-world[data-era='1'] { --k-h: 34%; --k-b: 15%; }
+.sw-world[data-era='2'] { --k-h: 30%; --k-b: 16%; }
+.sw-world[data-era='3'] { --k-h: 29%; --k-b: 19%; }
+.sw-world:not([data-room='shore']) { --k-h: 52%; --k-b: 15%; }
+.sw-klyop { position: absolute; left: 50%; bottom: var(--k-b); z-index: 16; height: calc(var(--k-h) * var(--k-scale)); padding: 0; border: 0; background: none; cursor: pointer; transform: translateX(-50%); touch-action: manipulation; }
 .sw-klyop:focus-visible { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 12px; }
 .sw-k { position: relative; display: block; height: 100%; width: auto; transform-origin: 50% 100%; user-select: none; -webkit-user-drag: none; }
 /* a soft shadow on the boards under his feet instead of a glow around him */
@@ -108,10 +132,10 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 @keyframes sw-croak { 40% { transform: scale(1.04, 0.94); } }
 .sw-scene.storm .sw-k { filter: brightness(1.15) sepia(.25) saturate(1.3); }
 .sw-klyop.sw-fly-target .sw-k { filter: brightness(1.12) saturate(1.1); }
-.sw-world:not([data-room='shore']) .sw-klyop { left: 52%; height: 66%; bottom: 15%; }
+.sw-world:not([data-room='shore']) .sw-klyop { left: 52%; }
 /* through the door: he walks to the door and away (data-threshold "out"), or comes back from it ("in" -> "back") */
 .sw-world[data-threshold] .sw-klyop { pointer-events: none; transform-origin: 50% 100%; transition: left 1.05s ease-in-out, bottom 1.05s ease-in-out, transform 1.05s ease-in-out, opacity 1.05s; }
-.sw-world:is([data-threshold='out'], [data-threshold='in']) .sw-klyop { left: 57%; bottom: 31%; transform: translateX(-50%) scale(.58); }
+.sw-world:is([data-threshold='out'], [data-threshold='in']) .sw-klyop { left: 57%; bottom: 30%; transform: translateX(-50%) scale(.8); }
 .sw-world[data-threshold='out'] .sw-klyop { opacity: .85; }
 .sw-world[data-threshold] .sw-croak { opacity: 0; transition: opacity 200ms; }
 .sw-world:is([data-threshold='out'], [data-threshold='in'])::after { background-color: rgba(6, 8, 5, .94); }
@@ -166,6 +190,7 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 .sw-rate { margin: 1px 0 0; font-size: 12px; line-height: 1.3; color: var(--metal-soft); }
 .sw-income-detail { display: block; color: var(--duckweed); }
 .sw-income-detail:not([data-boosted]) { display: none; }
+.sw-income-raises:not(:empty)::before { content: ' · '; }
 .sw-rank { display: flex; gap: 8px; align-items: center; max-width: 56%; pointer-events: auto; }
 .sw-rank-img { flex: none; display: none; height: 46px; width: auto; filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.4)); }
 .sw-rank-txt { min-width: 0; }
@@ -190,6 +215,9 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 /* indoors the cut-out buildings lose the strip of swamp water they were drawn standing in */
 .sw-world[data-room='server'] .sw-house[data-id='peat'] img { clip-path: inset(0 0 15% 0); }
 .sw-world[data-room='radio'] .sw-house[data-id='radio'] img { clip-path: inset(0 0 7% 0); }
+/* their contact shadow moves up to where the clipped picture ends */
+.sw-world[data-room='server'] .sw-house[data-id='peat']::before { bottom: 13%; }
+.sw-world[data-room='radio'] .sw-house[data-id='radio']::before { bottom: 5%; }
 .sw-room-name { min-width: 0; margin-left: 4px; overflow: hidden; color: var(--metal-text); font-size: 13px; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; text-shadow: 0 1px 3px #000c; }
 
 /* the vibe meter: bottom right of the scene */
@@ -233,11 +261,26 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 .sw-construct .sw-text { font-size: 12px; color: var(--ink-2); }
 .sw-construct .sw-price { display: grid; justify-items: end; gap: 2px; }
 .sw-stage-cost { font-weight: 700; font-size: 15px; font-variant-numeric: tabular-nums; }
+/* what the next step still lacks (planks, resin, amber): Tolya sells it, a trip to 3D brings it */
+.sw-needs { display: grid; gap: 6px; margin-top: -4px; padding: 7px 10px 8px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 8px 8px; background: var(--ground); }
+.sw-needs-l { margin: 0; font-size: 12.5px; line-height: 1.35; color: var(--ink-2); }
+.sw-needs-actions { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.sw-needs-actions button { flex: 1 1 auto; }
+.sw-go3d { min-height: 40px; padding: 4px 12px; border: 1px solid var(--brass); border-radius: 6px; background: transparent; color: var(--ink); font-size: 13px; font-weight: 600; cursor: pointer;
+  transition: background-color var(--ease); }
+.sw-go3d:hover { background: var(--hover); }
+/* Tolya's stall */
+.sw-market-lead { margin: 0 2px 8px; font-size: 12.5px; line-height: 1.4; color: var(--ink-2); }
+.sw-calm-line { margin: 0 2px 8px; font-size: 13px; font-weight: 600; color: var(--signal-text); }
+.sw-good .sw-text { display: block; }
+.sw-goods { margin-bottom: 8px; }
+.sw-gear-item .sw-cost { font-size: 12.5px; }
+.sw-gear-item:disabled:not(.done) .sw-name { color: var(--ink-2); }
 .sw-build-l { padding: 2px 8px; border-radius: 4px; background: var(--ground); color: var(--ink-2); font-size: 12px; font-weight: 600; }
 .sw-construct.can .sw-build-l { background: var(--signal); color: var(--on-signal); }
 .sw-construct.all .sw-price, .sw-construct.all .sw-next-l { display: none; }
 
-.sw-tabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); flex: none; gap: 2px; padding: 3px; border-radius: 8px; background: var(--surface); }
+.sw-tabs { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); flex: none; gap: 2px; padding: 3px; border-radius: 8px; background: var(--surface); }
 .sw-tabs button { min-width: 0; min-height: 40px; padding: 4px 2px; border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--ink-2); font-size: 13px; overflow-wrap: anywhere; cursor: pointer; }
 .sw-tabs button:hover { color: var(--ink); }
 .sw-tabs button[aria-selected='true'] { background: var(--water); color: var(--on-water); border-color: var(--brass); }
@@ -325,7 +368,8 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 .sw-ach.locked .sw-ach-icon > :not(.sw-ach-unknown) { filter: brightness(0); opacity: .55; }
 .sw-ach.locked .sw-ach-name { font-weight: 400; color: var(--ink-2); }
 .sw-ach:not(.locked) .sw-ach-bar { display: none; }
-.sw-panel > h2 { margin: 2px 2px 8px; font: 600 14px/1.3 var(--sans); color: var(--ink-2); }
+.sw-panel > h2, .sw-trips h2 { margin: 2px 2px 8px; font: 600 14px/1.3 var(--sans); color: var(--ink-2); }
+.sw-trips { margin-top: 12px; }
 .sw-records { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 0; }
 .sw-records div { padding: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); }
 .sw-records dt { color: var(--ink-2); font-size: 12px; }
@@ -377,7 +421,7 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
   .sw-walk-link { min-height: 44px; padding: 4px 10px; gap: 4px; font-size: 13px; white-space: nowrap; }
   .sw-game { gap: 8px; }
   .sw-scene { border-radius: 6px; }
-  .sw-world { flex: none; height: clamp(290px, 38svh, 370px); }
+  .sw-world { flex: none; height: clamp(290px, 38svh, 370px); --k-scale: 1.3; }
   .sw-backdrop { background-image: var(--sw-mobile-background, url('/brand/swamp/bg-960.webp')), var(--sw-mobile-previous, none); }
   .sw-layer { background-image: var(--src-m); }
   .sw-say { font-size: 13px; padding: 6px 10px; max-width: 72%; }
@@ -401,6 +445,8 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 }
 @media (max-width: 600px) {
   .sw-count { font-size: 26px; }
+  .sw-income-base { display: none; }
+  .sw-income-raises::before { content: none !important; }
   .sw-unit { font-size: 14px; }
   .sw-rate { font-size: 11px; }
   .sw-buy-action { padding: 4px 8px; font-size: 12px; }

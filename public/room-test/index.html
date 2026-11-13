@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Комната для двоих: проверка</title>
+<link rel="icon" href="/favicon.png">
+<style>
+  /* the site's swamp colours (DESIGN.md); a test page, so one plain screen */
+  :root { --ground: #10160E; --surface: #182016; --line: #2C3727; --ink: #E2E8DA; --ink-2: #A3AE99; --water: #1B2C16; --water-deep: #111D0E;
+    --duckweed: #B9D27A; --brass: #D5AD71; --amber: #E8B04A; --copper: #e8a65c; --moss: #94bf67; --blue: #76c5e4; color-scheme: dark; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--ground); color: var(--ink); font: 16px/1.45 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 12px 16px 24px; }
+  h1 { font: 700 22px/1.2 Georgia, serif; margin: 4px 0 4px; }
+  p { margin: 0 0 8px; color: var(--ink-2); font-size: 15px; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 8px 0; }
+  input, select, button { min-height: 44px; border-radius: 4px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; padding: 0 12px; }
+  input { min-width: 0; }
+  #code { width: 8em; text-transform: uppercase; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; }
+  #nick { width: 14ch; }
+  button { cursor: pointer; }
+  button.main { background: var(--duckweed); color: #10160E; border-color: var(--duckweed); font-weight: 600; }
+  #status { font-weight: 600; }
+  #status[data-s="open"] { color: var(--duckweed); }
+  #status[data-s="reconnecting"], #status[data-s="connecting"] { color: var(--amber); }
+  #status[data-s="full"], #status[data-s="version"], #status[data-s="error"] { color: #e88a7a; }
+  #invite { display: none; padding: 8px 12px; border: 1px dashed var(--line); border-radius: 4px; word-break: break-all; font-size: 14px; }
+  canvas { display: block; width: 100%; aspect-ratio: 5 / 3; min-height: 260px; border-radius: 6px; background: var(--water-deep); touch-action: none; user-select: none; }
+  .note { font-size: 13px; }
+  #server-row { display: none; }
+</style>
+</head>
+<body>
+<main>
+<h1>Комната для двоих</h1>
+<p>Проверка связи для «Первого причала»: два телефона, два кружка на схеме причала. Своего водите пальцем (или WASD и стрелками), чужой должен двигаться у второго.</p>
+<div class="row" id="server-row"><input id="server" placeholder="адрес сервера, например ws://127.0.0.1:8787" style="flex:1"></div>
+<div class="row">
+  <input id="nick" maxlength="20" aria-label="Ник" placeholder="Ник">
+  <select id="color" aria-label="Цвет"><option value="copper">медь</option><option value="moss">мох</option><option value="blue">голубой</option></select>
+</div>
+<div class="row">
+  <button type="button" class="main" id="create">Создать комнату</button>
+  <input id="code" maxlength="7" aria-label="Код комнаты" placeholder="КОД">
+  <button type="button" id="enter">Войти</button>
+  <button type="button" id="leave" hidden>Выйти</button>
+</div>
+<div class="row"><span id="status" data-s="">не подключено</span><span id="rtt" class="note"></span></div>
+<div class="row"><div id="invite"></div><button type="button" id="share" hidden>Поделиться ссылкой</button></div>
+<canvas id="map" width="1000" height="600" aria-label="Схема причала с кружками игроков"></canvas>
+<p class="note" id="who"></p>
+</main>
+<script type="module">
+import { joinRoom, makeRoomCode, parseRoomCode, roomCodeFromHash, inviteUrl, serverFor } from "./multiplayer-client.mjs";
+
+const $ = (s) => document.querySelector(s);
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const colors = { copper: "#e8a65c", moss: "#94bf67", blue: "#76c5e4" };
+const label = { connecting: "подключаюсь…", open: "в комнате", reconnecting: "связь пропала, переподключаюсь…", full: "комната полная (4 из 4)", version: "у соседа другая версия: обновите страницу", error: "ошибка, пробую ещё", closed: "вышли" };
+const build = document.querySelector('meta[name="vs-build"]')?.content || "room-test-1";
+
+$("#nick").value = store.get("vibeswamp-room-nick") || `Клёп ${Math.floor(10 + Math.random() * 90)}`;
+$("#color").value = store.get("vibeswamp-room-color") || "moss";
+if (!serverFor()) { $("#server-row").style.display = "flex"; $("#server").value = store.get("vibeswamp-room-server") || "ws://127.0.0.1:8787"; }
+const server = () => serverFor() || $("#server").value.trim();
+
+let room = null;
+// the dock in metres: x -20..20, z -12..12 (the same numbers as the 3D walk would send)
+const me = { x: -6 + Math.random() * 4, z: 2 + Math.random() * 2, h: 0, a: "idle" };
+let target = null;
+const keys = new Set();
+
+function enter(code) {
+  room?.leave();
+  const nick = $("#nick").value.trim(), color = $("#color").value;
+  store.set("vibeswamp-room-nick", nick); store.set("vibeswamp-room-color", color);
+  if (!serverFor()) store.set("vibeswamp-room-server", $("#server").value.trim());
+  history.replaceState(null, "", `#room=${code}`);
+  $("#code").value = code;
+  const link = inviteUrl(code);
+  $("#invite").textContent = link; $("#invite").style.display = "block";
+  $("#share").hidden = false; $("#leave").hidden = false;
+  room = joinRoom({ code, server: server(), profile: { nick, color, hat: null }, house: { stage: 1, items: [] }, build,
+    onEvent: (e) => { if (e.type === "status") { $("#status").dataset.s = e.status; $("#status").textContent = label[e.status] || e.status; } },
+  });
+  room.setPose({ x: me.x, y: 0, z: me.z, h: me.h, a: "idle" });
+}
+$("#create").addEventListener("click", () => enter(makeRoomCode()));
+$("#enter").addEventListener("click", () => { const c = parseRoomCode($("#code").value); if (c) enter(c); else $("#code").focus(); });
+$("#leave").addEventListener("click", () => { room?.leave(); room = null; $("#leave").hidden = true; });
+$("#share").addEventListener("click", async () => {
+  const url = $("#invite").textContent;
+  try { if (navigator.share) await navigator.share({ title: "Комната на болоте", url }); else { await navigator.clipboard.writeText(url); $("#share").textContent = "Ссылка скопирована"; } } catch {}
+});
+const fromLink = roomCodeFromHash();
+if (fromLink) enter(fromLink);
+
+// moving: hold a finger or the mouse on the map and the circle walks there; or WASD / arrows
+const map = $("#map"), g = map.getContext("2d");
+// the canvas follows its size on screen and the pixel density, so circles and names stay readable on a phone
+let px1 = 1;
+const fit = () => { const r = map.getBoundingClientRect(), d = devicePixelRatio || 1; map.width = Math.round(r.width * d); map.height = Math.round(r.height * d); px1 = d; };
+addEventListener("resize", fit); fit();
+const toWorld = (px, py) => ({ x: (px / map.width) * 40 - 20, z: (py / map.height) * 24 - 12 });
+const toPx = (x, z) => [((x + 20) / 40) * map.width, ((z + 12) / 24) * map.height];
+const point = (e) => { const r = map.getBoundingClientRect(); return toWorld(((e.clientX - r.left) / r.width) * map.width, ((e.clientY - r.top) / r.height) * map.height); };
+map.addEventListener("pointerdown", (e) => { map.setPointerCapture(e.pointerId); target = point(e); });
+map.addEventListener("pointermove", (e) => { if (target) target = point(e); });
+for (const t of ["pointerup", "pointercancel"]) map.addEventListener(t, () => { target = null; });
+addEventListener("keydown", (e) => { if (e.target.matches("input")) return; keys.add(e.key.toLowerCase()); });
+addEventListener("keyup", (e) => keys.delete(e.key.toLowerCase()));
+
+function drawDock() {
+  g.fillStyle = "#111D0E"; g.fillRect(0, 0, map.width, map.height);
+  g.fillStyle = "#1B2C16";   // two islands: the host's and the neighbour's
+  const sx = map.width / 1000, sy = map.height / 600;
+  g.beginPath(); g.ellipse(...toPx(-10, 3), 210 * sx, 150 * sy, 0, 0, Math.PI * 2); g.fill();
+  g.beginPath(); g.ellipse(...toPx(11, -3), 190 * sx, 140 * sy, 0, 0, Math.PI * 2); g.fill();
+  g.fillStyle = "#6B4A2A";   // the deck between them
+  const [x0, y0] = toPx(-4, -1), [x1, y1] = toPx(6, 1);
+  g.fillRect(x0, y0, x1 - x0, y1 - y0);
+  g.strokeStyle = "rgba(0,0,0,.35)"; g.lineWidth = 2;
+  for (let x = x0; x < x1; x += 22 * sx) { g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y1); g.stroke(); }
+  g.fillStyle = "rgba(226,232,218,.45)"; g.font = `${13 * px1}px Georgia, serif`;
+  g.fillText("островок хозяина", ...toPx(-15, 9)); g.fillText("островок соседа", ...toPx(6, 8));
+}
+function dot(x, z, color, name, alpha = 1, mine = false) {
+  const [px, py] = toPx(x, z);
+  g.globalAlpha = alpha;
+  g.fillStyle = color; g.beginPath(); g.arc(px, py, (mine ? 13 : 12) * px1, 0, Math.PI * 2); g.fill();
+  g.lineWidth = (mine ? 3 : 1.5) * px1; g.strokeStyle = mine ? "#E2E8DA" : "#10160E"; g.stroke();
+  g.fillStyle = "#E2E8DA"; g.font = `600 ${14 * px1}px system-ui, sans-serif`; g.textAlign = "center";
+  g.fillText(name, px, py - 20 * px1); g.textAlign = "left";
+  g.globalAlpha = 1;
+}
+let lastT = performance.now();
+function frame(now) {
+  const dt = Math.min(0.1, (now - lastT) / 1000); lastT = now;
+  let vx = 0, vz = 0;
+  if (target) { const dx = target.x - me.x, dz = target.z - me.z, d = Math.hypot(dx, dz); if (d > 0.2) { vx = dx / d; vz = dz / d; } }
+  if (keys.has("a") || keys.has("arrowleft")) vx -= 1;
+  if (keys.has("d") || keys.has("arrowright")) vx += 1;
+  if (keys.has("w") || keys.has("arrowup")) vz -= 1;
+  if (keys.has("s") || keys.has("arrowdown")) vz += 1;
+  const len = Math.hypot(vx, vz);
+  if (len) { me.x = Math.max(-19, Math.min(19, me.x + (vx / len) * 6 * dt)); me.z = Math.max(-11, Math.min(11, me.z + (vz / len) * 6 * dt)); me.h = Math.atan2(vx, vz); }
+  me.a = len ? "run" : "idle";
+  room?.setPose({ x: me.x, y: 0, z: me.z, h: me.h, a: me.a });
+  drawDock();
+  const others = room?.sample(now) ?? [];
+  for (const o of others) dot(o.x, o.z, colors[o.color] || "#ccc", o.nick + (o.ghost ? " (связь…)" : ""), o.alpha);
+  dot(me.x, me.z, colors[$("#color").value], $("#nick").value || "я", 1, true);
+  if (room?.rtt != null) $("#rtt").textContent = `до сервера и обратно: ${room.rtt} мс`;
+  $("#who").textContent = room ? `В комнате: вы${others.length ? ", " + others.map((o) => o.nick).join(", ") : " (пока никого)"}.` : "";
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+setInterval(() => room?.measure?.(), 3000);
+window.roomTest = { get room() { return room; }, me };   // for automatic checks
+</script>
+</body>
+</html>

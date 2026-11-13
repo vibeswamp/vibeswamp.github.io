@@ -28,12 +28,15 @@ function moduleUrl(name, dependencies) {
 const siteStyles = sourceAssetUrl("style.css");
 // The clicker (its own chat): every module is versioned so a cached copy cannot mix an old engine with a new save.
 const swampEngine = sourceAssetUrl("swamp/engine.mjs");
+const swampSave = moduleUrl("swamp/save.mjs", { "./engine.mjs": swampEngine });
 const clickerScript = moduleUrl("swamp.js", {
   "./swamp/engine.mjs": swampEngine,
-  "./swamp/save.mjs": moduleUrl("swamp/save.mjs", { "./engine.mjs": swampEngine }),
+  "./swamp/save.mjs": swampSave,
   "./swamp/scene.mjs": moduleUrl("swamp/scene.mjs", { "./engine.mjs": swampEngine }),
   "./swamp/expedition-save.mjs": sourceAssetUrl("swamp/expedition-save.mjs"),
+  "./swamp/expedition-3d-save.mjs": moduleUrl("swamp/expedition-3d-save.mjs", { "./engine.mjs": swampEngine, "./save.mjs": swampSave }),
   "./swamp/threshold.mjs": sourceAssetUrl("swamp/threshold.mjs"),
+  "./swamp/backdrop-gl.mjs": sourceAssetUrl("swamp/backdrop-gl.mjs"),
 });
 const clickerStyles = sourceAssetUrl("swamp.css");
 const strollScript = sourceAssetUrl("klyop-stroll.mjs");
@@ -1347,6 +1350,8 @@ await cp(join(root, "src", "site.js"), join(dist, "site.js"));
 await cp(join(root, "src", "swamp"), join(dist, "swamp"), { recursive: true });
 await cp(join(root, "src", "swamp-walk"), join(dist, "swamp-walk"), { recursive: true });
 await cp(join(root, "src", "klyop-stroll.mjs"), join(dist, "klyop-stroll.mjs"));
+// the room test page (public/room-test/) loads the same client module the 3D walk will use (server/rooms/README.md)
+await cp(join(root, "src", "swamp-walk", "multiplayer-client.mjs"), join(dist, "room-test", "multiplayer-client.mjs"));
 if (existsSync(join(root, "src", "pet.js"))) await cp(join(root, "src", "pet.js"), join(dist, "pet.js"));
 
 for (const [name, source] of emittedModules) await writeFile(join(dist, name), source);

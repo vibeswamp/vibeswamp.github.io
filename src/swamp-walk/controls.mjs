@@ -2,7 +2,7 @@ import { clamp } from "./land.mjs";
 
 const KEYS = new Set([
   "KeyW", "KeyA", "KeyS", "KeyD", "ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight",
-  "ShiftLeft", "ShiftRight", "Space", "KeyR", "KeyE", "Enter", "KeyF", "KeyQ", "KeyV",
+  "ShiftLeft", "ShiftRight", "Space", "KeyR", "KeyE", "Enter", "KeyF", "KeyQ", "KeyV", "KeyI", "KeyG",
 ]);
 const START_PITCH = 0.32;
 // Phones look flatter from a little further back: horizon in the upper quarter, Klyop in the lower third.
@@ -15,9 +15,15 @@ const FOLLOW_RATE = 2.1;
 const PITCH_RETURN = 1.3;
 const CENTER_RATE = 13;
 const DEADZONE = 0.10;
-const ACTIONS = { Space: "jump", TouchJump: "jump", KeyE: "interact", Enter: "interact", KeyF: "attack", KeyQ: "dodge" };
+const ACTIONS = { Space: "jump", TouchJump: "jump", KeyE: "interact", Enter: "interact", KeyF: "attack", KeyQ: "dodge",
+  KeyI: "inventory", KeyG: "focus" };
+// With a target held the camera turns to look past Klyop at it, on phones and computers alike.
+const FOCUS_RATE = 4.2;
 
-export function createControls(canvas, { stick, jump, interact, attack, dodge }, onReset, onCenter, touchLayout) {
+export function createControls(canvas, { stick, jump, interact, attack, dodge, inventory, focus }, onReset, onCenter,
+  touchLayout) {
+  // The focus button is made by walk-hud.mjs; main.mjs does not need to pass it.
+  focus ??= canvas.ownerDocument.getElementById("swalk-focus");
   const keys = new Set();
   const queue = [];
   let drag = null, touch = null, stickSprinting = false;
@@ -50,6 +56,8 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   document.addEventListener("visibilitychange", () => { if (document.hidden) clearInput(); });
   window.addEventListener("keydown", (event) => {
     if (!KEYS.has(event.code) || event.ctrlKey || event.metaKey || event.altKey) return;
+    // typing a nickname in the room window: the letters go to the field, not to Klyop
+    if (event.target.closest?.("input, textarea, select, [contenteditable]")) return;
     if ((event.code === "Space" || event.code === "Enter") && event.target.closest?.("button, a")) return;
     event.preventDefault();
     if (event.repeat) return;
@@ -71,8 +79,20 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
   jump.addEventListener("click", event => {
     if (event.detail === 0) queue.push({ time: event.timeStamp, action: "jump" });
   });
-  for (const [action, button] of Object.entries({ interact, attack, dodge })) {
-    button.addEventListener("click", event => queue.push({ time: event.timeStamp, action }));
+  // A finger acts on the press: quicker in a fight, and a tap that follows a short stick touch sometimes gets no
+  // click from the browser at all. Mouse and keyboard keep the click; a click right after a press is the same tap.
+  for (const [action, button] of Object.entries({ interact, attack, dodge, inventory, focus })) {
+    if (!button) continue;
+    let pressedAt = -Infinity;
+    button.addEventListener("pointerdown", event => {
+      if (event.pointerType === "mouse" || event.button !== 0) return;
+      pressedAt = event.timeStamp;
+      queue.push({ time: event.timeStamp, action });
+    });
+    button.addEventListener("click", event => {
+      if (event.timeStamp - pressedAt < 900) return;
+      queue.push({ time: event.timeStamp, action });
+    });
   }
 
   canvas.addEventListener("pointerdown", (event) => {
@@ -143,7 +163,19 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
     sinceSwipe = Infinity;
   }
 
-  function updateCamera(heading, dt) {
+  // `focusYaw`: the direction from Klyop to the held target (main.mjs may pass it); without it, a pressed focus
+  // button means Klyop already faces the target, so his heading is used.
+  function updateCamera(heading, dt, focusYaw) {
+    const locked = Number.isFinite(focusYaw) ? focusYaw
+      : focus?.getAttribute("aria-pressed") === "true" ? heading : null;
+    if (locked !== null) {
+      centerYaw = null;
+      if (drag) return;
+      const delta = locked + Math.PI - camera.yaw;
+      camera.yaw += Math.atan2(Math.sin(delta), Math.cos(delta)) * -Math.expm1(-FOCUS_RATE * dt);
+      camera.pitch += (restingPitch() - camera.pitch) * -Math.expm1(-3 * dt);
+      return;
+    }
     if (!touchLayout.matches) return;
     if (centerYaw !== null) {
       const weight = -Math.expm1(-CENTER_RATE * dt);
@@ -183,7 +215,7 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge },
     },
     sample(time) {
       const tapped = new Set();
-      const actions = { jump: false, interact: false, attack: false, dodge: false };
+      const actions = { jump: false, interact: false, attack: false, dodge: false, inventory: false, focus: false };
       while (queue.length && queue[0].time <= time + 1e-5) {
         const event = queue.shift();
         if (event.action) actions[event.action] = true;

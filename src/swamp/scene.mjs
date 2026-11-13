@@ -1,13 +1,33 @@
 import { owned, roomOpen } from "./engine.mjs";
 
-// Each anchor is on dry ground or floorboards in its own room: [x, bottom, height, z-index] in % of the painting.
-// On a phone the painting is cut by about a tenth on each side, so the shore keeps its buildings within 13–87%.
-const ANCHORS = {
-  shore: { tussock: [21, 6, 24, 7], antenna: [15, 21, 36, 3], flytrap: [79, 6, 22, 7], beaver: [81, 22, 19, 3] },
-  // inside the hut the buildings stand on the floor, left and right of Klyop
-  workshop: { stump: [22, 2, 42, 5], review: [76, 2, 34, 6] },
-  radio: { radio: [75, -3, 48, 5] },
-  server: { peat: [22, -8, 56, 5] },
+// Where each building stands (owner, 13.11: «расположить органично… дизайнером интерьера»): a place with a meaning
+// and the hut's scale, by building era on the shore and by room inside. [x, bottom, height, z, flags] in % of the
+// painting (rooms: of the close-up). Flags: "ground" - stands on the deck or the floor, gets a contact shadow;
+// "back" - behind the hut's walls and roof (only its top shows).
+// Safe band, measured at 412×892, 1366, 1440 and 1920: x 19.5–86.5 (a phone shows 10.7–89.3 and keeps the room
+// buttons in a column at x < 19, a count badge sticks out on the right), bottom ≥ 11 (room buttons bottom left and
+// the vibe meter bottom right on desktop and phone), top ≤ 72 (the counter and the rank at the top), Klyop's body in
+// the middle. So the left bank is tech (the laptop and its antenna), the right one is life (flytrap, beaver).
+// Sketch: docs/redesign/clicker-layout.png.
+const SHORE = {
+  // the open tussock: the laptop hummock on the left with its reed antenna in the water behind it; the flytrap's pot
+  // on the island's right end, the beaver dam in the water beyond it
+  0: { tussock: [26, 11, 16, 7], antenna: [26, 29, 22, 2], flytrap: [71, 11, 14, 7], beaver: [80, 20, 13, 3] },
+  // the deck and its posts: the flytrap moves onto the deck's corner by the right post
+  1: { tussock: [26, 11, 16, 7], antenna: [26, 29, 22, 2], flytrap: [70, 14, 13, 8, "ground"], beaver: [80, 22, 12, 3] },
+  // the closed hut: the antenna stands behind it and shows its dish over the roof, the flytrap waits by the door,
+  // the dam comes to the front water at the right
+  2: { tussock: [25, 11, 15, 7], antenna: [76, 33, 36, 1, "back"], flytrap: [67, 17, 12, 8, "ground"], beaver: [82, 12, 11, 7] },
+  // the furnished hut is part of the painting: nothing in front of its room; the antenna in the reeds at the right
+  3: { tussock: [25, 11, 15, 7], antenna: [81, 30, 32, 3], flytrap: [70, 14, 12, 8, "ground"], beaver: [83, 12, 10, 7] }
+};
+const ROOMS = {
+  // a work corner by the window for the stump computer, a reading corner by the desk lamp for the frogs
+  workshop: { stump: [76, 11, 26, 5, "ground"], review: [29, 11, 20, 6, "ground"] },
+  // the radio set on the floor by the bench, next to the tea (its bottom 7% is clipped: the base shows at 12%)
+  radio: { radio: [74, 10, 26, 5, "ground"] },
+  // the peat server by the desk against the left wall (its swamp water, the bottom 15%, is clipped indoors)
+  server: { peat: [29, 6, 32, 5, "ground"] },
   office: {}
 };
 
@@ -38,7 +58,7 @@ const layerHtml = (name, className = "") => `<span class="sw-layer ${className}"
 const warm = new Set();
 const preload = (url) => { if (url && !warm.has(url)) { warm.add(url); const image = new Image(); image.src = url; } };
 
-export function createScene({ world, houses, rooms, data, text, producerLabels, onRoom }) {
+export function createScene({ world, houses, housesBack, rooms, data, text, producerLabels, onRoom, onBackdrop }) {
   const shelter = world.querySelector(".sw-shelter");
   const backdrop = world.querySelector(".sw-backdrop");
   let signature = "", lastStage = null;
@@ -74,6 +94,10 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
     signature = key;
     world.dataset.room = state.room;
     world.dataset.stage = String(state.stage);
+    // How big Klyop stands depends on what is built around him (swamp.css, data-era): the open tussock, the deck with
+    // posts, the closed hut with a door, the furnished hut he walks inside.
+    const built = new Set(data.stages.slice(0, state.stage).map(({ id }) => id));
+    world.dataset.era = built.has("floor") ? "3" : built.has("awning") ? "2" : built.has("deck") ? "1" : "0";
     const steps = data.art.steps || {};
     const view = data.rooms.find((room) => room.id === state.room)?.view;
     const background = view ? painting(view.image) : null;
@@ -99,6 +123,8 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
     backdrop.style.setProperty("--sw-background", `url("${source}")`);
     backdrop.style.setProperty("--sw-mobile-background", `url("${mobileSource}")`);
     world.dataset.artRoom = String(!!background);
+    // the living backdrop (backdrop-gl.mjs) moves the shore painting; the rooms keep the still close-up
+    onBackdrop?.(source, art?.base === "v2-stage-3" ? "stage3" : "bg", state.room === "shore");
     world.dataset.stageArt = String(!!art?.base);
     const fresh = lastStage !== null && state.stage === lastStage + 1 ? data.stages[state.stage - 1]?.id : null;
     lastStage = state.stage;
@@ -114,13 +140,20 @@ export function createScene({ world, houses, rooms, data, text, producerLabels, 
       preload(`/brand/swamp/${coming.base}${phone}.webp`);
       for (const name of [coming.dark, coming.layer]) if (name) preload(`${STEP_DIR}${name}${phone}.webp`);
     }
-    houses.innerHTML = data.buildings.filter((building) => building.room === state.room && owned(state, building.id) > 0).map((building) => {
-      const [x, bottom, height, z] = ANCHORS[state.room][building.id];
-      const count = owned(state, building.id);
-      const size = height * (1 + Math.min(0.16, Math.log10(count) * 0.08));
+    const anchors = state.room === "shore" ? SHORE[world.dataset.era] : ROOMS[state.room];
+    const front = [], back = [];
+    for (const building of data.buildings) {
+      const count = owned(state, building.id), spot = anchors?.[building.id];
+      if (building.room !== state.room || count < 1 || !spot) continue;
+      const [x, bottom, height, z, flag = ""] = spot;
+      // a few more of the same make it a little bigger, never out of scale with the hut
+      const size = height * (1 + Math.min(0.08, Math.log10(count) * 0.04));
+      const classes = ["sw-house", building.id === freshBuilding ? "new" : "", flag, state.room === "shore" ? "" : "indoor"].filter(Boolean).join(" ");
       // Only the count sits on the picture; the name is in the shop list (names over the art covered each other).
-      return `<div class="sw-house${building.id === freshBuilding ? " new" : ""}" data-id="${building.id}" title="${producerLabels[building.id]}" style="left:${x}%;bottom:${bottom}%;height:${size.toFixed(1)}%;z-index:${z}">
-        <img src="/brand/swamp/${building.id}.webp" alt="" draggable="false" decoding="async">${count > 1 ? `<span class="sw-n num">×${count}</span>` : ""}</div>`;
-    }).join("");
+      (flag === "back" ? back : front).push(`<div class="${classes}" data-id="${building.id}" title="${producerLabels[building.id]}" style="left:${x}%;bottom:${bottom}%;height:${size.toFixed(1)}%;z-index:${z}">
+        <img src="/brand/swamp/${building.id}.webp" alt="" draggable="false" decoding="async">${count > 1 ? `<span class="sw-n num">×${count}</span>` : ""}</div>`);
+    }
+    houses.innerHTML = front.join("");
+    housesBack.innerHTML = back.join("");
   };
 }

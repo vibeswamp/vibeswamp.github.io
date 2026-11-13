@@ -117,115 +117,226 @@
       "id": "plank",
       "cost": 400,
       "total": 3300,
-      "part": "plank"
+      "part": "plank",
+      "wood": 1
     },
     {
       "id": "poles",
       "cost": 2500,
       "total": 20000,
-      "part": "poles"
+      "part": "poles",
+      "wood": 1
     },
     {
       "id": "awning",
       "cost": 10000,
       "total": 93000,
-      "part": "awning"
+      "part": "awning",
+      "wood": 2
     },
     {
       "id": "wall_l",
       "cost": 40000,
       "total": 330000,
-      "part": "wall-l"
+      "part": "wall-l",
+      "wood": 2
     },
     {
       "id": "wall_r",
       "cost": 130000,
       "total": 1000000,
-      "part": "wall-r"
+      "part": "wall-r",
+      "wood": 2
     },
     {
       "id": "window_hole",
       "cost": 350000,
       "total": 3000000,
-      "part": "window-hole"
+      "part": "window-hole",
+      "wood": 1,
+      "resin": 1
     },
     {
       "id": "window",
       "cost": 1400000,
       "total": 11000000,
-      "part": "window"
+      "part": "window",
+      "wood": 1,
+      "resin": 1
     },
     {
       "id": "door",
       "cost": 3800000,
       "total": 32000000,
-      "part": "door"
+      "part": "door",
+      "wood": 2,
+      "resin": 1
     },
     {
       "id": "floor",
       "cost": 8000000,
       "total": 67000000,
-      "part": "floor"
+      "part": "floor",
+      "wood": 2
     },
     {
       "id": "lamp",
       "cost": 19000000,
       "total": 170000000,
-      "part": "lamp"
+      "part": "lamp",
+      "wood": 1,
+      "resin": 1,
+      "amber": 1
     },
     {
       "id": "furniture",
       "cost": 45000000,
       "total": 390000000,
-      "part": "furniture"
+      "part": "furniture",
+      "wood": 2,
+      "resin": 1
     },
     {
       "id": "chair",
       "cost": 120000000,
       "total": 990000000,
-      "part": "chair"
+      "part": "chair",
+      "wood": 1,
+      "resin": 1
     },
     {
       "id": "tea_corner",
       "cost": 360000000,
       "total": 2900000000,
-      "part": "tea-corner"
+      "part": "tea-corner",
+      "wood": 2,
+      "resin": 1,
+      "amber": 2
     },
     {
       "id": "workshop",
       "cost": 800000000,
       "total": 6500000000,
-      "part": "workshop"
+      "part": "workshop",
+      "wood": 3,
+      "resin": 1
     },
     {
       "id": "extension",
       "cost": 1500000000,
       "total": 13000000000,
-      "part": "extension"
+      "part": "extension",
+      "wood": 3,
+      "resin": 1
     },
     {
       "id": "server_room",
       "cost": 2200000000,
       "total": 19000000000,
-      "part": "server-room"
+      "part": "server-room",
+      "wood": 2,
+      "resin": 2
     },
     {
       "id": "studio",
       "cost": 2900000000,
       "total": 26000000000,
-      "part": "studio"
+      "part": "studio",
+      "wood": 3,
+      "resin": 2,
+      "amber": 3
     },
     {
       "id": "radio_room",
       "cost": 4100000000,
       "total": 33000000000,
-      "part": "radio-room"
+      "part": "radio-room",
+      "wood": 2,
+      "resin": 2
     },
     {
       "id": "office",
       "cost": 5800000000,
       "total": 48000000000,
-      "part": "office"
+      "part": "office",
+      "wood": 3,
+      "resin": 1
+    }
+  ],
+  "homeMaterials": false,
+  "market": {
+    "wood": 25,
+    "resin": 50,
+    "amber": 240,
+    "floorWood": 15,
+    "floorResin": 40,
+    "floorAmber": 300
+  },
+  "expedition": {
+    "inTrip": 1,
+    "reward": {
+      "night": 60,
+      "amber": 20,
+      "floor": 40
+    },
+    "killCroaks": 10,
+    "calm": {
+      "bonus": 0.3,
+      "seconds": 1200
+    },
+    "shelf": {
+      "bonus": 0.02,
+      "max": 10
+    }
+  },
+  "gear": [
+    {
+      "id": "wrench1",
+      "kind": "wrench",
+      "after": "deck",
+      "seconds": 60,
+      "wood": 1,
+      "resin": 0
+    },
+    {
+      "id": "bag1",
+      "kind": "bag",
+      "after": "door",
+      "seconds": 90,
+      "wood": 2,
+      "resin": 1
+    },
+    {
+      "id": "lantern",
+      "kind": "lantern",
+      "after": "lamp",
+      "seconds": 90,
+      "wood": 1,
+      "resin": 1
+    },
+    {
+      "id": "wrench2",
+      "kind": "wrench",
+      "after": "tea_corner",
+      "seconds": 120,
+      "wood": 2,
+      "resin": 1
+    },
+    {
+      "id": "bag2",
+      "kind": "bag",
+      "after": "workshop",
+      "seconds": 120,
+      "wood": 3,
+      "resin": 1
+    },
+    {
+      "id": "wrench3",
+      "kind": "wrench",
+      "after": "server_room",
+      "seconds": 150,
+      "wood": 3,
+      "resin": 2
     }
   ],
   "rooms": [

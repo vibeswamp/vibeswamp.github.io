@@ -1,5 +1,8 @@
 import { BEAVER, BEAVER_APPROACH, createBeaverSite } from "./beaver-site.mjs";
 import { createDeck } from "./deck.mjs";
+import { gradeLedgeApproaches } from "./klyop-mobile-terrain.mjs";
+import { createDayWorld, DAY_FORD_BANK, DAY_FORD_EXIT, DAY_STOPS } from "./day-world.mjs";
+import { createLakeSites, FISHING_PIER } from "./lake-layout.mjs";
 
 export const RADIUS = 72;
 export const CELLS = 216;
@@ -34,19 +37,60 @@ export const BRIDGE_WIDTH = 2.65;
 export const WORLD_LIMIT = RADIUS - 2;
 export const MAP_EXTENT = Math.ceil(Math.SQRT2 * RADIUS) + 8;
 export const RETURN_PASSAGE = { width: 1.5, points: [[-12.2, 21.5], [-4, 21.5]] };
-export const RADIO_TUNING = { x: 8, z: -33.4, radius: 1.12 };
+export const RADIO_TUNING = { ...DAY_STOPS.amber, radius: 1.12 };
 export const FLYTRAP = { x: 3.45, z: 21.35, radius: 0.44, warningRadius: 1.04, hitRadius: 0.78 };
 export const TUSSOCK = { x: -3.1, z: 20.7, radius: 0.44 };
 export const WATER_EXITS = [
   { id: "east-bank", points: [[19, 7], [19, 4.5], [19, 2.5]] },
   { id: "west-bank", points: [[-14.5, 17.8], [-14.5, 19.1], [-14.5, 22]] },
+  DAY_FORD_EXIT,
 ];
 
 const TRAILS = [SHORE, RISE, DESCENT];
 const CREEK = [[-70, -41], [-49, -32], [-32, -24], [-23, -17], [-14, -10], [-4, -4]];
 const OUTLET = [[8, 15], [14, 23], [22, 29], [31, 39], [38, 60], [41, 74]];
+
+// The sunset vista (13.11, owner: «красивые, приятные пейзажи»). From the pier and from the end of the fishing pier
+// the sun goes down to the north-west over open water: the lagoon runs out into a wide sound that reaches the
+// edge of the map, the west bank in that line is low reedy marsh, and the west bluff stands aside as a frame.
+export const SUN_DIR = (() => { const x = -.66, z = -.73, n = Math.hypot(x, z); return [x / n, z / n]; })();
+export const VISTAS = [[0, 24], [-5.16, 19.45]];
+// Trees also keep out of the sun line from the lookout on the radio hill, on the way down to the west.
+export const LOOKOUTS = [...VISTAS, [1, -39.5]];
+// [x, z, half-width] along the sun line from the pier; the shore trail crosses its mouth as a low causeway.
+const SOUND = [[-13, 6, 5.5], [-24, -4, 8], [-37, -16, 11], [-52, -30, 15], [-70, -46, 19]];
+export function sunVista(x, z, half = .26, points = VISTAS) {
+  let best = 0;
+  for (const [vx, vz] of points) {
+    const dx = x - vx, dz = z - vz, d = Math.hypot(dx, dz);
+    if (d < 4 || d > 115) continue;
+    const along = (dx * SUN_DIR[0] + dz * SUN_DIR[1]) / d;
+    best = Math.max(best, smooth(Math.cos(half), Math.cos(half * .45), along));
+  }
+  return best;
+}
+// Close to a viewpoint the cone is too thin to clear a trunk beside the line: keep a few metres free either side,
+// from just behind the camera to far out.
+export function onSunLine(x, z, points = LOOKOUTS, margin = 2.6) {
+  return points.some(([vx, vz]) => {
+    const dx = x - vx, dz = z - vz;
+    const along = dx * SUN_DIR[0] + dz * SUN_DIR[1];
+    return along > -8 && along < 80 && Math.abs(dx * SUN_DIR[1] - dz * SUN_DIR[0]) < margin + Math.max(0, along) * .2;
+  });
+}
+function soundWidth(x, z) {
+  let best = { distance: Infinity, width: 1 };
+  for (let i = 1; i < SOUND.length; i++) {
+    const a = SOUND[i - 1], b = SOUND[i];
+    const dx = b[0] - a[0], dz = b[1] - a[1];
+    const t = clamp(((x - a[0]) * dx + (z - a[1]) * dz) / (dx * dx + dz * dz), 0, 1);
+    const d = Math.hypot(x - a[0] - dx * t, z - a[1] - dz * t);
+    if (d < best.distance) best = { distance: d, width: mix(a[2], b[2], t) };
+  }
+  return best;
+}
 const BLUFFS = [
-  { x: -35, z: -1, rx: 10, rz: 12, high: 4.3, edge: 0.18 },
+  { x: -47, z: 21, rx: 9, rz: 11, high: 4.1, edge: 0.2 },
   { x: -17, z: -34, rx: 12, rz: 12, high: 4.8, edge: 0.24 },
   { x: 9, z: -31, rx: 21, rz: 15, high: 6.12, edge: 0.16 },
   { x: 40, z: -39, rx: 11, rz: 15, high: 3.8, edge: 0.25 },
@@ -142,13 +186,18 @@ export function createLand() {
       const creek = nearest(x, z, CREEK).distance;
       const outlet = nearest(x, z, OUTLET).distance;
       const bank = b * 0.13 + a * 0.08;
+      const sound = soundWidth(x, z);
       const wet = Math.max(
         1 - smooth(0.68, 1.13, lagoon + bank),
         1 - smooth(1.9, 5.2, creek + b * 2.6),
         1 - smooth(2.7, 7.4, outlet + b * 3.4),
+        1 - smooth(.62, 1.08, sound.distance / sound.width + b * .22 + a * .12),
         smooth(62, 72, Math.hypot(x * 0.96, z * 0.94)),
       );
       h = mix(h, -1.65 + a * 0.85 + b * 0.72, wet);
+      // Land left in the sun line stays low: reedy marsh with pools, nothing that rises over the far water.
+      const vista = sunVista(x, z, .34) * smooth(9, 16, Math.hypot(x, z - 24));
+      h = mix(h, Math.min(h, .16 + b * .42 + a * .22), vista);
 
       for (const bluff of BLUFFS) {
         const d = Math.hypot((x - bluff.x + (z - bluff.z) * 0.21) / bluff.rx, (z - bluff.z) / bluff.rz);
@@ -162,6 +211,12 @@ export function createLand() {
 
       const trail = nearestTrail(x, z);
       h = mix(h, trail.y + b * 0.09, 1 - smooth(1.32, 3.35, trail.distance + b * 0.29));
+      if (x >= 3 && x <= 21.5 && z >= 0 && z <= 20.5) {
+        const fordBank = nearest(x, z, DAY_FORD_BANK);
+        const bankSpread = 1.10 + b * .44 + a * .24;
+        const peatFinger = 1 - smooth(bankSpread * .55, bankSpread * 1.67, fordBank.distance);
+        h = Math.max(h, mix(h, fordBank.y + b * .13, peatFinger));
+      }
       const index = iz * SIZE + ix;
       heights[index] = h;
       paths[index] = 1 - smooth(0.85, 1.9, trail.distance + b * 0.6);
@@ -179,13 +234,15 @@ export function createLand() {
     return tx + tz <= 1 ? a + (b - a) * tx + (c - a) * tz : d + (c - d) * (1 - tx) + (b - d) * (1 - tz);
   }
 
-  const deck = createDeck(PIER, BRIDGE, BRIDGE_WIDTH, RETURN_PASSAGE, heightAt);
+  gradeLedgeApproaches(heights, CELLS, RADIUS, heightAt, createDayWorld(heightAt).ledges);
+  const deck = createDeck(PIER, BRIDGE, BRIDGE_WIDTH, RETURN_PASSAGE, heightAt, FISHING_PIER);
+  const lakes = createLakeSites(deck, SWIM_FLOOR);
   const beaver = createBeaverSite(heightAt);
   const woodAt = (x, z) => Math.max(deck.heightAt(x, z), beaver.rampAt(x, z));
-  const floorAt = (x, z) => Math.max(heightAt(x, z), woodAt(x, z));
+  const day = createDayWorld((x, z) => Math.max(heightAt(x, z), woodAt(x, z)));
   const surfaceAt = (x, z) => {
     const ground = heightAt(x, z);
     return woodAt(x, z) >= ground - .025 ? "wood" : ground < WATER ? "water" : "mud";
   };
-  return { heights, paths, grain, heightAt, floorAt, surfaceAt, deck, beaver };
+  return { heights, paths, grain, heightAt, floorAt: day.floorAt, surfaceAt, deck, beaver, day, lakes };
 }

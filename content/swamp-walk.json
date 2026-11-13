@@ -60,7 +60,46 @@
       "returnHome": "To the shack"
     },
     "motionPack": "/swamp-walk/mvp/profile.json",
-    "actionPack": "/swamp-walk/mvp/actions.json"
+    "actionPack": "/swamp-walk/mvp/actions.json",
+    "room": {
+      "button": "Invite a neighbour",
+      "inRoom": "Neighbour",
+      "title": "Invite a neighbour",
+      "titleJoin": "You are invited over",
+      "lead": "Send the link to a friend: their Klyop comes here, to your pier. Each keeps their own progress and save.",
+      "leadJoin": "Your Klyop goes to the neighbour's pier. Your progress and save stay as they are.",
+      "nick": "Nickname",
+      "color": "Pouch colour",
+      "colors": {
+        "copper": "copper",
+        "moss": "moss",
+        "blue": "blue"
+      },
+      "defaultNick": "Klyop",
+      "invite": "Invite",
+      "join": "Come over",
+      "save": "Save",
+      "leave": "Leave the room",
+      "close": "Close",
+      "link": "Link for the neighbour",
+      "copy": "Copy the link",
+      "share": "Send the link",
+      "copied": "Link copied.",
+      "copyByHand": "Select the link and copy it.",
+      "badNick": "A nickname is 2 to 20 signs: letters, digits, space, hyphen, underscore.",
+      "noStorage": "The browser will not keep the nickname. You can still invite; next time it asks again.",
+      "status": {
+        "connecting": "Connecting…",
+        "waiting": "Waiting for the neighbour. Send them the link.",
+        "together": "Here: {nicks}.",
+        "lost": "{nick} dropped off, waiting a minute.",
+        "reconnecting": "The connection dropped, connecting again…",
+        "full": "This room already has four.",
+        "version": "The neighbour has another version of the swamp. Both reload the page.",
+        "error": "Could not connect. Try a bit later.",
+        "closed": "You left the room."
+      }
+    }
   },
   "uk": {
     "title": "Перший причал",
@@ -123,7 +162,46 @@
       "returnHome": "До хатини"
     },
     "motionPack": "/swamp-walk/mvp/profile.json",
-    "actionPack": "/swamp-walk/mvp/actions.json"
+    "actionPack": "/swamp-walk/mvp/actions.json",
+    "room": {
+      "button": "Покликати сусіда",
+      "inRoom": "Сусід",
+      "title": "Покликати сусіда",
+      "titleJoin": "Тебе кличуть у гості",
+      "lead": "Надішли посилання другові: його Кльоп прийде сюди, на твій причал. Прогрес і збереження в кожного свої.",
+      "leadJoin": "Твій Кльоп прийде до сусіда на причал. Твій прогрес і збереження не змінюються.",
+      "nick": "Нік",
+      "color": "Колір підсумка",
+      "colors": {
+        "copper": "мідний",
+        "moss": "моховий",
+        "blue": "блакитний"
+      },
+      "defaultNick": "Кльопа",
+      "invite": "Покликати",
+      "join": "Прийти в гості",
+      "save": "Зберегти",
+      "leave": "Вийти з кімнати",
+      "close": "Закрити",
+      "link": "Посилання для сусіда",
+      "copy": "Скопіювати посилання",
+      "share": "Надіслати посилання",
+      "copied": "Посилання скопійовано.",
+      "copyByHand": "Виділи посилання й скопіюй.",
+      "badNick": "Нік — від 2 до 20 знаків: літери, цифри, пробіл, дефіс, підкреслення.",
+      "noStorage": "Браузер не дає зберегти нік. Покликати можна, але наступного разу спитаємо знову.",
+      "status": {
+        "connecting": "Підключаємося…",
+        "waiting": "Чекаємо на сусіда. Надішли йому посилання.",
+        "together": "Поруч: {nicks}.",
+        "lost": "{nick} зник із мережі, чекаємо хвилину.",
+        "reconnecting": "Зв’язок зник, підключаємося знову…",
+        "full": "У цій кімнаті вже четверо.",
+        "version": "У сусіда інша версія болота. Оновіть сторінку обоє.",
+        "error": "Не вдалося підключитися. Спробуй трохи згодом.",
+        "closed": "Ти вийшов із кімнати."
+      }
+    }
   },
   "ru": {
     "title": "Первый причал",
@@ -186,6 +264,45 @@
       "returnHome": "В лачугу"
     },
     "motionPack": "/swamp-walk/mvp/profile.json",
-    "actionPack": "/swamp-walk/mvp/actions.json"
+    "actionPack": "/swamp-walk/mvp/actions.json",
+    "room": {
+      "button": "Позвать соседа",
+      "inRoom": "Сосед",
+      "title": "Позвать соседа",
+      "titleJoin": "Тебя зовут в гости",
+      "lead": "Отправь ссылку другу: его Клёп придёт сюда, на твой причал. Прогресс и сохранения у каждого свои.",
+      "leadJoin": "Твой Клёп придёт к соседу на причал. Твой прогресс и сохранение не меняются.",
+      "nick": "Ник",
+      "color": "Цвет подсумка",
+      "colors": {
+        "copper": "медный",
+        "moss": "мшистый",
+        "blue": "голубой"
+      },
+      "defaultNick": "Клёпа",
+      "invite": "Позвать",
+      "join": "Прийти в гости",
+      "save": "Сохранить",
+      "leave": "Выйти из комнаты",
+      "close": "Закрыть",
+      "link": "Ссылка для соседа",
+      "copy": "Скопировать ссылку",
+      "share": "Отправить ссылку",
+      "copied": "Ссылка скопирована.",
+      "copyByHand": "Выдели ссылку и скопируй.",
+      "badNick": "Ник — от 2 до 20 знаков: буквы, цифры, пробел, дефис, подчёркивание.",
+      "noStorage": "Браузер не даёт сохранить ник. Позвать можно, но в следующий раз спросим снова.",
+      "status": {
+        "connecting": "Подключаемся…",
+        "waiting": "Ждём соседа. Отправь ему ссылку.",
+        "together": "Рядом: {nicks}.",
+        "lost": "{nick} пропал из сети, ждём его минуту.",
+        "reconnecting": "Связь пропала, подключаемся снова…",
+        "full": "В этой комнате уже четверо.",
+        "version": "У соседа другая версия болота. Обновите страницу оба.",
+        "error": "Не получилось подключиться. Попробуй чуть позже.",
+        "closed": "Ты вышел из комнаты."
+      }
+    }
   }
 }

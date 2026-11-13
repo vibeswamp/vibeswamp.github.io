@@ -7,8 +7,6 @@ const COPY = {
     confirm: "Сбросить открытия и трофей «Первого причала»?",
     resetDone: "Открытия 3D сброшены.", resetFailed: "Браузер не разрешил сбросить открытия.",
     player: "Клёпа", objective: "Цель вылазки",
-    start: "Метка у плотины. Здесь можно начать вылазку.",
-    finish: "Муха побеждена. Забери добычу у метки.",
   },
   uk: {
     phases: ["Підключаємо рушій 3D", "Завантажуємо стартові файли", "Збираємо сцену", "Підключаємо керування"],
@@ -18,8 +16,6 @@ const COPY = {
     confirm: "Скинути відкриття й трофей «Першого причалу»?",
     resetDone: "Відкриття 3D скинуто.", resetFailed: "Браузер не дозволив скинути відкриття.",
     player: "Кльопа", objective: "Мета вилазки",
-    start: "Позначка біля греблі. Тут можна почати вилазку.",
-    finish: "Муху переможено. Забери здобич біля позначки.",
   },
   en: {
     phases: ["Starting the 3D engine", "Downloading startup files", "Assembling the scene", "Setting up controls"],
@@ -29,8 +25,6 @@ const COPY = {
     confirm: "Reset your First Landing discoveries and trophy?",
     resetDone: "3D discoveries reset.", resetFailed: "The browser blocked the reset.",
     player: "Klyop", objective: "Sortie objective",
-    start: "The marker is at the dam. Start the sortie here.",
-    finish: "The fly is defeated. Collect the reward at the marker.",
   },
 };
 
@@ -132,6 +126,19 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
     legend.append(item);
   }
   tools.append(legend);
+  // Focus on a foe: a quiet toggle beside the dodge (pressed while a target is held), G on a keyboard.
+  const fight = text.expedition ?? {};
+  const dodgeButton = get("dodge");
+  if (dodgeButton && fight.focus && !get("focus")) {
+    const focus = button("walk-jump walk-focus", fight.focus);
+    focus.id = "swalk-focus";
+    focus.hidden = true;
+    focus.title = "G";
+    focus.setAttribute("aria-pressed", "false");
+    dodgeButton.before(focus);
+  }
+  const keyLine = world.querySelector(".walk-help-desktop");
+  if (keyLine && fight.focusKey) keyLine.append(` · ${fight.focusKey}`);
   // The key list fades from the screen after the first steps; the map panel keeps a copy.
   const coarse = doc.defaultView.matchMedia("(pointer: coarse)").matches;
   const helpLine = world.querySelector(coarse ? ".walk-help-touch" : ".walk-help-desktop");
@@ -196,24 +203,23 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
   };
 }
 
-export function walkObjectiveHint(lang, action, fallback) {
-  if (action === "start" || action === "finish") return copyFor(lang)[action];
-  return fallback;
-}
-
 const INTERACT_FACING = Math.cos(70 * Math.PI / 180);
+const EXTENDED_FACING = Math.cos(95 * Math.PI / 180);
 
 export function pickWalkAction(player, candidates, floorAt, obstructed) {
   if (!player.grounded || player.swimming || player.traversal || player.swing != null) return null;
   const facingX = Math.sin(player.heading), facingZ = Math.cos(player.heading);
   let nearest = null, closest = Infinity;
-  for (const { action, point, radius } of candidates) {
+  // `face: false` lets a spot work from any side; `extraReach` widens it a little for thumbs (candidate C).
+  for (const { action, point, radius, face = true, extraReach = 0 } of candidates) {
     const dx = point.x - player.x, dz = point.z - player.z;
     const distance = Math.hypot(dx, dz);
-    if (distance >= Math.min(closest, radius)) continue;
+    if (distance >= Math.min(closest, radius + extraReach)) continue;
     const y = floorAt(point.x, point.z);
     if (Math.abs(player.y - y) >= 0.5) continue;
-    if (distance > 0.35 && facingX * dx + facingZ * dz < distance * INTERACT_FACING) continue;
+    const alignment = facingX * dx + facingZ * dz;
+    if (face && distance > 0.35 && alignment < distance * INTERACT_FACING) continue;
+    if (distance >= radius && alignment < distance * EXTENDED_FACING) continue;
     if (obstructed?.(player, { x: point.x, y, z: point.z })) continue;
     nearest = action;
     closest = distance;

@@ -1,74 +1,74 @@
 {
-  "fetchedAt": "2026-11-12",
+  "fetchedAt": "2026-11-13",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 275,
-      "lifetimeSubscriptions": 336,
-      "favorited": 40,
-      "views": 1364,
+      "subscriptions": 280,
+      "lifetimeSubscriptions": 345,
+      "favorited": 41,
+      "views": 1398,
       "created": "2026-10-18",
       "updated": "2026-11-12"
     },
     "seamless-world": {
-      "subscriptions": 210,
-      "lifetimeSubscriptions": 290,
-      "favorited": 89,
-      "views": 1568,
+      "subscriptions": 212,
+      "lifetimeSubscriptions": 293,
+      "favorited": 92,
+      "views": 1609,
       "created": "2026-10-19",
       "updated": "2026-11-12"
     },
     "trodden-trails": {
-      "subscriptions": 105,
-      "lifetimeSubscriptions": 115,
-      "favorited": 15,
-      "views": 387,
+      "subscriptions": 126,
+      "lifetimeSubscriptions": 137,
+      "favorited": 17,
+      "views": 454,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "belt-lantern": {
-      "downloads": 834,
+      "downloads": 847,
       "versions": 4,
       "created": "2026-04-03",
       "updated": "2026-04-03",
-      "counted": "2026-11-12"
+      "counted": "2026-11-13"
     },
     "ancestral-ruins": {
-      "subscriptions": 11,
-      "lifetimeSubscriptions": 13,
+      "subscriptions": 19,
+      "lifetimeSubscriptions": 21,
       "favorited": 8,
-      "views": 107,
+      "views": 158,
       "created": "2026-10-31",
-      "updated": "2026-11-12"
+      "updated": "2026-11-13"
     },
     "ancient-obsession": {
       "subscriptions": 9,
       "lifetimeSubscriptions": 12,
       "favorited": 2,
-      "views": 170,
+      "views": 197,
       "created": "2026-10-31",
       "updated": "2026-11-12"
     },
     "challenges-wagers": {
       "subscriptions": 4,
       "lifetimeSubscriptions": 5,
-      "favorited": 1,
-      "views": 117,
+      "favorited": 2,
+      "views": 129,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "told-twice": {
-      "subscriptions": 10,
-      "lifetimeSubscriptions": 11,
-      "favorited": 2,
-      "views": 88,
+      "subscriptions": 19,
+      "lifetimeSubscriptions": 20,
+      "favorited": 5,
+      "views": 130,
       "created": "2026-10-31",
       "updated": "2026-11-07"
     },
     "shelf-life": {
-      "subscriptions": 23,
-      "lifetimeSubscriptions": 32,
-      "favorited": 4,
-      "views": 177,
+      "subscriptions": 33,
+      "lifetimeSubscriptions": 42,
+      "favorited": 5,
+      "views": 217,
       "created": "2026-11-08",
       "updated": "2026-11-08"
     }

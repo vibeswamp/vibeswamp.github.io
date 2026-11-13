@@ -1,9 +1,13 @@
 import { RANKS, rankOf, priceOf as buildingPrice, producerMultiplier, swampMultiplier, baseRate as calculateBaseRate,
-  incomeRate, clickValue, buyBuilding, buyStage, roomOpen, startProject, finishProject, achievementProgress, badgeCount } from "./swamp/engine.mjs";
+  incomeRate, clickValue, buyBuilding, buyStage, roomOpen, startProject, finishProject, achievementProgress, badgeCount,
+  canBuildStage, stageNeeds, marketPrice, missingPrice, buyMissing, buyMaterial, gearStatus, gearPrice, buyGear, materialsOf, shelfBonus,
+  calmUntil, calmBoost, hasStage, materialsOn } from "./swamp/engine.mjs";
 import { freshSave, loadSave, persistSave } from "./swamp/save.mjs";
 import { createScene, shoreArt } from "./swamp/scene.mjs";
 import { expeditionContext, reserveExpedition, settleExpedition } from "./swamp/expedition-save.mjs";
 import { markThreshold, takeThreshold } from "./swamp/threshold.mjs";
+import { fishOf, stockOf } from "./swamp/expedition-3d-save.mjs";
+import { createLivingBackdrop } from "./swamp/backdrop-gl.mjs";
 
 // Klyop builds the swamp: a light clicker with the site toad. Texts come from content/swamp.json (built into the page),
 // the save lives in localStorage ("vibeswamp-swamp"). Flies caught in the pond on the home page come in here too.
@@ -46,7 +50,7 @@ function startClicker(host, textEl, lockedStorage) {
     if (!writeOwner) return;
     if (hiddenAt) {
       const time = Date.now();
-      const caught = calculateBaseRate(S, D) * Math.min(7200, Math.max(0, (time - hiddenAt) / 1000)) * 0.5;
+      const caught = awayIncome(hiddenAt, time);
       S.flies += caught; S.total += caught; hiddenAt = time;
     }
     try { persistSave(storage, S); saveWarning = false; }
@@ -71,20 +75,31 @@ function startClicker(host, textEl, lockedStorage) {
   const baseRate = () => calculateBaseRate(S, D);
   const vibePct = () => (S.done.track ? 50 : 25);
   const radioOn = () => !!VS().playing;
-  const boosts = () => ({ radio: radioOn(), swarm: now() < swarmUntil, tea: Date.now() < S.activities.teaUntil });
+  const calmOn = () => Date.now() < calmUntil(S);
+  const boosts = () => ({ radio: radioOn(), swarm: now() < swarmUntil, tea: Date.now() < S.activities.teaUntil, calm: calmOn() });
   const rate = () => incomeRate(S, D, boosts());
-  const perClick = () => clickValue(S, D, { vibe: now() < vibeUntil, storm: now() < stormUntil });
+  const perClick = () => clickValue(S, D, { vibe: now() < vibeUntil, storm: now() < stormUntil, calm: calmOn() });
   const gardenReward = () => Math.max(15, baseRate() * D.activities.garden.rewardSeconds);
   const compileReward = () => Math.max(30, baseRate() * D.activities.compile.rewardSeconds);
   const flyReward = (count) => Math.max(1, baseRate() * 2, perClick()) * count;
 
-  // away: half of the calm catch, two hours at most
-  const away = Math.min(2 * 3600, Math.max(0, (Date.now() - (S.t || Date.now())) / 1000));
-  if (away > 60 && baseRate() > 0) {
-    const got = baseRate() * away * 0.5;
-    S.flies += got; S.total += got;
-    note = [note, fill(T.away, { n: fmt(got) })].filter(Boolean).join(" ");
+  // away: half of the calm catch, two hours at most. Since 13.11.2026 (docs/design/economy.md) the time Klyop spent on
+  // a 3D day (walkSeconds, written by the day's save) pays in full, and a calm night after a won one adds its +30%.
+  function awayIncome(from, to, walk = 0) {
+    const away = Math.min(2 * 3600, Math.max(0, (to - from) / 1000));
+    const calmEnd = calmUntil(S), calmStart = calmEnd - (D.expedition?.calm?.seconds ?? 0) * 1000;
+    const calmPart = Math.max(0, (Math.min(to, calmEnd, from + away * 1000) - Math.max(from, calmStart)) / 1000);
+    const walked = Math.max(0, (D.expedition?.inTrip ?? 0.5) - 0.5) * Math.min(walk, away);
+    return calculateBaseRate(S, D) * (0.5 * away + walked + 0.5 * (calmBoost(D) - 1) * calmPart);
   }
+  const away = Math.min(2 * 3600, Math.max(0, (Date.now() - (S.t || Date.now())) / 1000));
+  const walk = Number.isFinite(S.expedition3d?.walkSeconds) ? Math.max(0, S.expedition3d.walkSeconds) : 0;
+  if ((away > 60 || walk > 0) && baseRate() > 0) {
+    const got = awayIncome(S.t || Date.now(), Date.now(), walk);
+    S.flies += got; S.total += got;
+    note = [note, fill(walk > 0 ? U.walkAway : T.away, { n: fmt(got) })].filter(Boolean).join(" ");
+  }
+  if (walk > 0) S.expedition3d = { ...S.expedition3d, walkSeconds: 0 };
 
   // ---------- the page ----------
   const pic = (id) => `/brand/swamp/${id}.webp`;
@@ -113,6 +128,7 @@ function startClicker(host, textEl, lockedStorage) {
 <div class="sw-art">
 <div class="sw-backdrop" aria-hidden="true"></div>
 <div class="sw-wave" aria-hidden="true">${glints}</div>
+<div class="sw-houses sw-houses-back" aria-hidden="true"></div>
 <div class="sw-shelter" aria-hidden="true"></div>
 <div class="sw-houses" aria-hidden="true"></div>
 <button type="button" class="sw-klyop"><img class="sw-k" src="/brand/klyop-full.webp" alt="" draggable="false" decoding="async"><span class="sw-croak">${U.croak} <span class="num sw-per">+1</span></span></button>
@@ -140,11 +156,19 @@ function startClicker(host, textEl, lockedStorage) {
 <section class="sw-side" aria-labelledby="sw-management">
 <h2 id="sw-management" class="sw-hidden-title">${U.management}</h2>
 <button type="button" class="sw-construct"><span class="sw-stage-preview" aria-hidden="true"></span><span class="sw-what"><span class="sw-next-l">${U.next}</span><span class="sw-name"></span><span class="sw-text sw-stage-gate"></span></span><span class="sw-price"><span class="sw-stage-cost num"></span><span class="sw-build-l">${V.buildStage}</span></span></button>
+<div class="sw-needs" hidden><p class="sw-needs-l"></p><p class="sw-needs-actions"><button type="button" class="sw-buy-action sw-tolya"></button><button type="button" class="sw-go3d">${U.go3d}</button></p></div>
 <div class="sw-tabs" role="tablist" aria-label="${U.management}">${Object.entries(V.tabs).map(([id, name], i) => `<button type="button" role="tab" id="sw-tab-${id}" aria-controls="sw-panel-${id}" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-tab="${id}">${name}</button>`).join("")}</div>
 <div class="sw-panels">
 <div class="sw-panel" id="sw-panel-shop" role="tabpanel" aria-labelledby="sw-tab-shop" tabindex="0">
 <ol class="sw-list">${buildings.map((b) => `<li><article class="sw-buy" data-id="${b.id}" title="${b.text}"><span class="sw-pic-box"><img class="sw-pic" src="${pic(b.id)}" alt="" draggable="false" loading="lazy" decoding="async"><span class="sw-own num"></span></span><div class="sw-what"><h3 class="sw-name">${b.name}</h3><p class="sw-text">${b.text}</p><p class="sw-gain"></p></div><div class="sw-price"><button type="button" class="sw-buy-action"></button></div></article></li>`).join("")}</ol>
 <div class="sw-howto"><h3 class="sw-panel-h">${U.howTo.title}</h3><ul>${U.howTo.lines.map((line) => `<li>${line}</li>`).join("")}</ul></div>
+</div>
+<div class="sw-panel" id="sw-panel-market" role="tabpanel" aria-labelledby="sw-tab-market" tabindex="0" hidden>
+<h3 class="sw-panel-h">${U.market.title}</h3><p class="sw-market-lead">${U.market.lead}</p><p class="sw-calm-line" hidden></p>
+<ol class="sw-list sw-goods">${["wood", "resin", "amber"].map((item) => `<li><article class="sw-buy sw-good" data-item="${item}"><span class="sw-pic-box"><img class="sw-pic" src="/brand/swamp/goods/${item}.webp" alt="" draggable="false" loading="lazy" decoding="async"></span><div class="sw-what"><h3 class="sw-name">${U.market[item]}</h3><p class="sw-text">${U.market[item + "Text"]}</p><p class="sw-gain sw-have"></p></div><div class="sw-price"><button type="button" class="sw-buy-action sw-good-buy"></button></div></article></li>`).join("")}</ol>
+<p class="sw-market-lead sw-amber-none" hidden></p>
+<h3 class="sw-panel-h">${U.market.gear}</h3><p class="sw-market-lead">${U.market.gearLead}</p>
+<ol class="sw-list sw-gear">${D.gear.map((g) => `<li><button type="button" class="sw-build sw-gear-item" data-gear="${g.id}"><span class="sw-what"><span class="sw-name">${U.gear[g.id][0]}</span><span class="sw-text">${U.gear[g.id][1]}</span></span><span class="sw-price"><span class="num sw-cost"></span><span class="sw-state"></span></span></button></li>`).join("")}</ol>
 </div>
 <div class="sw-panel" id="sw-panel-construction" role="tabpanel" aria-labelledby="sw-tab-construction" tabindex="0" hidden>
 <h3 class="sw-panel-h">${V.projects}</h3>
@@ -152,7 +176,7 @@ function startClicker(host, textEl, lockedStorage) {
 <h3 class="sw-panel-h sw-stage-progress"></h3><ol class="sw-stage-history"></ol>
 </div>
 <div class="sw-panel" id="sw-panel-achievements" role="tabpanel" aria-labelledby="sw-tab-achievements" tabindex="0" hidden><p class="sw-ach-count"></p>${Object.entries(U.achGroups).map(([group, title]) => `<h3 class="sw-panel-h">${title}</h3><ol class="sw-ach-grid">${D.achievements.filter((a) => a.group === group).map((a) => `<li class="sw-ach locked" data-ach="${a.id}"><button type="button" class="sw-ach-tile"><span class="sw-ach-icon"></span><span class="sw-ach-name"></span><span class="sw-ach-bar" aria-hidden="true"><span></span></span></button></li>`).join("")}</ol>`).join("")}</div>
-<div class="sw-panel" id="sw-panel-records" role="tabpanel" aria-labelledby="sw-tab-records" tabindex="0" hidden><h2>${U.statsLocal}</h2><dl class="sw-records">${Object.entries(U.stats).map(([id, label]) => `<div><dt>${label}</dt><dd class="num" data-sw-stat="${id}"></dd></div>`).join("")}</dl></div>
+<div class="sw-panel" id="sw-panel-records" role="tabpanel" aria-labelledby="sw-tab-records" tabindex="0" hidden><h2>${U.statsLocal}</h2><dl class="sw-records">${Object.entries(U.stats).map(([id, label]) => `<div><dt>${label}</dt><dd class="num" data-sw-stat="${id}"></dd></div>`).join("")}</dl><div class="sw-trips" hidden><h2>${U.trips.title}</h2><dl class="sw-records">${["wood", "resin", "amber", "fish", "best"].map((id) => `<div><dt>${U.trips[id]}</dt><dd class="num" data-sw-trip="${id}"></dd></div>`).join("")}</dl></div></div>
 </div>
 <p class="sw-foot"><span class="sw-stats"></span><button type="button" class="sw-reset">${T.reset}</button></p>
 </section>
@@ -165,7 +189,7 @@ function startClicker(host, textEl, lockedStorage) {
 <p class="sw-save-status" role="status" hidden></p><p class="sw-toast" role="status" hidden></p>`;
 
   const $ = (s) => host.querySelector(s);
-  const scene = $(".sw-scene"), world = $(".sw-world"), houses = $(".sw-houses"), fliesEl = $(".sw-flies");
+  const scene = $(".sw-scene"), world = $(".sw-world"), houses = $(".sw-houses:not(.sw-houses-back)"), housesBack = $(".sw-houses-back"), fliesEl = $(".sw-flies");
   const num = $(".sw-num"), rateN = $(".sw-rate-n"), per = $(".sw-per"), say = $(".sw-say"), stats = $(".sw-stats");
   const incomeDetail = $(".sw-income-detail");
   const radioControl = document.querySelector(".radio .r-play");
@@ -173,10 +197,15 @@ function startClicker(host, textEl, lockedStorage) {
   radioToggle.hidden = !radioControl;
   radioToggle.addEventListener("click", () => radioControl?.click());
   const records = [...host.querySelectorAll("[data-sw-stat]")];
+  const tripsBox = $(".sw-trips"), tripCells = [...host.querySelectorAll("[data-sw-trip]")];
   const btn = $(".sw-klyop"), kImg = $(".sw-k"), pops = $(".sw-pops");
   const meter = $(".sw-meter-bar span"), meterBox = $(".sw-meter");
   const rankImg = $(".sw-rank-img"), rankNo = $(".sw-rank-no"), rankName = $(".sw-rank-name"), rankBar = $(".sw-rank-bar"), rankNext = $(".sw-rank-next"), rankBox = $(".sw-rank"), rankBonus = $(".sw-rank-bonus");
   const construct = $(".sw-construct"), mini = $(".sw-mini"), miniNum = $(".sw-mini-num"), miniNext = $(".sw-mini-next");
+  const needsBox = $(".sw-needs"), needsLine = $(".sw-needs-l"), tolyaBuy = $(".sw-tolya"), go3d = $(".sw-go3d");
+  const marketTab = $("#sw-tab-market"), marketPanel = $("#sw-panel-market"), calmLine = $(".sw-calm-line"), amberNone = $(".sw-amber-none");
+  const goodCards = [...host.querySelectorAll(".sw-good")], gearItems = [...host.querySelectorAll(".sw-gear-item")];
+  const setText = (el, text) => { if (el.textContent !== text) el.textContent = text; };
   // The next building step in the card: a small crop of the scene as it will look once the step is built (the same
   // cut-out layers stacked on the painting), dimmed until there are flies enough. Steps without pictures show "?".
   const preview = $(".sw-stage-preview");
@@ -198,12 +227,21 @@ function startClicker(host, textEl, lockedStorage) {
     preview.style.setProperty("--pv-pos", `${(-left * f).toFixed(1)}px ${(-top * f).toFixed(1)}px`);
   };
   const howTo = $(".sw-howto");
-  const buyCards = [...host.querySelectorAll(".sw-buy")], buildBtns = [...host.querySelectorAll(".sw-build")];
+  // buildings and projects only: the stall's goods and gear reuse their row styles
+  const buyCards = [...host.querySelectorAll(".sw-buy:not(.sw-good)")], buildBtns = [...host.querySelectorAll(".sw-build:not(.sw-gear-item)")];
   host.addEventListener("dragstart", (event) => event.preventDefault());
   // A long press on a picture must not open the phone's image menu or start a text selection.
   host.addEventListener("contextmenu", (event) => { if (event.target.closest(".sw-world, .sw-pic, .sw-mini")) event.preventDefault(); });
   const producerLabels = Object.fromEntries(buildings.map(({ id, name }) => [id, name]));
-  const drawScene = createScene({ world, houses, rooms: $(".sw-rooms"), data: D, text: V, producerLabels, onRoom: (room) => {
+  // clouds, leaves and water that move (WebGL); without it, or with reduced motion, the still picture stays
+  let living = null;
+  if (!calm) {
+    try { living = createLivingBackdrop({ art: $(".sw-art"), world, phone: () => matchMedia("(max-width: 900px)").matches }); }
+    catch { living = null; }
+  }
+  if (living) world.classList.add("gl-live");
+  const drawScene = createScene({ world, houses, housesBack, rooms: $(".sw-rooms"), data: D, text: V, producerLabels,
+    onBackdrop: (painting, mask, shore) => living?.set(painting, mask, shore), onRoom: (room) => {
     if (!roomOpen(S, D, room)) { speak(V.roomHints[room]); return; }
     if (S.room === room) return;
     S.room = room;
@@ -561,23 +599,72 @@ function startClicker(host, textEl, lockedStorage) {
   };
 
   // ---------- render ----------
+  // Tolya's stall: planks and resin for flies, amber only for the next step, and gear for the 3D swamp
+  const clock = (ms) => { const sec = Math.max(0, Math.ceil(ms / 1000)); return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`; };
+  const renderMarket = (needs, mats) => {
+    const amberWanted = needs?.miss.amber ?? 0;
+    const shelf = fill(U.market.shelf, { n: mats.amber, p: Math.round(shelfBonus(S, D) * 100) });
+    for (const card of goodCards) {
+      const item = card.dataset.item, price = marketPrice(S, D, item);
+      const sold = item !== "amber" || amberWanted > 0;
+      card.parentElement.hidden = !sold;
+      setText(card.querySelector(".sw-have"), item === "amber" ? shelf : fill(U.market.have, { n: mats[item] }));
+      const action = card.querySelector(".sw-good-buy");
+      setText(action, fill(U.market.buy, { n: fmt(price) }));
+      action.disabled = !sold || S.flies < price;
+      card.classList.toggle("can", sold && S.flies >= price);
+    }
+    amberNone.hidden = amberWanted > 0;
+    if (!amberNone.hidden) setText(amberNone, `${U.market.amberNone} ${U.market.amber}: ${shelf}.`);
+    const calmLeft = calmUntil(S) - Date.now();
+    calmLine.hidden = calmLeft <= 0;
+    if (calmLeft > 0) setText(calmLine, fill(U.market.calm, { n: Math.round((calmBoost(D) - 1) * 100), t: clock(calmLeft) }));
+    for (const el of gearItems) {
+      const item = D.gear.find((g) => g.id === el.dataset.gear), status = gearStatus(S, D, item), price = gearPrice(S, D, item);
+      const cost = [fill(U.market.gearBuy, { n: fmt(price) }), item.wood ? fill(U.market.gearMats, { w: item.wood }) : "", item.resin ? fill(U.market.gearResin, { r: item.resin }) : ""].filter(Boolean).join(" · ");
+      const ready = status === "open" && S.flies >= price && mats.wood >= item.wood && mats.resin >= item.resin;
+      el.disabled = !ready;
+      el.classList.toggle("done", status === "owned");
+      el.classList.toggle("can", ready);
+      setText(el.querySelector(".sw-cost"), status === "owned" ? "" : cost);
+      setText(el.querySelector(".sw-state"), status === "owned" ? U.market.gearOwned
+        : status === "closed" && !hasStage(S, D, item.after) ? fill(U.market.gearAfter, { s: V.stages[item.after] }) : "");
+    }
+  };
+
   const render = () => {
     if (survivorsActive) return;
     checkAchievements(); renderActivities(); drawScene(S);
     const next = D.stages[S.stage];
     $(".sw-stage-progress").textContent = fill(V.stageProgress, { n: S.stage, max: D.stages.length });
-    construct.disabled = !next || S.total < next.total || S.flies < next.cost;
+    const needs = stageNeeds(S, D), mats = materialsOf(S);
+    const lacking = Boolean(needs && (needs.miss.wood || needs.miss.resin || needs.miss.amber));
+    construct.disabled = !canBuildStage(S, D);
     construct.classList.toggle("can", !construct.disabled);
     construct.classList.toggle("all", !next);
     construct.querySelector(".sw-name").textContent = next ? V.stages[next.id] : V.allBuilt;
     const previewKey = next ? next.id : "all";
     if (preview.dataset.step !== previewKey) { preview.dataset.step = previewKey; paintPreview(); }
     $(".sw-stage-cost").textContent = next ? fmt(next.cost) : "";
+    // planks, resin and amber the step asks for: what is there of each
+    const needList = needs ? [["wood", U.needWood], ["resin", U.needResin], ["amber", U.needAmber]].filter(([item]) => needs.need[item])
+      .map(([item, line]) => fill(line, { h: Math.min(mats[item], needs.need[item]), n: needs.need[item] })).join(", ") : "";
     const gate = next && S.total < next.total ? fill(V.stageGate, { n: fmt(next.total - S.total) })
       : next && S.flies < next.cost ? fill(U.stageNeed, { n: fmt(next.cost - S.flies) }) : "";
     $(".sw-stage-gate").textContent = gate;
+    needsBox.hidden = !lacking;
+    if (lacking) {
+      setText(needsLine, fill(U.needs, { list: needList }));
+      const price = missingPrice(S, D);
+      setText(tolyaBuy, fill(U.tolyaBuy, { n: fmt(price) }));
+      tolyaBuy.disabled = S.flies < price;
+      go3d.hidden = !document.querySelector(".sw-walk-link");
+    }
+    marketTab.hidden = !materialsOn(D) || S.stage < 2;
+    if (marketTab.hidden && marketTab.getAttribute("aria-selected") === "true") selectTab(tabs[0]);
+    if (!marketPanel.hidden) renderMarket(needs, mats);
     miniNum.textContent = fmt(S.flies);
-    const miniText = next ? `${V.stages[next.id]} · ${fmt(next.cost)}` : "";
+    const miniText = next ? `${V.stages[next.id]} · ${lacking ? U.needsMini : fmt(next.cost)}` : "";
     if (miniNext.textContent !== miniText) miniNext.textContent = miniText;
     miniNext.classList.toggle("can", !construct.disabled);
     if (historyStage !== S.stage) {
@@ -585,6 +672,14 @@ function startClicker(host, textEl, lockedStorage) {
       $(".sw-stage-history").innerHTML = D.stages.slice(0, S.stage).reverse().map((stage) => `<li><span aria-hidden="true">✓</span> ${V.stages[stage.id]}</li>`).join("");
     }
     for (const record of records) record.textContent = whole.format(Math.floor(S[record.dataset.swStat]));
+    const trips = S.expedition3d;
+    tripsBox.hidden = !trips;
+    if (trips) {
+      const stock = stockOf(S), best = trips.best;
+      const values = { wood: whole.format(stock.wood), resin: whole.format(stock.resin), amber: whole.format(trips.amber || 0), fish: whole.format(fishOf(S)),
+        best: best ? fill(U.trips.bestValue, { t: best.trophies || 0, k: best.kills || 0 }) : "—" };
+      for (const cell of tripCells) if (cell.textContent !== values[cell.dataset.swTrip]) cell.textContent = values[cell.dataset.swTrip];
+    }
     const modifiers = boosts();
     const passive = baseRate();
     num.textContent = fmt(S.flies);
@@ -594,7 +689,18 @@ function startClicker(host, textEl, lockedStorage) {
     if (modifiers.radio) incomeLines.push(fill(U.radioIncome, { n: vibePct() }));
     if (modifiers.tea) incomeLines.push(fill(U.teaIncome, { n: Math.round((D.activities.tea.multiplier - 1) * 100) }));
     if (modifiers.swarm) incomeLines.push(U.swarmIncome);
-    incomeDetail.textContent = incomeLines.join(" · ");
+    if (modifiers.calm) incomeLines.push(fill(U.calmIncome, { n: Math.round((calmBoost(D) - 1) * 100) }));
+    const shelfPct = Math.round(shelfBonus(S, D) * 100);
+    if (shelfPct) incomeLines.push(fill(U.shelfIncome, { n: shelfPct }));
+    // the base income, then what raises it now; a phone shows only the raises (the box stays one line high)
+    const [baseLine, ...raises] = incomeLines;
+    const detail = `${baseLine}|${raises.join(" · ")}`;
+    if (incomeDetail.dataset.text !== detail) {
+      incomeDetail.dataset.text = detail;
+      incomeDetail.innerHTML = '<span class="sw-income-base"></span><span class="sw-income-raises"></span>';
+      incomeDetail.firstChild.textContent = baseLine;
+      incomeDetail.lastChild.textContent = raises.join(" · ");
+    }
     incomeDetail.toggleAttribute("data-boosted", incomeLines.length > 1);
     radioToggle.setAttribute("aria-pressed", String(modifiers.radio));
     status(radioToggle, fill(modifiers.radio ? Dk.radioOn : Dk.radioOff, { n: vibePct() }),
@@ -738,6 +844,47 @@ function startClicker(host, textEl, lockedStorage) {
     const [x, y] = artPoint(event);
     if (onWater(x, y)) ripple(x, y, true);
   });
+  // ---------- now and then a bird crosses the far sky and a dragonfly darts over the water ----------
+  // Small drawn shapes moved with transform and opacity only; never with reduced motion, never in the rooms.
+  const BIRD = '<svg viewBox="0 0 20 8" aria-hidden="true"><path class="wing" d="M1 5 Q5.5 0.5 10 4.6 Q14.5 0.5 19 5" fill="none" stroke="#1c1914" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const DRAGONFLY = '<svg viewBox="0 0 26 12" aria-hidden="true"><g class="wings" fill="rgba(214,236,240,.5)" stroke="rgba(235,248,250,.6)" stroke-width=".3"><ellipse cx="10" cy="3.2" rx="5.4" ry="1.5"/><ellipse cx="10" cy="8.8" rx="5.4" ry="1.5"/><ellipse cx="15.2" cy="3.6" rx="4.3" ry="1.3"/><ellipse cx="15.2" cy="8.4" rx="4.3" ry="1.3"/></g><line x1="3" y1="6" x2="24" y2="6" stroke="#2c5c58" stroke-width="1.7" stroke-linecap="round"/><circle cx="24" cy="6" r="1.5" fill="#1f3f3c"/></svg>';
+  const critter = (className, svg, keyframes, duration) => {
+    if (calm || document.hidden || world.dataset.room !== "shore") return;
+    const el = document.createElement("span");
+    el.className = className;
+    el.innerHTML = svg;
+    wave.append(el);
+    const motion = el.animate(keyframes, { duration, easing: "linear", fill: "forwards" });
+    motion.onfinish = () => el.remove();
+  };
+  const bird = () => {
+    // far away, right to left just above the tree line, fading before the moss on the left; when the furnished hut
+    // is part of the painting (era 3) it flies higher, in the open sky above the roof, never in front of it
+    const high = world.dataset.era === "3", y = high ? 9 + Math.random() * 3 : 19 + Math.random() * 6;
+    const [x0, x1] = high ? [80, 56] : [97, 52], mid = (x0 + x1) / 2;
+    critter("sw-bird", BIRD, [
+      { left: `${x0}%`, top: `${y}%`, opacity: 0 }, { left: `${x0 - 4}%`, top: `${y - 1}%`, opacity: .85, offset: .12 },
+      { left: `${mid}%`, top: `${y - 2.5}%`, opacity: .85, offset: .6 }, { left: `${x1}%`, top: `${y - 2}%`, opacity: 0 }
+    ], (high ? 11000 : 15000) + Math.random() * 5000);
+  };
+  const dragonfly = () => {
+    // darts and hovers over the water by a bank, never over the hut: quick moves with stops between them
+    const left = Math.random() < .5, x = (v) => `${left ? v : 100 - v}%`, flip = left ? 1 : -1;
+    critter("sw-dragonfly", DRAGONFLY, [
+      { left: x(-3), top: "64%", transform: `scaleX(${flip})`, opacity: 0 },
+      { left: x(8), top: "60%", transform: `scaleX(${flip})`, opacity: 1, offset: .12 },
+      { left: x(9), top: "60.6%", transform: `scaleX(${flip})`, opacity: 1, offset: .32 },
+      { left: x(14), top: "66%", transform: `scaleX(${flip})`, opacity: 1, offset: .42 },
+      { left: x(14.6), top: "65.2%", transform: `scaleX(${flip})`, opacity: 1, offset: .62 },
+      { left: x(19), top: "58%", transform: `scaleX(${flip})`, opacity: 1, offset: .76 },
+      { left: x(21), top: "54%", transform: `scaleX(${flip})`, opacity: 0 }
+    ], 7000);
+  };
+  // the first ones come soon after opening, later ones now and then
+  const now_and_then = (fn, min, max, first = min) => setTimeout(() => { fn(); now_and_then(fn, min, max); }, (first + Math.random() * (max - min) * (first === min ? 1 : .2)) * 1000);
+  now_and_then(bird, 35, 90, 8);
+  now_and_then(dragonfly, 25, 70, 5);
+
   // now and then something touches the water: a midge, a drop from the reeds
   setInterval(() => {
     if (Math.random() > 0.55) return;
@@ -791,7 +938,7 @@ function startClicker(host, textEl, lockedStorage) {
   });
 
   host.addEventListener("click", (e) => {
-    const buy = e.target.closest(".sw-buy-action");
+    const buy = e.target.closest(".sw-buy:not(.sw-good) .sw-buy-action");
     if (buy && !buy.disabled) {
       const b = buildings.find((x) => x.id === buy.closest(".sw-buy").dataset.id);
       if (buyBuilding(S, D, b.id)) {
@@ -804,7 +951,7 @@ function startClicker(host, textEl, lockedStorage) {
       }
       return;
     }
-    const bld = e.target.closest(".sw-build");
+    const bld = e.target.closest(".sw-build:not(.sw-gear-item)");
     if (bld && !bld.disabled) {
       const b = builds.find((x) => x.id === bld.dataset.id);
       if (startProject(S, D, b.id, Date.now())) {
@@ -814,6 +961,21 @@ function startClicker(host, textEl, lockedStorage) {
         render(); save();
       }
     }
+  });
+
+  // the step card: buy what the step lacks from Tolya, or go out to 3D for it
+  tolyaBuy.addEventListener("click", () => {
+    if (!buyMissing(S, D)) return;
+    VS().sound?.("tick"); K.lastInput = now();
+    render(); save();
+  });
+  go3d.addEventListener("click", () => { if (exitLink) leave(new URL(exitLink.href, location.href)); });
+  marketPanel.addEventListener("click", (event) => {
+    const good = event.target.closest(".sw-good-buy"), gear = event.target.closest(".sw-gear-item");
+    const done = good ? buyMaterial(S, D, good.closest(".sw-good").dataset.item, 1) : gear ? buyGear(S, D, gear.dataset.gear) : false;
+    if (!done) return;
+    VS().sound?.("tick"); K.lastInput = now();
+    render(); save();
   });
 
   $(".sw-construct").addEventListener("click", () => {
@@ -885,7 +1047,7 @@ function startClicker(host, textEl, lockedStorage) {
   // ---------- buildings at work: now and then one of them bounces and brings its catch ----------
   setInterval(() => {
     if (document.hidden || calm || survivorsActive) return;
-    const mine = [...houses.children];
+    const mine = [...houses.children, ...housesBack.children];
     if (!mine.length) return;
     const h = mine[Math.floor(Math.random() * mine.length)];
     const b = buildings.find((x) => x.id === h.dataset.id);
@@ -955,7 +1117,7 @@ function startClicker(host, textEl, lockedStorage) {
       hiddenAt = Date.now(); save();
     }
     else {
-      if (hiddenAt) reward(baseRate() * Math.min(7200, Math.max(0, (Date.now() - hiddenAt) / 1000)) * 0.5);
+      if (hiddenAt) reward(awayIncome(hiddenAt, Date.now()));
       hiddenAt = 0; last = now();
       tick(); drawFlies(); save();
     }
@@ -1076,7 +1238,8 @@ function startClicker(host, textEl, lockedStorage) {
     // The save handler registered above runs before ownership is released.
     addEventListener("pageshow", (event) => { if (event.persisted) location.reload(); });
     return new Promise((release) => addEventListener("pagehide", release, { once: true }));
-  }).catch(() => {
+  }).catch((error) => {
+    console.error(error);
     host.dataset.swampLocked = "";
     host.textContent = JSON.parse(textEl.textContent || "{}").v2?.saveProblem || "Storage unavailable.";
   });

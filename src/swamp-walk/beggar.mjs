@@ -1,3 +1,5 @@
+import { createTelegraph, windupClock } from "./combat-fx.mjs";
+
 const SCALE = 1.72;
 const ASSET_FLOOR = -0.435968;
 const WALK_SPEED = 0.75;
@@ -49,52 +51,13 @@ function makeActions(THREE, model) {
   return { mixer, actions };
 }
 
-function makeWarning(THREE, floorAt) {
-  const start = -Math.PI / 2 - HALF_SWEEP;
-  const angle = HALF_SWEEP * 2;
-  const group = new THREE.Group();
-  group.name = "BeggarStrikeTelegraph";
-  const layers = [
-    [new THREE.CircleGeometry(REACH, 26, start, angle), 0xbf7534, 0.021],
-    [new THREE.RingGeometry(REACH - 0.055, REACH, 26, 1, start, angle), 0xffbf61, 0.027],
-  ].map(([geometry, color, lift], index) => {
-    geometry.rotateX(-Math.PI / 2);
-    const rest = geometry.attributes.position.array.slice();
-    const material = new THREE.MeshBasicMaterial({ color, transparent: true, depthWrite: false, side: THREE.DoubleSide });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.frustumCulled = false;
-    mesh.renderOrder = 2 + index;
-    group.add(mesh);
-    return { geometry, material, rest, lift };
-  });
-  return {
-    group,
-    aim(x, z, yaw) {
-      const cos = Math.cos(yaw), sin = Math.sin(yaw);
-      for (const { geometry, rest, lift } of layers) {
-        const p = geometry.attributes.position;
-        for (let i = 0; i < p.count; i++) {
-          const lx = rest[i * 3], lz = rest[i * 3 + 2];
-          const px = x + lx * cos + lz * sin, pz = z - lx * sin + lz * cos;
-          p.setXYZ(i, px, floorAt(px, pz) + lift, pz);
-        }
-        p.needsUpdate = true;
-      }
-    },
-    show(age) {
-      group.visible = age !== null && age < IMPACT + 0.1;
-      if (!group.visible) return;
-      const strength = age < IMPACT ? smooth(age / IMPACT) : 1 - smooth((age - IMPACT) / 0.1);
-      layers[0].material.opacity = age < IMPACT ? 0.16 + strength * 0.30 : strength * 0.39;
-      layers[1].material.opacity = age < IMPACT ? 0.61 + strength * 0.35 : strength * 0.88;
-    },
-  };
-}
-
-export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorAt, onHit,
-  points = [], waterLevel = 0.08, canReach = () => true }) {
+export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorAt, onHit, model, raid = false, waterLevel = 0.08,
+  points = [], canReach = () => true, hits = 3, tuning = {} }) {
+  const rehit = tuning.rehit ?? 0.14;
+  // The sign jab: its windup is stretched to `tell` seconds (combat-tuning.mjs) so it can be read and dodged.
+  const clock = windupClock(IMPACT, tuning.tell ?? IMPACT);
   const patrol = buildRoute(x, z, points);
-  const gltf = await new GLTFLoader().loadAsync(url);
+  const gltf = model ?? await new GLTFLoader().loadAsync(url);
   const { mixer, actions: [idle, walk, run, attack, hit] } = makeActions(THREE, gltf);
   const attackEnd = attack.getClip().duration, hitEnd = hit.getClip().duration;
   if (attackEnd < IMPACT + BLEND || hitEnd < BLEND) throw new Error("Beggar GLB has incomplete combat clips");
@@ -108,7 +71,7 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
   body.add(gltf.scene);
   root.add(body);
   const position = root.position;
-  const warning = makeWarning(THREE, floorAt);
+  const warning = createTelegraph(THREE, floorAt, { reach: REACH, halfAngle: HALF_SWEEP, fill: 0xbf7534, edge: 0xffbf61 });
   const shadow = new THREE.Mesh(new THREE.CircleGeometry(0.55, 24), new THREE.MeshBasicMaterial({
     color: 0x111c15, transparent: true, opacity: 0.31, depthWrite: false,
   }));
@@ -182,7 +145,8 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
 
     const attacking = mode === "attack";
     const reacting = mode === "hit" || mode === "fall";
-    const strikeWeight = attacking ? attackWeight(age)
+    const strikeAt = attacking ? clock.clip(age) : 0;
+    const strikeWeight = attacking ? attackWeight(strikeAt)
       : reacting && interrupted ? interrupted.weight * (1 - smooth(age / BLEND)) : 0;
     const hitWeight = reacting ? smooth(age / BLEND) * (mode === "hit" ? smooth((hitEnd - age) / BLEND) : 1) : 0;
     const gaitWeight = 1 - strikeWeight - hitWeight;
@@ -190,7 +154,7 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
     walk.time = phase * walk.getClip().duration;
     run.time = phase * run.getClip().duration;
     for (const [index, action] of [idle, walk, run].entries()) action.setEffectiveWeight(weights[index] * gaitWeight);
-    attack.time = attacking ? Math.min(age, attackEnd) : interrupted?.time ?? 0;
+    attack.time = attacking ? Math.min(strikeAt, attackEnd) : interrupted?.time ?? 0;
     attack.setEffectiveWeight(strikeWeight);
     hit.time = reacting ? Math.min(age, hitEnd) : 0;
     hit.setEffectiveWeight(hitWeight);
@@ -201,11 +165,11 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
     body.scale.setScalar(1 - 0.94 * smooth((fall - 0.56) / 0.44));
     root.visible = shadow.visible = fall < 1;
     shadow.position.set(position.x, position.y + 0.014, position.z);
-    warning.show(attacking ? age : null);
+    warning.show(attacking ? (age < clock.tell ? age / clock.tell : 1 + age - clock.tell) : null);
   }
 
   function reset() {
-    health = 3;
+    health = hits;
     mode = "ready";
     age = cooldown = phase = idleTime = 0;
     weights = [1, 0, 0];
@@ -217,12 +181,12 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
     renderPose(0, 0, 0);
   }
 
-  function move(dt, player) {
+  function move(dt, player, waypoint) {
     const dx = player.x - position.x, dz = player.z - position.z;
     const distance = Math.hypot(dx, dz);
     const playerInZone = Math.hypot(player.x - x, player.z - z) <= LEASH_RADIUS;
     const closeHeight = Math.abs(player.y - position.y) <= 0.63;
-    const hunting = playerInZone && closeHeight && distance <= NOTICE_RADIUS;
+    const hunting = !waypoint && (raid || playerInZone && distance <= NOTICE_RADIUS) && closeHeight;
     if (hunting && distance <= WINDUP_RANGE + 1e-6 && cooldown <= 0 && lineClear(player.x, player.z)) {
       face(dx, dz, 1);
       warning.aim(position.x, position.z, root.rotation.y);
@@ -230,48 +194,63 @@ export async function createBeggar({ THREE, GLTFLoader, scene, url, x, z, floorA
       age = 0;
       return [0, 0];
     }
-    const target = hunting ? player : patrolTarget();
+    const target = waypoint ?? (hunting ? player : patrolTarget());
     face(target.x - position.x, target.z - position.z, 1 - Math.exp(-dt * 14));
-    const moved = moveTo(target, dt * (hunting ? RUN_SPEED : WALK_SPEED), hunting ? WINDUP_RANGE : 0);
-    return [moved ? (hunting ? 2 : 1) : 0, moved];
+    const running = hunting || raid;
+    const moved = moveTo(target, dt * (running ? RUN_SPEED : WALK_SPEED), hunting ? WINDUP_RANGE : 0);
+    return [moved ? (running ? 2 : 1) : 0, moved];
   }
 
   reset();
   scene.add(root, shadow, warning.group);
+  function harm(amount) {
+    if (!health || (mode === "hit" && age < rehit)) return false;
+    interrupted = mode === "attack" ? { time: clock.clip(age), weight: attackWeight(clock.clip(age)) } : null;
+    health = Math.max(0, health - amount);
+    mode = health ? "hit" : "fall";
+    age = 0;
+    renderPose(0, 0, 0);
+    return true;
+  }
   return {
     position,
+    get attacking() { return mode === "attack"; },
+    // 0..1 while the strike winds up (the host lights the body with it), otherwise null.
+    get telegraph() { return mode === "attack" && age < clock.tell ? age / clock.tell : null; },
     get defeated() { return health === 0; },
-    update(dt, player) {
+    get gone() { return mode === "fall" && age >= FALL_TIME; },
+    update(dt, player, waypoint) {
       if (!Number.isFinite(dt) || dt <= 0) return;
       let gait = 0, distance = 0, contact = false;
       const previous = age;
       age += dt;
       if (mode === "attack") {
-        contact = previous < IMPACT && age >= IMPACT
+        contact = previous < clock.tell && age >= clock.tell
           && Math.abs(player.y + PLAYER_CHEST - position.y - BEGGAR_CHEST) <= 0.62
           && arc(player.x - position.x, player.z - position.z, root.rotation.y, REACH, HALF_SWEEP)
           && lineClear(player.x, player.z);
-        if (age >= attackEnd) { mode = "ready"; cooldown = RECOVERY; }
+        if (clock.clip(age) >= attackEnd) { mode = "ready"; cooldown = RECOVERY; }
       } else if (mode === "hit") {
         if (age >= hitEnd) { mode = "ready"; cooldown = RECOVERY; }
       } else if (mode === "ready") {
         cooldown = Math.max(0, cooldown - dt);
-        [gait, distance] = move(dt, player);
+        [gait, distance] = move(dt, player, waypoint);
       }
       renderPose(dt, gait, distance);
-      if (contact) onHit();
+      if (contact) onHit(player);
     },
-    strike(player) {
+    strike(player, amount = 1) {
       if (!health || mode === "hit") return false;
       if (Math.abs(player.y + PLAYER_CHEST - position.y - BEGGAR_CHEST) > 0.8
           || !arc(position.x - player.x, position.z - player.z, player.yaw, 1.85, Math.PI * 0.32)
           || !lineClear(player.x, player.z)) return false;
-      interrupted = mode === "attack" ? { time: age, weight: attackWeight(age) } : null;
-      health--;
-      mode = health ? "hit" : "fall";
-      age = 0;
-      renderPose(0, 0, 0);
-      return true;
+      return harm(amount);
+    },
+    harm,
+    // Knockback (expedition-combat.mjs moves the actor): only onto ground he could walk to - no water, no walls.
+    standAt(nx, nz) {
+      const ny = floorAt(nx, nz);
+      return stepAllowed(nx, nz, ny, position.y) ? ny : null;
     },
     reset,
   };

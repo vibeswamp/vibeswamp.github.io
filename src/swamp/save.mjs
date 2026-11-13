@@ -1,4 +1,4 @@
-import { rankOf, roomOpen } from "./engine.mjs";
+import { gearOf, rankOf, roomOpen } from "./engine.mjs";
 
 const LEGACY_SAVE_KEY = "vibeswamp-swamp";
 export const SAVE_KEY = "vibeswamp-swamp:v2";
@@ -38,6 +38,9 @@ export function migrateSave(raw, data, time = Date.now()) {
   const visited = Array.isArray(state.visited) ? state.visited : [];
   state.visited = [...new Set(["shore", ...visited.filter((id) => data.rooms.some((room) => room.id === id)), state.room])];
   state.activities = Object.fromEntries(Object.keys(freshSave().activities).map((key) => [key, number(dictionary(raw.activities)[key])]));
+  // gear for the 3D swamp and what was bought from Tolya (13.11.2026); a save without them has none
+  if (raw.gear !== undefined) state.gear = gearOf(state);
+  if (raw.market !== undefined) state.market = Object.fromEntries(["wood", "resin", "amber"].map((key) => [key, Math.floor(number(dictionary(raw.market)[key]))]));
   return state;
 }
 

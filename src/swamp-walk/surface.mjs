@@ -1,45 +1,85 @@
 import * as T from "./vendor/three.mjs";
-import { CELLS, RADIUS, WATER, random, smooth } from "./land.mjs";
+import { CELLS, RADIUS, SUN_DIR, WATER, random, smooth } from "./land.mjs";
 import { addNightStars, cloudTexture } from "./sky-weather.mjs";
-
-// The sun sets north-west, over the open lagoon seen from the pier. Due north it hid behind the radio hill.
-export const SUN = new T.Vector3(-0.66, 0.165, -0.73).normalize();
-export const HAZE = new T.Color(0x69716a);
+import { reflectInWater } from "./water-reflection.mjs";
+// The sun sets north-west, over the open sound seen from the pier (land.mjs SUN_DIR); 6 degrees up, so on a phone
+// the sun itself stands in the frame above the far treeline. Due north it hid behind the radio hill.
+export const SUN = new T.Vector3(SUN_DIR[0], 0.105, SUN_DIR[1]).normalize();
+// One evening palette for the sky, the fog, the far shore and the water: the haze is the sky at the horizon, and
+// toward the sun both turn apricot by the same rule, so far banks melt into the sky instead of cutting a grey line.
+export const HAZE = new T.Color(0x7c7070);
 export const FOG = 0.0105;
+export const APRICOT = new T.Color(0xff8a4e);
+// How much apricot is in the air: 1 in the evening, 0 at night and in rain (weather.mjs).
+export const WARMTH = { value: 1 };
 const col = (hex) => new T.Color(hex);
+// GLSL: the fog colour seen along a world-space ray, the same glow the sky has around the sun.
+export const SUNWARD_FOG = `
+  vec3 sunwardFog(vec3 fogBase, vec3 ray, vec3 sunDir, vec3 apricot, float warmth) {
+    float toward = max(0., dot(normalize(ray), sunDir));
+    float glow = pow(toward, 8.) * .55 + pow(toward, 40.) * .25;
+    return mix(fogBase, apricot, glow * warmth);
+  }
+`;
 
+// The sunward fog, for materials with their own onBeforeCompile (the forest): call it inside that hook. It replaces
+// three's fog_fragment so the fog turns apricot toward the sun, and leaves `airColor` for code after it.
+export function sunwardFogShader(shader) {
+  Object.assign(shader.uniforms, { fogSun: { value: SUN }, fogApricot: { value: APRICOT }, fogWarmth: WARMTH });
+  shader.vertexShader = "varying vec3 fogRay;\nvarying float fogY;\n" + shader.vertexShader.replace("#include <fog_vertex>", `#include <fog_vertex>
+    vec4 sunwardPoint = vec4(transformed, 1.);
+    #ifdef USE_INSTANCING
+      sunwardPoint = instanceMatrix * sunwardPoint;
+    #endif
+    sunwardPoint = modelMatrix * sunwardPoint;
+    fogRay = sunwardPoint.xyz - cameraPosition;
+    fogY = sunwardPoint.y;`);
+  shader.fragmentShader = "varying vec3 fogRay;\nvarying float fogY;\nuniform vec3 fogSun, fogApricot;\nuniform float fogWarmth;\n"
+    + SUNWARD_FOG + shader.fragmentShader.replace("#include <fog_fragment>", `
+    #ifdef USE_FOG
+      vec3 airColor = sunwardFog(fogColor, fogRay, fogSun, fogApricot, fogWarmth);
+      float fogFactor = 1.0 - exp(- fogDensity * fogDensity * vFogDepth * vFogDepth);
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, airColor, fogFactor);
+    #endif`);
+}
+
+// Scenery materials (terrain, timber, reeds, grass): the sunward fog plus a low mist band over the water.
 export function groundMist(material) {
   const compile = material.onBeforeCompile;
   const cacheKey = compile.toString();
-  material.customProgramCacheKey = () => "ground-mist:" + cacheKey;
+  material.customProgramCacheKey = () => "ground-mist-v2:" + cacheKey;
   material.onBeforeCompile = (shader, renderer) => {
     compile.call(material, shader, renderer);
-    shader.vertexShader = "varying float mistY;\n" + shader.vertexShader.replace("#include <fog_vertex>", 
-      "#include <fog_vertex>\n  vec4 fogPoint = vec4(transformed, 1.);\n  #ifdef USE_INSTANCING\n    fogPoint = instanceMatrix * fogPoint;\n  #endif\n  mistY = (modelMatrix * fogPoint).y;");
-    shader.fragmentShader = "varying float mistY;\n" + shader.fragmentShader.replace("#include <fog_fragment>", 
-      "#include <fog_fragment>\n  #ifdef USE_FOG\n    float groundHaze = (1. - smoothstep(.16, 2.65, mistY)) * smoothstep(9., 58., vFogDepth) * .52;\n    gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor, groundHaze);\n  #endif");
+    sunwardFogShader(shader);
+    shader.fragmentShader = shader.fragmentShader.replace("gl_FragColor.rgb = mix(gl_FragColor.rgb, airColor, fogFactor);", `
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, airColor, fogFactor);
+      float groundHaze = (1. - smoothstep(.16, 2.65, fogY)) * smoothstep(9., 58., vFogDepth) * .52;
+      gl_FragColor.rgb = mix(gl_FragColor.rgb, airColor, groundHaze);`);
   };
   return material;
 }
 
 export function createSky(scene) {
-  scene.fog = new T.FogExp2(HAZE, FOG);
-  scene.add(new T.HemisphereLight(0xa2b9c9, 0x7e795b, 1.57));
-  const key = new T.DirectionalLight(0xffc493, 2.36);
+  scene.fog = new T.FogExp2(HAZE.clone(), FOG);
+  const ambient = new T.HemisphereLight(0xb3b6cc, 0x7e745b, 1.57);
+  scene.add(reflectInWater(ambient));
+  const key = new T.DirectionalLight(0xffb987, 2.5);
   key.position.copy(SUN).multiplyScalar(46);
   key.position.y += 13;
-  scene.add(key);
+  scene.add(reflectInWater(key));
   const fill = new T.DirectionalLight(0xcbdbfa, 0.72);
   fill.position.set(15, 15, 20);
-  scene.add(fill);
+  scene.add(reflectInWater(fill));
   // Clouds and stars come from the candidate C (sky-weather.mjs): one 128x64 noise texture, no extra objects.
   const cloudState = { value: new T.Vector4() };
   const sky = new T.Mesh(new T.SphereGeometry(190, 32, 20), new T.ShaderMaterial({
     side: T.BackSide, depthWrite: false,
     uniforms: {
-      sun: { value: SUN }, horizon: { value: col(0x746a69) }, highSky: { value: col(0x34445d) },
-      apricot: { value: col(0xff8650) }, sunCore: { value: col(0xffbb58).multiplyScalar(1.38) },
+      sun: { value: SUN }, horizon: { value: HAZE.clone() }, highSky: { value: col(0x34405f) },
+      apricot: { value: APRICOT.clone() }, sunCore: { value: col(0xffbb58).multiplyScalar(1.38) },
       cloudMap: { value: cloudTexture() }, cloudState,
+      // Opposite the sun the evening sky keeps a pink band low over the trees (the "belt" of a clear sunset).
+      belt: { value: col(0xc99aa3) }, warmth: WARMTH,
     },
     vertexShader: `
       varying vec3 direction;
@@ -49,7 +89,8 @@ export function createSky(scene) {
       }
     `,
     fragmentShader: `
-      uniform vec3 sun, horizon, highSky, apricot, sunCore;
+      uniform vec3 sun, horizon, highSky, apricot, sunCore, belt;
+      uniform float warmth;
       uniform sampler2D cloudMap;
       uniform vec4 cloudState;
       varying vec3 direction;
@@ -60,6 +101,9 @@ export function createSky(scene) {
         float skirt = 1. - smoothstep(.026, .26, abs(dir.y - sun.y));
         float streak = sin(dir.y * 118. + sin(dir.x * 13. + dir.z * 4.) * 1.8) * .07;
         sky = mix(sky, apricot, pow(glow, 8.) * skirt * (.74 + streak));
+        float away = pow(max(0., -dot(normalize(dir.xz + vec2(.0001)), normalize(sun.xz))), 1.4);
+        float band = away * smoothstep(-.03, .07, dir.y) * (1. - smoothstep(.09, .36, dir.y)) * warmth;
+        sky = mix(sky, belt, band * .45);
         vec2 cloudUV = dir.xz * vec2(.49, .35) / (.34 + max(dir.y, 0.));
         float cloud = texture2D(cloudMap, cloudUV + vec2(cloudState.x, .17)).r;
         if (cloudState.w < .5) {
@@ -67,8 +111,10 @@ export function createSky(scene) {
           cloud = mix(cloud, veil, .26);
         }
         float cloudCover = smoothstep(.45, .58, cloud + cloudState.z * .12);
-        cloudCover *= smoothstep(-.035, .11, dir.y) * (1. - smoothstep(.62, .94, dir.y));
+        // A clear band low over the trees, so the far shores stand against the glow and not against cloud.
+        cloudCover *= smoothstep(.035, .19, dir.y) * (1. - smoothstep(.62, .94, dir.y));
         vec3 overcast = mix(sky * .52, apricot * .53 + sky * .37, skirt * pow(glow, 6.) * (1. - cloudState.y));
+        overcast = mix(overcast, belt * .82, band * .55);
         sky = mix(sky, overcast, cloudCover * (.78 + cloudState.z * .18));
         sky += sunCore * (pow(glow, 92.) * .34 + smoothstep(.99933, .99986, glow) * .48);
         gl_FragColor = vec4(sky, 1.);
@@ -79,6 +125,7 @@ export function createSky(scene) {
   }));
   sky.frustumCulled = false;
   sky.userData.weather = addNightStars(sky, cloudState);
+  sky.userData.lights = [ambient, key, fill];
   sky.renderOrder = -10;
   scene.add(sky);
   return sky;
@@ -116,7 +163,9 @@ function earthGrain() {
   return texture;
 }
 
-export function addTerrain(scene, land) {
+// `detail`: { mud, moss } tileable photos-like textures (textures/ground-*.webp, made with ComfyUI on 13.11), each
+// normalised to a mean of 0.5, so they add grain to the painted vertex colours instead of replacing them.
+export function addTerrain(scene, land, detail = null) {
   const { heights, paths, grain } = land;
   const positions = new Float32Array(heights.length * 3);
   const colors = new Float32Array(positions.length);
@@ -161,7 +210,17 @@ export function addTerrain(scene, land) {
   const material = new T.MeshStandardMaterial({
     vertexColors: true, roughness: 0.96, map: earthGrain(),
   });
+  if (detail) {
+    for (const texture of [detail.mud, detail.moss]) {
+      texture.wrapS = texture.wrapT = T.RepeatWrapping;
+      texture.colorSpace = T.SRGBColorSpace;
+      texture.anisotropy = 4;
+    }
+    material.defines = { ...material.defines, GROUND_DETAIL: "" };
+  }
+  material.customProgramCacheKey = () => detail ? "terrain-detail" : "terrain";
   material.onBeforeCompile = (shader) => {
+    if (detail) Object.assign(shader.uniforms, { mudMap: { value: detail.mud }, mossMap: { value: detail.moss } });
     shader.vertexShader = `
       attribute float face;
       attribute float vegetation;
@@ -178,10 +237,22 @@ export function addTerrain(scene, land) {
       varying float steepness;
       varying float turf;
       varying vec3 soil;
+      #ifdef GROUND_DETAIL
+        uniform sampler2D mudMap, mossMap;
+      #endif
     ` + shader.fragmentShader.replace("#include <map_fragment>", `
       vec3 grain = texture2D(map, vMapUv + vec2(soil.y * steepness * .79, 0.)).rgb;
       vec3 matGrass = vec3(grain.g * .92, grain.b * 1.07, grain.r * .81);
-      diffuseColor.rgb *= mix(vec3(grain.r), matGrass * (.89 + grain.g * .19), turf);
+      #ifdef GROUND_DETAIL
+        // Two scales of each texture against tiling: 2.4 m and 11 m. Cliffs stretch the mud along the slope.
+        vec2 groundUv = soil.xz * .41 + vec2(soil.y * steepness * .6, 0.);
+        vec3 mudDetail = texture2D(mudMap, groundUv).rgb * texture2D(mudMap, soil.zx * .09 + .37).rgb * 4.;
+        vec3 mossDetail = texture2D(mossMap, groundUv * 1.2).rgb * texture2D(mossMap, soil.zx * .083 + .61).rgb * 4.;
+        vec3 ground = mix(mudDetail, mossDetail, turf);
+        diffuseColor.rgb *= mix(vec3(1.), ground, .85) * mix(vec3(grain.r), vec3(1.), .55);
+      #else
+        diffuseColor.rgb *= mix(vec3(grain.r), matGrass * (.89 + grain.g * .19), turf);
+      #endif
     `).replace("#include <color_fragment>", `
       #include <color_fragment>
       float fault = sin(soil.x * .78 + soil.z * .52) * .43 + sin(soil.x * 1.76 - soil.z * 1.32) * .26;
@@ -200,5 +271,5 @@ export function addTerrain(scene, land) {
       }
     `);
   };
-  scene.add(new T.Mesh(geometry, groundMist(material)));
+  scene.add(reflectInWater(new T.Mesh(geometry, groundMist(material))));
 }

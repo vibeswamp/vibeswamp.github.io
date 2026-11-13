@@ -3,6 +3,7 @@
     "v2": {
       "tabs": {
         "shop": "Shop",
+        "market": "Stall",
         "construction": "Projects",
         "achievements": "Badges",
         "records": "My stats"
@@ -85,7 +86,75 @@
             "Catch flying flies or drag them to Klyop for three times the catch.",
             "Spend flies on buildings, they catch on their own. Building steps are in the Next build card."
           ]
-        }
+        },
+        "trips": {
+          "title": "From 3D trips",
+          "wood": "Planks in store",
+          "resin": "Resin in store",
+          "amber": "Amber",
+          "fish": "Fish caught",
+          "best": "Best day",
+          "bestValue": "trophies: {t} · foes beaten: {k}"
+        },
+        "market": {
+          "title": "Uncle Tolya's stall",
+          "lead": "Trips to 3D bring planks and resin. Tolya sells them for flies, at a higher price.",
+          "stock": "Store",
+          "wood": "Plank",
+          "woodText": "For the hut's steps and for gear.",
+          "resin": "Resin",
+          "resinText": "Holds the window, the door, the furniture and the extensions.",
+          "amber": "Amber",
+          "amberText": "Only for the next step. It stays on the shelf.",
+          "amberNone": "Tolya sells amber only for a step that needs it. Trips bring the rest.",
+          "have": "in store {n}",
+          "shelf": "on the shelf {n} · +{p}% income",
+          "buy": "Buy for {n}",
+          "gear": "Gear for 3D",
+          "gearLead": "Works on trips: a harder hit, a bigger bag, a lantern.",
+          "gearOwned": "Owned",
+          "gearAfter": "After the step “{s}”",
+          "gearBuy": "{n} flies",
+          "gearMats": "planks {w}",
+          "gearResin": "resin {r}",
+          "calm": "Calm night: +{n}% income for {t} more"
+        },
+        "gear": {
+          "wrench1": [
+            "Sturdier wrench",
+            "Hits 20% harder in 3D."
+          ],
+          "bag1": [
+            "Basket",
+            "A bag of 10 slots in 3D instead of 8."
+          ],
+          "lantern": [
+            "Lantern",
+            "Hold amber for 4 seconds instead of 6, and its light shows from afar."
+          ],
+          "wrench2": [
+            "Even sturdier wrench",
+            "Hits another 20% harder."
+          ],
+          "bag2": [
+            "Big basket",
+            "A bag of 12 slots."
+          ],
+          "wrench3": [
+            "Master's wrench",
+            "Hits another 20% harder."
+          ]
+        },
+        "needs": "Needs: {list}",
+        "needWood": "planks {h} of {n}",
+        "needResin": "resin {h} of {n}",
+        "needAmber": "amber on the shelf {h} of {n}",
+        "tolyaBuy": "Buy from Tolya for {n} flies",
+        "go3d": "Go out to 3D",
+        "needsMini": "needs materials",
+        "walkAway": "While Klyop was out in 3D, the swamp worked at full strength: +{n} flies.",
+        "calmIncome": "Calm night +{n}%",
+        "shelfIncome": "Amber +{n}%"
       },
       "rooms": {
         "shore": "Shore",
@@ -440,6 +509,7 @@
     "v2": {
       "tabs": {
         "shop": "Покупки",
+        "market": "Крамниця",
         "construction": "Збірки",
         "achievements": "Досягнення",
         "records": "Підсумки"
@@ -522,7 +592,75 @@
             "Лови мух у повітрі або тягни їх до Кльопи, так утричі більше.",
             "Витрачай мух на споруди, вони ловлять самі. Кроки будівництва — у картці «Далі будуємо»."
           ]
-        }
+        },
+        "trips": {
+          "title": "З вилазок у 3D",
+          "wood": "Дошки на складі",
+          "resin": "Смола на складі",
+          "amber": "Бурштин",
+          "fish": "Риби спіймано",
+          "best": "Найкращий день",
+          "bestValue": "трофеї: {t} · переможено: {k}"
+        },
+        "market": {
+          "title": "Крамниця Дядька Толі",
+          "lead": "Дошки й смолу приносять вилазки в 3D. Толя продає їх за мухи, але дорожче.",
+          "stock": "Склад",
+          "wood": "Дошка",
+          "woodText": "Потрібна крокам дому і спорядженню.",
+          "resin": "Смола",
+          "resinText": "Скріплює вікно, двері, меблі й прибудови.",
+          "amber": "Бурштин",
+          "amberText": "Лише під наступний крок. З полиці не витрачається.",
+          "amberNone": "Бурштин Толя продає лише під крок, якому він потрібен. Решту приносять вилазки.",
+          "have": "на складі {n}",
+          "shelf": "на полиці {n} · +{p}% до доходу",
+          "buy": "Купити за {n}",
+          "gear": "Спорядження для 3D",
+          "gearLead": "Працює у вилазках: сильніший удар, більший мішок, ліхтар.",
+          "gearOwned": "Є",
+          "gearAfter": "Після кроку «{s}»",
+          "gearBuy": "{n} мух",
+          "gearMats": "дошки {w}",
+          "gearResin": "смола {r}",
+          "calm": "Спокійна ніч: +{n}% до доходу ще {t}"
+        },
+        "gear": {
+          "wrench1": [
+            "Міцніший ключ",
+            "Удар у 3D сильніший на 20%."
+          ],
+          "bag1": [
+            "Короб",
+            "Мішок у 3D на 10 місць замість 8."
+          ],
+          "lantern": [
+            "Ліхтар",
+            "Бурштин тримати 4 секунди замість 6, світло видно здалеку."
+          ],
+          "wrench2": [
+            "Ще міцніший ключ",
+            "Удар ще на 20% сильніший."
+          ],
+          "bag2": [
+            "Великий короб",
+            "Мішок на 12 місць."
+          ],
+          "wrench3": [
+            "Ключ майстра",
+            "Удар ще на 20% сильніший."
+          ]
+        },
+        "needs": "Потрібно: {list}",
+        "needWood": "дошки {h} з {n}",
+        "needResin": "смола {h} з {n}",
+        "needAmber": "бурштин на полиці {h} з {n}",
+        "tolyaBuy": "Купити у Толі за {n} мух",
+        "go3d": "Вийти в 3D",
+        "needsMini": "потрібні матеріали",
+        "walkAway": "Поки Клеп ходив у 3D, болото працювало на повну: +{n} мух.",
+        "calmIncome": "Спокійна ніч +{n}%",
+        "shelfIncome": "Бурштин +{n}%"
       },
       "rooms": {
         "shore": "Берег",
@@ -877,6 +1015,7 @@
     "v2": {
       "tabs": {
         "shop": "Покупки",
+        "market": "Лавка",
         "construction": "Сборки",
         "achievements": "Ачивки",
         "records": "Итоги"
@@ -959,7 +1098,75 @@
             "Лови летающих мух или тащи их к Клёпе, так втрое больше.",
             "Трать мух на постройки, они ловят сами. Шаги стройки — в карточке «Дальше строим»."
           ]
-        }
+        },
+        "trips": {
+          "title": "С вылазок в 3D",
+          "wood": "Доски на складе",
+          "resin": "Смола на складе",
+          "amber": "Янтарь",
+          "fish": "Рыбы поймано",
+          "best": "Лучший день",
+          "bestValue": "трофеи: {t} · побеждено: {k}"
+        },
+        "market": {
+          "title": "Лавка Дяди Толи",
+          "lead": "Доски и смолу приносят вылазки в 3D. Толя продаёт их за мухи, но дороже.",
+          "stock": "Склад",
+          "wood": "Доска",
+          "woodText": "Нужна шагам дома и снаряжению.",
+          "resin": "Смола",
+          "resinText": "Скрепляет окно, дверь, мебель и пристройки.",
+          "amber": "Янтарь",
+          "amberText": "Только под следующий шаг. С полки не тратится.",
+          "amberNone": "Янтарь Толя продаёт только под шаг, которому он нужен. Остальной приносят вылазки.",
+          "have": "на складе {n}",
+          "shelf": "на полке {n} · +{p}% к доходу",
+          "buy": "Купить за {n}",
+          "gear": "Снаряжение для 3D",
+          "gearLead": "Работает в вылазках: сильнее удар, больше мешок, фонарь.",
+          "gearOwned": "Есть",
+          "gearAfter": "После шага «{s}»",
+          "gearBuy": "{n} мух",
+          "gearMats": "доски {w}",
+          "gearResin": "смола {r}",
+          "calm": "Спокойная ночь: +{n}% к доходу ещё {t}"
+        },
+        "gear": {
+          "wrench1": [
+            "Ключ покрепче",
+            "Удар в 3D сильнее на 20%."
+          ],
+          "bag1": [
+            "Короб",
+            "Мешок в 3D на 10 мест вместо 8."
+          ],
+          "lantern": [
+            "Фонарь",
+            "Янтарь держать 4 секунды вместо 6, свет видно издалека."
+          ],
+          "wrench2": [
+            "Ключ ещё крепче",
+            "Удар ещё на 20% сильнее."
+          ],
+          "bag2": [
+            "Большой короб",
+            "Мешок на 12 мест."
+          ],
+          "wrench3": [
+            "Ключ мастера",
+            "Удар ещё на 20% сильнее."
+          ]
+        },
+        "needs": "Нужно: {list}",
+        "needWood": "доски {h} из {n}",
+        "needResin": "смола {h} из {n}",
+        "needAmber": "янтарь на полке {h} из {n}",
+        "tolyaBuy": "Купить у Толи за {n} мух",
+        "go3d": "Выйти в 3D",
+        "needsMini": "нужны материалы",
+        "walkAway": "Пока Клёп ходил в 3D, болото работало в полную силу: +{n} мух.",
+        "calmIncome": "Спокойная ночь +{n}%",
+        "shelfIncome": "Янтарь +{n}%"
       },
       "rooms": {
         "shore": "Берег",

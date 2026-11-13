@@ -33,12 +33,13 @@ export function cloudTexture() {
 }
 
 export function addNightStars(sky, cloudState) {
-  const rng = random(7942), count = 174;
+  const rng = random(7942), count = 340;
   const positions = [], brightness = [];
   for (let i = 0; i < count; i++) {
-    const yaw = rng() * Math.PI * 2, y = .13 + rng() * .86, ring = Math.sqrt(1 - y * y);
+    // Denser low over the trees, where the walking camera actually looks.
+    const yaw = rng() * Math.PI * 2, y = .035 + rng() ** 2.4 * .93, ring = Math.sqrt(1 - y * y);
     positions.push(Math.cos(yaw) * ring * 187, y * 187, Math.sin(yaw) * ring * 187);
-    brightness.push(.19 + rng() ** 1.8 * .81);
+    brightness.push(.32 + rng() ** 1.6 * .68);
   }
   const geometry = new T.BufferGeometry();
   geometry.setAttribute("position", new T.Float32BufferAttribute(positions, 3));
@@ -53,7 +54,8 @@ export function addNightStars(sky, cloudState) {
       varying float glow;
       void main() {
         glow = brightness * (.87 + sin(time * .37 + brightness * 31.) * .13);
-        gl_PointSize = 1.15 + brightness * 1.45;
+        // Big enough to read on a phone screen: 2-4.8 px instead of 1-2.6 px.
+        gl_PointSize = 2.0 + brightness * 2.8;
         gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
       }
     `,
@@ -78,6 +80,6 @@ export function addNightStars(sky, cloudState) {
     time.value = elapsed;
     opacity.value = smooth(.78, .99, dark) * (1 - wet * .86) * .83;
     stars.visible = opacity.value > .005;
-    geometry.setDrawRange(0, economy ? 76 : count);
+    geometry.setDrawRange(0, economy ? 230 : count);
   };
 }

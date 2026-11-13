@@ -3,6 +3,7 @@ import { BODY_RADIUS, advanceRailVault, railBlocks, railFloor, tryRailVault } fr
 import { BODY_HEIGHT, distanceToSolid, overlapsSolid, solidNormal } from "./collisions.mjs";
 import { advanceDeckClimb, planDeckClimb } from "./deck-climb.mjs";
 import { advanceBankExit, findBankExit } from "./shore.mjs";
+import { DODGE, FOCUS } from "./combat-tuning.mjs";
 
 const MAP_LIMIT = RADIUS - 2;
 const RUN_SPEED = 3.7;
@@ -18,6 +19,7 @@ const GRAVITY = 15.2;
 const COYOTE = 0.10;
 const JUMP_BUFFER = 0.12;
 export const JUMP_IMPULSE = 5.9;
+const LUNGE_SPEED = 3.4;
 
 function swimsAt(ground, wasSwimming) {
   return ground < WAIST_FLOOR + (wasSwimming ? SWIM_EXIT_HYSTERESIS : 0);
@@ -33,11 +35,12 @@ export function spawnPlayer(floorAt, point = SPAWN) {
     x, z, y: floorAt(x, z), dy: 0, speed: 0, grounded: true,
     swimming: false, pose: "idle", heading: Math.PI, runningJump: false, traversal: null,
     coyote: 0, jumpBuffer: 0, swing: null, hurt: null, landing: null, airLimit: RUN_SPEED, airAge: null,
-    dodge: null, dodgeCooldown: 0, shoreClimb: null, mantle: null,
+    dodge: null, dodgeCooldown: 0, shoreClimb: null, mantle: null, hitstop: 0, moveYaw: Math.PI, strafe: null, lunge: 0,
   };
 }
 
-export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, exits = []) {
+// `allowMovement(x, z)` (the game day) can forbid ground: with planks in the bag Klyop does not swim.
+export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, exits = [], allowMovement) {
   if (player.mantle) return advanceDeckClimb(player, dt, floorAt, obstacles);
   if (intent.jump) player.swing = null;
   player.jumpBuffer = intent.jump ? JUMP_BUFFER : Math.max(0, player.jumpBuffer - dt);
@@ -74,22 +77,31 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   if (player.landing !== null) player.landing.age += dt;
   const magnitude = clamp(Math.hypot(intent.x, intent.z), 0, 1);
   const wading = player.grounded && player.y < WATER;
+  // The dodge roll (combat-tuning.mjs): toward the stick, or straight back without it; it cancels a swing.
+  // `guard` counts down the invulnerable part, the last `settle` seconds slow down into the next step.
   player.dodgeCooldown = Math.max(0, player.dodgeCooldown - dt);
   if (intent.dodge && !intent.jump && player.grounded && !wading && player.dodgeCooldown === 0) {
     player.dodge = {
       angle: magnitude > 0 ? Math.atan2(intent.x, intent.z) : player.heading + Math.PI,
-      time: 0.25,
+      age: 0, guard: DODGE.guard,
     };
-    player.dodgeCooldown = 0.75;
+    // The roll starts at once in its direction (no turning on the spot first).
+    player.heading = player.dodge.angle;
+    player.dodgeCooldown = DODGE.time + DODGE.gap;
     player.swing = null;
+    player.hitstop = 0;
   }
   if (player.dodge) {
-    player.dodge.time -= dt;
-    if (player.dodge.time <= 0 || !player.grounded || intent.jump) player.dodge = null;
+    player.dodge.age += dt;
+    player.dodge.guard = Math.max(0, DODGE.guard - player.dodge.age);
+    if (player.dodge.age >= DODGE.time || !player.grounded || intent.jump) player.dodge = null;
   }
   const strength = player.dodge ? 1 : magnitude;
   const sprinting = intent.sprint && !player.swimming && !wading;
-  const topSpeed = player.dodge ? SPRINT_SPEED : !player.grounded ? player.airLimit
+  const rollSpeed = player.dodge && player.dodge.age < DODGE.time - DODGE.settle ? DODGE.speed : RUN_SPEED * 0.5;
+  // Focus (expedition-combat.mjs sets `strafeYaw`): Klyop keeps facing the target and steps where the stick says.
+  const strafing = Number.isFinite(intent.strafeYaw) && player.grounded && !player.dodge && !player.swimming && !wading;
+  const topSpeed = player.dodge ? rollSpeed : strafing ? FOCUS.strafe : !player.grounded ? player.airLimit
     : player.swimming ? 2.75 : wading ? WADE_SPEED : sprinting ? SPRINT_SPEED : RUN_SPEED;
   if (player.grounded) player.coyote = player.swimming ? 0 : COYOTE;
   else player.coyote = Math.max(0, player.coyote - dt);
@@ -109,7 +121,12 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   }
 
   let alignment = 1;
-  if (strength > 0) {
+  if (strafing) {
+    const face = intent.strafeYaw - player.heading;
+    player.heading += clamp(Math.atan2(Math.sin(face), Math.cos(face)), -12 * dt, 12 * dt);
+    const toward = (strength > 0 ? Math.atan2(intent.x, intent.z) : player.heading) - player.moveYaw;
+    player.moveYaw += clamp(Math.atan2(Math.sin(toward), Math.cos(toward)), -18 * dt, 18 * dt);
+  } else if (strength > 0) {
     const angle = (player.dodge?.angle ?? Math.atan2(intent.x, intent.z)) - player.heading;
     const delta = Math.atan2(Math.sin(angle), Math.cos(angle));
     const turnRate = player.dodge ? 24 : player.grounded ? 16 : 8;
@@ -117,12 +134,16 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
     player.heading += turn;
     alignment = clamp(Math.cos(delta - turn) * 1.35, 0, 1);
   }
-  const desiredSpeed = strength * Math.min(topSpeed, player.grounded ? Infinity : player.airLimit)
-    * alignment * (player.swing === null ? 1 : 0.35);
-  const acceleration = player.dodge ? 42 : player.grounded ? (desiredSpeed > player.speed ? 23 : 31) : 9;
+  // During a swing Klyop barely moves; at the hitstop of a landed blow he holds still.
+  // The heavy third blow carries Klyop forward `lunge` metres (combat-tuning.mjs) whatever the stick does.
+  const lunging = player.lunge > 0 && player.swing !== null && player.grounded && !(player.hitstop > 0);
+  if (!strafing || lunging) player.moveYaw = player.heading;
+  const desiredSpeed = lunging ? LUNGE_SPEED : strength * Math.min(topSpeed, player.grounded ? Infinity : player.airLimit)
+    * alignment * (player.swing === null ? 1 : player.hitstop > 0 ? 0 : 0.35);
+  const acceleration = player.dodge ? DODGE.accel : player.grounded ? (desiredSpeed > player.speed ? 23 : 31) : 9;
   player.speed += clamp(desiredSpeed - player.speed, -acceleration * dt, acceleration * dt);
-  const dx = Math.sin(player.heading) * player.speed * dt;
-  const dz = Math.cos(player.heading) * player.speed * dt;
+  const dx = Math.sin(player.moveYaw) * player.speed * dt;
+  const dz = Math.cos(player.moveYaw) * player.speed * dt;
   const stepHeight = player.grounded ? STEP_HEIGHT : 0.025;
   const solidAt = (x, z) => obstacles.find(solid =>
     overlapsSolid(solid, x, player.y, z, BODY_RADIUS, BODY_HEIGHT)
@@ -131,6 +152,7 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
     const base = player.grounded ? Math.max(fromFloor, player.y) : player.y;
     const floor = restingFloor(x, z);
     if (floor > base + stepHeight || railBlocks(rail, x, player.y, z) || solidAt(x, z)) return false;
+    if (allowMovement && !allowMovement(x, z)) return false;
     const travel = Math.hypot(x - x0, z - z0);
     if (!player.grounded || travel < 1e-7 || floor - base <= 1.15 * travel) return true;
     const further = restingFloor(x + 0.14 * (x - x0) / travel, z + 0.14 * (z - z0) / travel);
@@ -164,6 +186,8 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
     }
   }
   const step = Math.hypot(player.x - x0, player.z - z0);
+  if (player.swing === null) player.lunge = 0;
+  else if (lunging) player.lunge = step > 1e-6 ? Math.max(0, player.lunge - step) : 0;
   if (takeoff) player.runningJump = step > 1e-7 && (takeoffSpeed >= 1.2 || strength >= 0.65);
   if (player.grounded && step + 1e-8 < Math.hypot(dx, dz)) player.speed = step / dt;
   if (!takeoff && player.grounded && !player.swimming && !player.dodge && player.swing === null
@@ -217,6 +241,10 @@ export function advancePlayer(player, intent, floorAt, obstacles, dt, parkour, e
   if (player.swimming) player.pose = moving ? "swim" : "float";
   else if (!player.grounded) player.pose = "air";
   else if (!moving) player.pose = "idle";
+  else if (strafing && player.y >= WATER) player.pose = "strafe";
   else player.pose = player.y < WATER ? "walk" : step / dt > 4.25 ? "sprint" : "run";
+  // The direction of a step relative to the facing, for the strafe clips (0 ahead, positive to the left).
+  player.strafe = player.pose === "strafe"
+    ? Math.atan2(Math.sin(player.moveYaw - player.heading), Math.cos(player.moveYaw - player.heading)) : null;
   return step;
 }

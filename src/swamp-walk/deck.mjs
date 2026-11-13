@@ -16,7 +16,7 @@ function triangleHeight(x, z, a, b, c) {
   return a[1] + (b[1] - a[1]) * u + (c[1] - a[1]) * v;
 }
 
-function ribbon(points, width) {
+function ribbon(points, width, joinHeight) {
   const normals = [];
   for (let i = 1; i < points.length; i++) {
     const dx = points[i][0] - points[i - 1][0], dz = points[i][1] - points[i - 1][1];
@@ -27,7 +27,9 @@ function ribbon(points, width) {
     const a = normals[Math.max(0, i - 1)], b = normals[Math.min(normals.length - 1, i)];
     const factor = width / (2 * (1 + a[0] * b[0] + a[1] * b[1]));
     const dx = factor * (a[0] + b[0]), dz = factor * (a[1] + b[1]);
-    return [[x + dx, y, z + dz], [x - dx, y, z - dz]];
+    const edge = [[x + dx, y, z + dz], [x - dx, y, z - dz]];
+    if (i === 0 && joinHeight) for (const point of edge) point[1] = joinHeight(point[0], point[2]);
+    return edge;
   });
   const spans = normals.map((_, i) => {
     const [a, b] = sides[i], [c, d] = sides[i + 1];
@@ -85,17 +87,22 @@ function landing(pier) {
   };
 }
 
-export function createDeck(pier, bridge, bridgeWidth, shortcut, terrainHeight) {
+export function createDeck(pier, bridge, bridgeWidth, shortcut, terrainHeight, fishingPier) {
   const pad = landing(pier);
   const main = ribbon(bridge, bridgeWidth);
   const returnPath = ribbon(shortcut.points.map(([x, z]) => [x, z, terrainHeight(x, z)]), shortcut.width);
+  const fishing = fishingPier ? ribbon([
+    [-bridgeWidth / 2, fishingPier.z, 0],
+    [fishingPier.endX, fishingPier.z, fishingPier.endY],
+  ], fishingPier.width, main.heightAt) : null;
   let opened = false;
   return {
-    pier: pad, bridge: main, shortcut: returnPath, thickness: THICKNESS,
+    pier: pad, bridge: main, shortcut: returnPath, fishing, thickness: THICKNESS,
     isShortcutOpen: () => opened,
     setShortcutOpen(value) { opened = value === true; },
     heightAt(x, z) {
-      return Math.max(pad.heightAt(x, z), main.heightAt(x, z), opened ? returnPath.heightAt(x, z) : -Infinity);
+      return Math.max(pad.heightAt(x, z), main.heightAt(x, z), fishing?.heightAt(x, z) ?? -Infinity,
+        opened ? returnPath.heightAt(x, z) : -Infinity);
     },
   };
 }
