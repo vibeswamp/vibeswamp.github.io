@@ -8,6 +8,7 @@ export function applyKlyopPresentation(T, rig) {
   const body = rig.getObjectByName("Klyop_Body");
   const belt = rig.getObjectByName("Electrician_Rig_T2");
   const lantern = rig.getObjectByName("Darkwater_Lantern_T2");
+  const glasses = rig.getObjectByName("Klyop_Glasses");
   if (!body?.isSkinnedMesh || !belt || !lantern) throw new Error("Missing Klyop v002 meshes");
 
   const { position, skinIndex, skinWeight } = body.geometry.attributes;
@@ -32,18 +33,21 @@ export function applyKlyopPresentation(T, rig) {
   }
   body.geometry.setAttribute("walkSkinFinish", new T.BufferAttribute(mask, 4));
   const clothWetness = { value: 0 };
+  const coatTint = { value: new T.Vector3(1, 1, 1) };
+  const skinTint = { value: new T.Vector3(1, 1, 1) };
   const setClothWetness = value => { clothWetness.value = T.MathUtils.clamp(value, 0, 1); };
-  applied.set(rig, setClothWetness);
   const finish = body.material.clone();
   finish.roughness = .98;
   finish.onBeforeCompile = shader => {
     shader.uniforms.klyopClothWetness = clothWetness;
+    shader.uniforms.klyopCoatTint = coatTint;
+    shader.uniforms.klyopSkinTint = skinTint;
     shader.vertexShader = "attribute vec4 walkSkinFinish; varying vec4 vWalkSkinFinish;\n" +
       shader.vertexShader.replace("#include <begin_vertex>", `
         #include <begin_vertex>
         vWalkSkinFinish = walkSkinFinish;
       `);
-    shader.fragmentShader = "uniform float klyopClothWetness; varying vec4 vWalkSkinFinish;\n" + shader.fragmentShader
+    shader.fragmentShader = "uniform float klyopClothWetness; uniform vec3 klyopCoatTint, klyopSkinTint; varying vec4 vWalkSkinFinish;\n" + shader.fragmentShader
       .replace("#include <color_fragment>", `
         #include <color_fragment>
         float skinCoverage = clamp(max(vWalkSkinFinish.x, max(vWalkSkinFinish.y, vWalkSkinFinish.z)), 0.0, 1.0);
@@ -52,6 +56,12 @@ export function applyKlyopPresentation(T, rig) {
           + vec3(-.17, .43, .11) * vWalkSkinFinish.y
           + vec3(-.20, .27, -.03) * vWalkSkinFinish.z;
         diffuseColor.rgb *= 1.0 + skinBalance * warmTexel;
+        diffuseColor.rgb *= mix(vec3(1.0), klyopSkinTint, skinCoverage);
+        float coatMask = (1.0 - skinCoverage) * (1.0 - smoothstep(1.03, 1.12, vWalkSkinFinish.w));
+        float coatActive = clamp(length(klyopCoatTint - vec3(1.0)) * 4.0, 0.0, 1.0);
+        float clothLuma = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
+        vec3 dyedCloth = klyopCoatTint * (0.05 + 2.8 * clothLuma);
+        diffuseColor.rgb = mix(diffuseColor.rgb, dyedCloth, coatActive * coatMask);
         float lowerCloth = (1.0 - skinCoverage) * (1.0 - smoothstep(.29, .46, vWalkSkinFinish.w));
         diffuseColor.rgb *= 1.0 - (1.0 - skinCoverage) * klyopClothWetness * .16 - lowerCloth * .13;
       `)
@@ -81,7 +91,7 @@ export function applyKlyopPresentation(T, rig) {
         #include <opaque_fragment>
       `);
   };
-  finish.customProgramCacheKey = () => "vibeswamp-klyop-dusk-v4";
+  finish.customProgramCacheKey = () => "vibeswamp-klyop-dusk-v5";
   body.material = finish;
 
   belt.traverse(object => {
@@ -89,10 +99,60 @@ export function applyKlyopPresentation(T, rig) {
     object.material = object.material.clone();
     object.material.color.multiplyScalar(.55);
   });
+  const lanternGlowMats = [];
   lantern.traverse(object => {
-    if (!object.isMesh || !/GearPilot-Amber/.test(object.material.name)) return;
-    object.material = object.material.clone();
-    object.material.emissiveIntensity *= 1.62;
+    if (!object.isMesh) return;
+    const matName = object.material?.name ?? "";
+    if (/GearPilot-Amber|Lantern_Glow/.test(matName)) {
+      object.material = object.material.clone();
+      if (/GearPilot-Amber/.test(matName)) object.material.emissiveIntensity *= 1.62;
+      lanternGlowMats.push({
+        material: object.material,
+        baseEmissive: object.material.emissive?.clone(),
+        baseColor: object.material.color?.clone(),
+      });
+    }
   });
-  return setClothWetness;
+  const glassesMats = [];
+  glasses?.traverse(object => {
+    if (!object.isMesh || !object.material) return;
+    const list = Array.isArray(object.material) ? object.material : [object.material];
+    const cloned = list.map(mat => {
+      const copy = mat.clone();
+      glassesMats.push({ material: copy, baseColor: copy.color?.clone(), baseRoughness: copy.roughness });
+      return copy;
+    });
+    object.material = Array.isArray(object.material) ? cloned : cloned[0];
+  });
+
+  function setAppearance({ coatRgb = [1, 1, 1], skinRgb = [1, 1, 1], glassesMode = "default", lanternHex = null } = {}) {
+    coatTint.value.set(coatRgb[0], coatRgb[1], coatRgb[2]);
+    skinTint.value.set(skinRgb[0], skinRgb[1], skinRgb[2]);
+    if (glasses) {
+      glasses.visible = glassesMode !== "none";
+      for (const { material, baseColor, baseRoughness } of glassesMats) {
+        if (!baseColor) continue;
+        if (glassesMode === "dark") {
+          material.color.setHex(0x16191f);
+          material.roughness = 0.16;
+        } else if (glassesMode === "gold") {
+          material.color.setHex(0xdcb056);
+          material.roughness = 0.28;
+        } else {
+          material.color.copy(baseColor);
+          material.roughness = baseRoughness;
+        }
+      }
+    }
+    if (lanternHex != null) {
+      for (const { material } of lanternGlowMats) {
+        material.color?.setHex(lanternHex);
+        material.emissive?.setHex(lanternHex);
+      }
+    }
+  }
+
+  const handle = { setClothWetness, setAppearance };
+  applied.set(rig, handle);
+  return handle;
 }

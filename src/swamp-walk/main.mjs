@@ -112,8 +112,13 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   const cameraSolids = [...outdoorCameraSolids, ...cabin.solids];
   const cutaway = ["awning", "window_hole", "window", "wall_l", "wall_r", "door"].flatMap(name => {
     const group = scene.getObjectByName(`Cabin/${name}`);
-    return group ? [{ group, bounds: new T.Box3().setFromObject(group).expandByScalar(0.03) }] : [];
+    return group ? [{
+      name, group, insideOnly: name === "awning",
+      bounds: new T.Box3().setFromObject(group).expandByScalar(0.03),
+    }] : [];
   });
+  const cabinLedger = scene.getObjectByName("Cabin/ledger");
+  const wallLeftEntry = cutaway.find(entry => entry.name === "wall_l");
   const parkour = character.parkour;
   if (parkour?.rail) {
     parkour.rail.y = land.floorAt(parkour.rail.x, parkour.rail.z);
@@ -185,7 +190,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   });
   // Neighbours in a room (stage 2 of docs/design/multiplayer.md): «Позвать соседа» on the map panel or a #room= link.
   const room = createWalkRoom({ world, scene, camera, character, floorAt: land.floorAt, storage, text, shelter,
-    button: $("room"), placeHome: house => addNeighbourHome({ scene, ...house, data: text.economyData }) });
+    button: $("room"), lookButton: $("look"), placeHome: house => addNeighbourHome({ scene, ...house, data: text.economyData }) });
   const target = new T.Vector3(), offset = new T.Vector3(), goal = new T.Vector3(), focusLook = new T.Vector3();
   const sight = new T.Ray(), sightHit = new T.Vector3();
   const pier = { x: PIER.x, z: PIER.z, heading: Math.PI };
@@ -205,30 +210,47 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   }
 
   function placeCamera(pose, dt, snap) {
-    const { yaw, pitch } = controls.camera;
+    const preview = room.looking;
     const inside = cabin.contains(pose.x, pose.z);
     const nearCabin = Math.hypot(pose.x - cabin.spawn.x, pose.z - cabin.spawn.z) < 5.7;
     const mobile = touchLayout.matches;
-    const reach = inside ? 3.72 : mobile ? 7.6 : camera.aspect < 0.8 ? 6.48 : 6.08;
+    const reach = preview ? (mobile ? 3.35 : 2.85) : inside ? 3.72 : mobile ? 7.6 : camera.aspect < 0.8 ? 6.48 : 6.08;
     const close = snap ? 0 : T.MathUtils.clamp((3.10 - boom) / 2.45, 0, 1);
     // Phones aim above Klyop's head so he sits in the lower third and the far shore stays in view.
-    const centerY = inside ? 0.96 - 0.22 * close : mobile ? 1.85 - 0.75 * close : 1.10 - 0.22 * close;
-    target.set(pose.x - Math.sin(yaw) * 0.43, Math.max(WATER, pose.y) + centerY,
-      pose.z - Math.cos(yaw) * 0.43);
+    // While customizing appearance (`preview`), frame his upper half cleanly above the bottom drawer.
+    const centerY = preview ? (mobile ? 0.46 : 0.74) : inside ? 0.96 - 0.22 * close : mobile ? 1.85 - 0.75 * close : 1.10 - 0.22 * close;
+    const solids = nearCabin ? outdoorCameraSolids : cameraSolids;
+    const traceReach = (camYaw, camPitch) => {
+      const ox = Math.sin(camYaw) * Math.cos(camPitch), oy = Math.sin(camPitch), oz = Math.cos(camYaw) * Math.cos(camPitch);
+      const tx = pose.x - Math.sin(camYaw) * (preview ? 0 : 0.43);
+      const ty = Math.max(WATER, pose.y) + centerY;
+      const tz = pose.z - Math.cos(camYaw) * (preview ? 0 : 0.43);
+      let clear = reach;
+      for (let i = 0.42; i <= reach; i += 0.24) {
+        const gx = tx + ox * i, gy = ty + oy * i, gz = tz + oz * i;
+        if (gy < land.floorAt(gx, gz) + 0.29 || solids.some(solid =>
+            overlapsSolid(solid, gx, gy - 0.15, gz, 0.19, 0.30))) {
+          clear = Math.max(0.44, i - 0.23);
+          break;
+        }
+      }
+      return clear;
+    };
+    let yaw = preview ? pose.heading - 0.36 : controls.camera.yaw;
+    const pitch = preview ? 0.09 : controls.camera.pitch;
+    let available = traceReach(yaw, pitch);
+    if (preview && available < reach - 0.35) {
+      for (const alt of [pose.heading + 0.36, pose.heading - 0.9, pose.heading + 0.9, pose.heading - 1.45, pose.heading + 1.45]) {
+        const cand = traceReach(alt, pitch);
+        if (cand > available) { available = cand; yaw = alt; }
+      }
+    }
+    target.set(pose.x - Math.sin(yaw) * (preview ? 0 : 0.43), Math.max(WATER, pose.y) + centerY,
+      pose.z - Math.cos(yaw) * (preview ? 0 : 0.43));
     // Focus on a target (the combat agent's G): the eye leans toward the enemy, so Klyop and it share the frame.
     const lock = expedition.focus;
     if (lock) target.lerp(focusLook.set(lock.x, Math.max(WATER, lock.y), lock.z), 0.3);
     offset.set(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
-    let available = reach;
-    for (let i = 0.42; i <= reach; i += 0.24) {
-      goal.copy(target).addScaledVector(offset, i);
-      if (goal.y < land.floorAt(goal.x, goal.z) + 0.29
-          || (nearCabin ? outdoorCameraSolids : cameraSolids).some(solid =>
-            overlapsSolid(solid, goal.x, goal.y - 0.15, goal.z, 0.19, 0.30))) {
-        available = Math.max(0.44, i - 0.23);
-        break;
-      }
-    }
     boom = snap || available < boom ? available : T.MathUtils.damp(boom, available, 12, dt);
     const fov = (camera.aspect < 0.8 ? 57 : 52) + Math.max(0, 3.0 - boom) * 9;
     if (Math.abs(camera.fov - fov) > 0.2) {
@@ -238,12 +260,15 @@ async function assemble(world, text, hud, setResetFacts, assets) {
     camera.position.copy(target).addScaledVector(offset, boom);
     sight.origin.copy(target);
     sight.direction.copy(offset);
-    for (const { group, bounds } of cutaway) {
-      group.visible = !nearCabin || !sight.intersectBox(bounds, sightHit) || sightHit.distanceTo(target) > boom + 0.12;
+    for (const entry of cutaway) {
+      const { group, bounds, insideOnly } = entry;
+      const allow = insideOnly ? inside : nearCabin;
+      group.visible = !allow || !sight.intersectBox(bounds, sightHit) || sightHit.distanceTo(target) > boom + 0.12;
     }
+    if (cabinLedger && wallLeftEntry) cabinLedger.visible = wallLeftEntry.group.visible;
     // Outdoors the eye looks a little over Klyop's head: the horizon drops toward the upper third, so the sunset
     // and the far shores fit in the frame (the orbit itself stays where the controls put it).
-    if (!inside) target.y += boom * .06;
+    if (!inside && !preview) target.y += boom * .06;
     camera.lookAt(target);
     scenery.updateGate(camera.position, pose, dt, snap);
     sky.position.copy(camera.position);
@@ -410,7 +435,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
         intent = { ...intent, x: -0.66, z: 0, sprint: false, jump: false, jumpHeld: false,
           interact: false, attack: false, dodge: false };
       }
-      if (expedition.modal || room.modal) intent = STILL;
+      if (expedition.modal || room.modal || room.looking) intent = STILL;
       else if (expedition.saving) intent = { ...STILL, interact: intent.interact };
       intent = expedition.dashIntent(intent, player, STEP);
       const distance = advancePlayer(player, intent, land.floorAt, obstacles, STEP, parkour, exits,
@@ -471,7 +496,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
       targetDark: followDay ? dayDarkness(run) : darknessAt(lapNow),
       targetWet: followDay && !forcedRain ? dayRain(run) : rainAt(lapNow) });
     character.setRain(weather.state.wet);
-    scenery.update(elapsed, camera.position, saved.radio, weather.state.dark);
+    scenery.update(elapsed, camera.position, saved.radio, weather.state.dark, rendered);
     home.update(elapsed);
     if ((!player.swimming && !player.grounded) || player.mantle || player.shoreClimb) {
       deckReady = false;

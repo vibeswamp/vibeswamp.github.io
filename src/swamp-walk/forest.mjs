@@ -66,8 +66,8 @@ function prototype(kind, level) {
     indices.push(origin, origin + 1, origin + 2, origin + 2, origin + 1, origin + 3);
   }
   const stem = height => [style.lean * Math.max(0, height) ** 1.7 + .041 * Math.sin(height * 7), height, .065 * Math.sin(height * 3.9)];
-  const y = [-.025, .06, .28, .51, .73, style.crown];
-  const width = [1.59, 1.00, .74, .54, .35, .052];
+  const y = [-.11, .06, .28, .51, .73, style.crown];
+  const width = kind === 2 ? [1.62, 1.00, .70, .48, .28, .016] : [1.59, 1.00, .74, .54, .35, .052];
   const sides = level === 0 ? 6 : level === 1 ? 5 : 4;
   const rings = level === 2 ? [0, 2, 4, 5] : y.map((_, i) => i);
   tube(rings.map(i => stem(y[i])), rings.map(i => style.bark * width[i]), sides);
@@ -85,6 +85,10 @@ function prototype(kind, level) {
       level === 0 ? [style.bark * .44, style.bark * .24, .005] : [style.bark * .38, .007],
       4, .96);
     if (kind === 2) {
+      if (level === 0) {
+        tube([elbow, [elbow[0] + Math.cos(a + .6) * .08, elbow[1] + .10, elbow[2] + Math.sin(a + .6) * .08]],
+          [style.bark * .16, .003], 3, .85);
+      }
       if (level < 2 && i % 2 === 0) card([elbow[0], elbow[1] - .095, elbow[2]], .15, .24, a, .06, 2, .70);
       continue;
     }
@@ -104,14 +108,18 @@ function prototype(kind, level) {
   for (let i = 0; i < roots; i++) {
     const angle = i * 2.39 + kind * .87, r = style.root * (.83 + .24 * Math.sin(i * 3 + kind));
     const dx = Math.cos(angle) * r, dz = Math.sin(angle) * r;
-    tube([[0, .13, 0], [dx * .47, .050, dz * .42], [dx, -.075, dz]],
+    tube([[0, .13, 0], [dx * .47, .025, dz * .42], [dx, -.21, dz]],
       [style.bark * .70, style.bark * .40, .006], level === 0 ? 4 : 3, .75);
     if (level === 0 && kind === 0 && i % 2 === 0) {
-      tube([[dx * 1.22, -.025, dz * 1.23], [dx * 1.21, .046, dz * 1.15], [dx * 1.15, .068, dz * 1.07]],
+      tube([[dx * 1.15, -.14, dz * 1.15], [dx * 1.18, .036, dz * 1.12], [dx * 1.12, .062, dz * 1.05]],
         [style.bark * .21, style.bark * .17, .009], 3, .76);
     }
   }
-  if (kind !== 2) {
+  if (kind === 2) {
+    const top = stem(style.crown);
+    tube([top, [top[0] + .035, style.crown + .09, top[2] - .02]], [style.bark * .13, .003], 4, .80);
+    tube([top, [top[0] - .032, style.crown + .065, top[2] + .028]], [style.bark * .11, .003], 4, .76);
+  } else {
     const top = stem(style.crown - .01);
     card(top, .35, .28, .47 + kind, .73, style.tile, 1.03);
     if (level < 2) card(top, .36, .31, 2.12 + kind, .60, style.tile, .94);
@@ -125,17 +133,20 @@ function prototype(kind, level) {
   return geometry;
 }
 
-function forestMaterial(map, time, level) {
+function forestMaterial(map, time, sight, level) {
   const material = new T.MeshLambertMaterial({
     map, color: 0xffffff, vertexColors: true, alphaTest: .40, alphaToCoverage: true, side: T.DoubleSide,
   });
-  // Level changes dither only in a 2-3 m ring, so mid-distance crowns are not hatched.
-  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v3";
+  // Level changes dither only in a 2-3 m ring, and branches between camera and Klyop dither clear.
+  material.customProgramCacheKey = () => "forest-atlas-cell-lod-v4";
   material.onBeforeCompile = shader => {
     sunwardFogShader(shader);
     shader.uniforms.forestTime = time;
     shader.uniforms.forestLevel = { value: level };
-    shader.vertexShader = "attribute float sway;\nuniform float forestTime, forestLevel;\nvarying vec2 forestBand;\n"
+    shader.uniforms.forestTarget = sight.target;
+    shader.uniforms.forestEye = sight.eye;
+    shader.uniforms.forestSight = sight.active;
+    shader.vertexShader = "attribute float sway;\nuniform float forestTime, forestLevel;\nvarying vec2 forestBand;\nvarying vec3 forestWorld;\n"
       + shader.vertexShader.replace("#include <begin_vertex>", "" +
         "#include <begin_vertex>\n" +
         "vec2 root = instanceMatrix[3].xz;\n" +
@@ -145,13 +156,28 @@ function forestMaterial(map, time, level) {
         "forestBand = forestLevel < .5 ? vec2(0., a) : forestLevel < 1.5 ? vec2(a, b) : vec2(b, 1.);\n" +
         "float gust = sin(forestTime * 1.25 + root.x * .18 + root.y * .19 + position.y * 4.5);\n" +
         "transformed.x += gust * sway * .013;\n" +
-        "transformed.z += gust * sway * .007;");
-    shader.fragmentShader = "varying vec2 forestBand;\n" + shader.fragmentShader.replace("#include <alphatest_fragment>",
-      "#include <alphatest_fragment>\n" +
-      "if (forestBand.x > 0. || forestBand.y < 1.) {\n" +
-      "  float pattern = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715))));\n" +
-      "  if (pattern < forestBand.x || pattern >= forestBand.y) discard;\n" +
-      "}");
+        "transformed.z += gust * sway * .007;\n" +
+        "forestWorld = (modelMatrix * instanceMatrix * vec4(transformed, 1.)).xyz;");
+    shader.fragmentShader = "uniform vec3 forestTarget, forestEye;\nuniform float forestSight;\nvarying vec2 forestBand;\nvarying vec3 forestWorld;\n"
+      + shader.fragmentShader.replace("#include <alphatest_fragment>",
+        "#include <alphatest_fragment>\n" +
+        "float pattern = fract(52.9829189 * fract(dot(gl_FragCoord.xy, vec2(.06711056, .00583715))));\n" +
+        "if (forestBand.x > 0. || forestBand.y < 1.) {\n" +
+        "  if (pattern < forestBand.x || pattern >= forestBand.y) discard;\n" +
+        "}\n" +
+        "if (forestSight > .5 && distance(cameraPosition, forestEye) < .35) {\n" +
+        "  vec3 seg = forestTarget - cameraPosition;\n" +
+        "  float segLen = length(seg);\n" +
+        "  if (segLen > .3) {\n" +
+        "    vec3 dir = seg / segLen;\n" +
+        "    float proj = dot(forestWorld - cameraPosition, dir);\n" +
+        "    if (proj > 0. && proj < segLen - .35) {\n" +
+        "      float perp = length(forestWorld - (cameraPosition + dir * proj));\n" +
+        "      float hole = 1. - smoothstep(.55, 1.55, perp);\n" +
+        "      if (hole > .02 && pattern < hole * .95) discard;\n" +
+        "    }\n" +
+        "  }\n" +
+        "}");
   };
   return material;
 }
@@ -160,6 +186,11 @@ export function addForest(scene, land, atlas, shore = shorePrototypes()) {
   atlas.colorSpace = T.SRGBColorSpace;
   atlas.anisotropy = 2;
   const time = { value: 0 }, seed = random(69173);
+  const sight = {
+    target: { value: new T.Vector3() },
+    eye: { value: new T.Vector3() },
+    active: { value: 0 },
+  };
   const transform = new T.Object3D();
   const tint = new T.Color();
   const anchors = TREE_ANCHORS.map(([sourceX, sourceZ, h, radius]) => {
@@ -167,7 +198,10 @@ export function addForest(scene, land, atlas, shore = shorePrototypes()) {
       ? DAM_TREE_SITES.find(site => site.from[0] === sourceX && site.from[1] === sourceZ)
       : null;
     const [x, z] = moved?.to ?? [sourceX, sourceZ];
-    const y = Math.max(WATER - .60, land.heightAt(x, z));
+    const ground = land.heightAt(x, z);
+    const minRim = Math.min(land.heightAt(x + .9, z), land.heightAt(x - .9, z),
+      land.heightAt(x, z + .9), land.heightAt(x, z - .9));
+    const y = Math.max(WATER - .60, ground - Math.max(0, ground - minRim) * .55);
     const pick = seed(), kind = pick < .105 ? 2 : y < WATER + .46 || pick < .38 ? 0 : 1;
     const yaw = seed() * 6.283, shape = mix(.90, 1.11, seed());
     const size = h * mix(.94, 1.10, seed());
@@ -196,7 +230,7 @@ export function addForest(scene, land, atlas, shore = shorePrototypes()) {
     const capacity = anchors.filter(anchor => anchor.kind === kind).length;
     return [0, 1, 2].map(level => {
       const geometry = kind < STYLES.length ? prototype(kind, level) : shore[kind][level];
-      const mesh = new T.InstancedMesh(geometry, forestMaterial(atlas, time, level), Math.max(1, capacity));
+      const mesh = new T.InstancedMesh(geometry, forestMaterial(atlas, time, sight, level), Math.max(1, capacity));
       mesh.name = "SwampTree-" + kind + "-" + level;
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);
       if (capacity) mesh.setColorAt(0, tint);
@@ -217,8 +251,15 @@ export function addForest(scene, land, atlas, shore = shorePrototypes()) {
         triangles: (mesh.geometry.index?.count ?? mesh.geometry.getAttribute("position").count) / 3 }));
       return { anchors: anchors.length, repacks, batches: rows, submitted: rows.reduce((sum, row) => sum + row.instances * row.triangles, 0) };
     },
-    update(elapsed, eye) {
+    update(elapsed, eye, player = null) {
       time.value = elapsed;
+      if (player) {
+        sight.eye.value.copy(eye);
+        sight.target.value.set(player.x, player.y + 1.05, player.z);
+        sight.active.value = 1;
+      } else {
+        sight.active.value = 0;
+      }
       const x = Math.floor(eye.x / CELL), z = Math.floor(eye.z / CELL);
       if (x === cx && z === cz) return;
       cx = x;

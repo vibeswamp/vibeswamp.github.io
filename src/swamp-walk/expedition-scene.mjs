@@ -102,10 +102,10 @@ export function addExpedition({
   const dodgeLabel = ui.dodge.textContent;
 
   const stamp = (point, tint, radius = 0.52) => {
-    const mesh = new T.Mesh(new T.RingGeometry(radius - 0.05, radius, 24), new T.MeshBasicMaterial({
-      color: tint, side: T.DoubleSide, transparent: true, opacity: 0.72, depthWrite: false,
+    const mesh = new T.Mesh(new T.RingGeometry(radius - 0.025, radius, 24), new T.MeshBasicMaterial({
+      color: tint, side: T.DoubleSide, transparent: true, opacity: 0.28, depthWrite: false,
     }));
-    mesh.position.set(point.x, floorAt(point.x, point.z) + 0.024, point.z);
+    mesh.position.set(point.x, floorAt(point.x, point.z) + 0.014, point.z);
     mesh.rotation.x = -Math.PI / 2;
     group.add(mesh);
     return mesh;

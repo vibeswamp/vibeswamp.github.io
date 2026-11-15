@@ -22,7 +22,7 @@ function sunU(radius) {
 }
 
 function treeline(width) {
-  const rows = 128, canvas = document.createElement("canvas");
+  const rows = 220, canvas = document.createElement("canvas");
   canvas.width = width;
   canvas.height = rows * 2;
   const g = canvas.getContext("2d");
@@ -120,16 +120,10 @@ function treeline(width) {
       }
     }
   }
-  // One soft pass over the finished picture (a filter on every shape costs about a second on a slow phone).
-  const soft = document.createElement("canvas");
-  soft.width = canvas.width;
-  soft.height = canvas.height;
-  const s = soft.getContext("2d");
-  s.filter = "blur(.5px)";
-  s.drawImage(canvas, 0, 0);
-  const texture = new T.CanvasTexture(soft);
+  const texture = new T.CanvasTexture(canvas);
   texture.wrapS = T.RepeatWrapping;
-  texture.anisotropy = 2;
+  texture.minFilter = T.LinearFilter;
+  texture.anisotropy = 4;
   return texture;
 }
 
@@ -139,7 +133,7 @@ function ringGeometry() {
     const geometry = new T.CylinderGeometry(ring.radius, ring.radius, ring.top - ring.bottom, SEGMENTS, 1, true);
     geometry.translate(0, (ring.top + ring.bottom) / 2, 0);
     const uv = geometry.getAttribute("uv");
-    for (let i = 0; i < uv.count; i++) uv.setY(i, (ring.row ? 0 : .5) + uv.getY(i) * .5 * (125 / 128) + (ring.row ? 0 : 1 / 256));
+    for (let i = 0; i < uv.count; i++) uv.setY(i, (ring.row ? 0 : .5) + uv.getY(i) * .5 * (215 / 220) + (ring.row ? 0 : 1 / 440));
     geometry.setAttribute("layer", new T.Float32BufferAttribute(new Float32Array(uv.count).fill(ring.row), 1));
     return geometry;
   });
@@ -173,7 +167,7 @@ export function addFarShore(scene, { economy = false, sky } = {}) {
   const dome = sky?.material.uniforms;
   const material = new T.ShaderMaterial({
     side: T.BackSide, transparent: true, depthWrite: false,
-    uniforms: { map: { value: treeline(economy ? 1024 : 2048) }, haze, sun: { value: SUN }, apricot: { value: APRICOT },
+    uniforms: { map: { value: treeline(economy ? 2048 : 4096) }, haze, sun: { value: SUN }, apricot: { value: APRICOT },
       warmth: WARMTH, highSky: dome?.highSky ?? { value: new T.Color(0x34405f) }, skyGlow: dome?.apricot ?? { value: APRICOT },
       sunCore: dome?.sunCore ?? { value: new T.Color(0xffbb58) }, belt: dome?.belt ?? { value: new T.Color(0xc99aa3) } },
     vertexShader: `

@@ -262,15 +262,12 @@ export function addTerrain(scene, land, detail = null) {
       float wet = 1. - smoothstep(.08, .67, soil.y + fault * .53);
       diffuseColor.rgb *= 1. - wet * (.20 + steepness * .19);
       if (steepness > .045) {
-        float bedY = soil.y + sin(soil.x * .43 + soil.z * .57) * .17 + fault * .24;
-        float layer = fract(bedY * 2.36);
-        float exposure = smoothstep(.01, .58, sin(soil.x * 1.27 + soil.z * .84)
-          * sin(soil.y * 2.68 + soil.x * .32 - soil.z * 1.16) + fault * .38);
-        float seams = smoothstep(.59, .87, layer) * (1. - smoothstep(.89, 1., layer)) * exposure;
-        float mottling = smoothstep(.10, .69, sin(soil.x * .79 + soil.z * .58)
+        float exposure = smoothstep(-.22, .62, sin(soil.x * 1.13 + soil.z * .71)
+          * cos(soil.y * 1.7 + soil.z * .47) + fault * .35);
+        float mottling = smoothstep(.08, .72, sin(soil.x * .79 + soil.z * .58)
           * sin(soil.y * 1.51 - soil.z * 1.43 + fault));
-        diffuseColor.rgb *= 1. - steepness * (.17 * seams + .22 * mottling);
-        diffuseColor.rgb += vec3(.022, .013, .008) * steepness * (1. - wet) * (.32 + .68 * exposure) * (1. - seams);
+        diffuseColor.rgb *= 1. - steepness * (.21 * mottling);
+        diffuseColor.rgb += vec3(.024, .015, .009) * steepness * (1. - wet) * (.35 + .65 * exposure);
       }
     `);
   };

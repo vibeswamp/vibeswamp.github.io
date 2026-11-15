@@ -72,7 +72,7 @@
   right: var(--walk-right);
   width: auto;
   justify-items: end;
-  z-index: 3;
+  z-index: 5;
 }
 
 .swalk[data-hud] .walk-map-toggle { min-height: 42px; margin-top: 3px; border-radius: 5px; }
@@ -111,7 +111,7 @@
 .swalk[data-hud] .walk-prompt:not([data-vault])::before { content: "E / Enter"; }
 
 @media (max-width: 640px) {
-  .swalk[data-map-open] :is(.walk-sortie, .walk-status, .walk-touch) { visibility: hidden; }
+  .swalk[data-map-open] :is(.walk-sortie, .walk-status, .walk-touch, .walk-emotes) { visibility: hidden; }
 }
 
 @media (max-width: 360px) {
@@ -215,12 +215,18 @@
 .swalk[data-hud][data-moved] .walk-help { opacity: 0; }
 
 @media (pointer: coarse) {
-  /* Left half of the lower screen is the stick: it starts wherever the thumb lands. */
+  /* Compact bottom-left stick zone so center-screen drags turn the camera instead of walking. */
   .swalk[data-hud] .walk-touch:not([hidden]) { display: block; inset: var(--walk-bar) 0 0 0; }
-  .swalk[data-hud] .walk-stick { position: absolute; left: 0; bottom: 0; width: 56%; height: 55%; }
+  .swalk[data-hud] .walk-stick {
+    position: absolute;
+    left: max(8px, env(safe-area-inset-left, 0px));
+    bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px));
+    width: min(158px, 39%);
+    height: min(168px, 31%);
+  }
   .swalk[data-hud] .walk-stick-ring {
-    left: var(--stick-origin-x, max(78px, calc(env(safe-area-inset-left, 0px) + 78px)));
-    top: var(--stick-origin-y, calc(100% - max(112px, calc(env(safe-area-inset-bottom, 0px) + 104px))));
+    left: var(--stick-origin-x, 62px);
+    top: var(--stick-origin-y, calc(100% - 66px));
     border-color: var(--hud-edge);
     background: rgb(35 28 18 / .42);
     opacity: .3;
@@ -409,3 +415,131 @@
 .swalk[data-hud] .walk-room-link input { font-size: .8rem; }
 .swalk[data-hud] .walk-room-options { display: grid; gap: 6px; margin-top: 12px; }
 .swalk[data-hud] .walk-room-options button[hidden], .swalk[data-hud] .walk-room-link button[hidden] { display: none; }
+
+/* Top-right bar holds Look + Map buttons side-by-side without crowding small screens. */
+.swalk[data-hud] .walk-map-bar { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.swalk[data-hud] .walk-look-toggle { min-height: 42px; margin-top: 3px; border-radius: 5px; }
+.swalk[data-hud] .walk-look-toggle[aria-expanded="true"] { border-color: var(--hud-lamp); color: #ffe3b0; }
+
+/* Nearby peers glow softly so tapping their nameplate (or High five) triggers a 3D interaction. */
+.swalk[data-hud] .walk-nameplate[data-near] {
+  pointer-events: auto;
+  cursor: pointer;
+  border-color: var(--hud-lamp);
+  box-shadow: 0 0 10px rgb(232 173 87 / .36);
+}
+.swalk[data-hud] .walk-hi5 {
+  min-height: 42px;
+  padding: 6px 12px;
+  border: 2px solid var(--hud-lamp);
+  border-radius: 8px;
+  background: rgb(58 44 24 / .88);
+  color: #ffe3b0;
+  font: 700 .8rem/1.2 var(--hud-label);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgb(0 0 0 / .38);
+}
+.swalk[data-hud] .walk-hi5[hidden] { display: none; }
+.swalk[data-hud] .walk-room-toast {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: calc(var(--walk-bar) + 96px);
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border: 1px solid var(--hud-lamp);
+  border-radius: 999px;
+  background: rgb(33 26 17 / .92);
+  color: #ffe3b0;
+  font: 600 .8rem/1.2 var(--hud-label);
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: 0 8px 24px rgb(0 0 0 / .45);
+}
+.swalk[data-hud] .walk-room-toast[hidden] { display: none; }
+
+/* Live 3D appearance customizer drawer. Kept low on screen so Klyop stands clearly above it. */
+.swalk[data-hud] .walk-look {
+  position: absolute;
+  z-index: 5;
+  left: var(--walk-left);
+  bottom: max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+  width: min(358px, calc(100vw - 20px));
+  max-height: min(62dvh, 420px);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  border: 1px solid var(--hud-edge);
+  border-radius: 6px 6px 12px 6px;
+  background: var(--hud-grain), rgb(33 26 17 / .94);
+  color: var(--hud-ink);
+  box-shadow: 0 12px 34px rgb(4 10 7 / .6);
+  pointer-events: auto;
+}
+.swalk[data-hud] .walk-look[hidden] { display: none; }
+.walk-look-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 13px 8px;
+  border-bottom: 1px solid var(--hud-edge-soft);
+}
+.walk-look-head strong { font: 600 .94rem/1.2 var(--hud-label); color: var(--hud-lamp); }
+.walk-look-done {
+  min-height: 36px;
+  padding: 5px 12px;
+  border: 1px solid var(--hud-lamp);
+  border-radius: 5px;
+  background: rgb(58 44 24 / .82);
+  color: #ffe3b0;
+  font: 600 .78rem/1 var(--hud-label);
+  cursor: pointer;
+}
+.walk-look-body {
+  overflow-y: auto;
+  display: grid;
+  gap: 10px;
+  padding: 10px 13px 13px;
+}
+.walk-look-row { display: grid; gap: 5px; }
+.walk-look-label { color: var(--hud-ink-2); font: 600 .73rem/1.2 var(--hud-label); letter-spacing: .02em; }
+.walk-look-choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.walk-look-pill {
+  min-height: 34px;
+  padding: 5px 10px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 5px;
+  background: rgb(22 17 11 / .75);
+  color: var(--hud-ink-2);
+  font: 600 .76rem/1.15 var(--hud-label);
+  cursor: pointer;
+}
+.walk-look-pill[aria-pressed="true"] {
+  border-color: var(--hud-lamp);
+  background: rgb(58 44 24 / .88);
+  color: #ffe3b0;
+}
+.walk-look-swatch {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid rgb(255 255 255 / .18);
+  background: var(--swatch);
+  cursor: pointer;
+}
+.walk-look-swatch[aria-pressed="true"] {
+  border-color: #ffe3b0;
+  box-shadow: 0 0 0 2px #211a11, 0 0 0 4px var(--hud-lamp);
+}
+.swalk[data-look-open] :is(.walk-touch, .walk-emotes, .walk-sortie, .walk-status) { visibility: hidden; }
+@media (max-width: 640px) {
+  .swalk[data-hud] .walk-look {
+    left: 10px;
+    right: 10px;
+    width: auto;
+    max-height: 45dvh;
+  }
+  .walk-look-pill { min-height: 38px; padding: 6px 10px; }
+  .walk-look-swatch { width: 34px; height: 34px; }
+}

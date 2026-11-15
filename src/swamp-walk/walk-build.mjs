@@ -91,6 +91,7 @@ ${styles.map(href => `<link rel="stylesheet" href="${href}">`).join("\n")}
     <h1>${esc(w.title)}</h1><p>${esc(w.lead)}</p>
   </header>
   <div class="walk-map" id="swalk-map" hidden>
+    <button id="swalk-look" class="walk-look-toggle" type="button">${esc(w.room?.lookButton ?? "Look")}</button>
     <canvas id="swalk-chart" width="200" height="200" aria-hidden="true"></canvas>
     <button id="swalk-reset" type="button">${esc(w.reset)}</button>
     <button id="swalk-camera" type="button" title="V">${esc(w.camera)}</button>

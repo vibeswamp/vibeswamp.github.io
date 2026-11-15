@@ -108,13 +108,18 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
   loading.replaceChildren(loadingTitle, loadingStep, progress, numbers, details, retry);
 
   const map = get("map");
+  const lookButton = get("look");
   const mapButton = button("walk-map-toggle", copy.map);
+  const mapBar = make("div", "walk-map-bar");
   const tools = make("div", "walk-map-tools");
   tools.id = "swalk-map-tools";
   tools.hidden = true;
   mapButton.setAttribute("aria-controls", tools.id);
   mapButton.setAttribute("aria-expanded", "false");
+  if (lookButton) lookButton.remove();
   tools.append(...map.children);
+  if (lookButton) mapBar.append(lookButton);
+  mapBar.append(mapButton);
   const legend = make("ul", "walk-map-legend");
   const labels = [["▲", copy.player], ["⚑", copy.objective], ["●", text.places.stump[0]],
     ["■", text.places.beaver[0]], ["◆", text.places.radio[0]]];
@@ -152,7 +157,7 @@ export function createWalkHud(world, text, { resetFacts } = {}) {
     });
     tools.append(clear, notice);
   }
-  map.append(mapButton, tools);
+  map.append(mapBar, tools);
 
   function toggleMap(open) {
     tools.hidden = !open;

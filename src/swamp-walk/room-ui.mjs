@@ -16,7 +16,7 @@ function action(text, className = "") {
 }
 
 // `colors` is { copper: "#hex", ... }; `parse(value)` checks a profile; the handlers get the checked profile.
-export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin, onLeave }) {
+export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin, onLeave, onOpenLook }) {
   const dialog = el("dialog", "walk-decision walk-room");
   dialog.id = "swalk-room-dialog";
   const title = el("h2");
@@ -67,9 +67,10 @@ export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin,
 
   const options = el("div", "walk-room-options");
   const primary = action(copy.invite);
+  const openLook = onOpenLook && copy.lookCustomButton ? action(copy.lookCustomButton, "walk-room-look") : null;
   const leave = action(copy.leave);
   const close = action(copy.close);
-  options.append(primary, leave, close);
+  options.append(...[primary, openLook, leave, close].filter(Boolean));
   dialog.append(title, lead, form, status, invite, options);
   world.append(dialog);
 
@@ -119,6 +120,10 @@ export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin,
       dialog.close();
       onJoin(profile);
     } else onInvite(profile);
+  });
+  openLook?.addEventListener("click", () => {
+    dialog.close();
+    onOpenLook();
   });
   leave.addEventListener("click", () => {
     dialog.close();

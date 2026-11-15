@@ -16,7 +16,7 @@ export const SHORE_TREES = [
   [-7.44, -10.2, 6.2, .9, MANGROVE], [-11.63, -13.21, 5.2, .9, MANGROVE], [-16.7, -16.03, 5.8, .9, MANGROVE],
   [6.39, -9.01, 7.2, .5, WILLOW], [-4.05, -11.51, 6.6, .5, WILLOW], [-12.08, -14.89, 7.4, .5, WILLOW],
   // the outlet by the ford and the dam
-  [15.75, -1.94, 5.6, .9, MANGROVE], [16.22, 12.67, 5.0, .9, MANGROVE], [18.13, 20.95, 5.8, .9, MANGROVE],
+  [14.2, -2.85, 5.4, .9, MANGROVE], [16.22, 12.67, 5.0, .9, MANGROVE], [18.13, 20.95, 5.8, .9, MANGROVE],
   [19.62, 19.74, 6.8, .5, WILLOW], [20.8, 8.47, 6.4, .5, WILLOW],
   // the west bank by the stump glade and the far edge of the sound, beside the sunset
   [-31.52, 18.96, 7.0, .5, WILLOW], [-36.46, 13.28, 6.4, .5, WILLOW], [-46.03, -.66, 6.8, .5, WILLOW],
@@ -126,7 +126,7 @@ function mangrove(level) {
     const start = [Math.cos(a) * .14, startY, Math.sin(a) * .14];
     const knee = [Math.cos(a) * reach * .6, startY + .12 + rng() * .1, Math.sin(a) * reach * .6];
     const drop = [Math.cos(a) * reach * .95, startY * .55, Math.sin(a) * reach * .95];
-    const foot = [Math.cos(a) * reach, -.3, Math.sin(a) * reach];
+    const foot = [Math.cos(a) * reach, -.58, Math.sin(a) * reach];
     b.tube(curve([start, knee, drop, foot], [6, 4][level]), [.1, .085, .07, .062, .058, .055],
       Math.max(3, sides - 2), { wobble: .06, dark: .45 });
   }
@@ -169,7 +169,7 @@ function willow(level) {
     for (let i = 0; i < 4; i++) {
       const a = i * Math.PI / 2 + .4;
       b.tube([V(Math.cos(a) * .2, .8, Math.sin(a) * .2), V(Math.cos(a) * .55, .05, Math.sin(a) * .55),
-        V(Math.cos(a) * .75, -.15, Math.sin(a) * .75)], [.16, .12, .08], 4, { dark: .45 });
+        V(Math.cos(a) * .75, -.42, Math.sin(a) * .75)], [.16, .12, .06], 4, { dark: .45 });
     }
   }
   const centre = V(.5, 5, .15);

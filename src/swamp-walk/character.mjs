@@ -7,6 +7,7 @@ import { JUMP_IMPULSE, waterSupportHeight } from "./motion.mjs";
 import { DODGE } from "./combat-tuning.mjs";
 import { validRailProfile } from "./rail.mjs";
 import { applyKlyopPresentation } from "./klyop-presentation.mjs";
+import { COATS, GEARS, SKINS, buildHatGroup, normalizeLook } from "./klyop-look.mjs";
 import { MODELS } from "./quality.mjs";
 import { reflectTreeInWater } from "./water-reflection.mjs";
 
@@ -95,8 +96,16 @@ export async function addCharacter(scene, pilotUrl, actionUrl, {
   const moves = { ...combat?.moves, ...(mantleSetup ? deck.moves : {}) };
   const body = new T.Group();
   gltf.scene.scale.setScalar(MODEL_SCALE);
-  const setClothWetness = applyKlyopPresentation(T, gltf.scene);
+  const { setClothWetness, setAppearance } = applyKlyopPresentation(T, gltf.scene);
   let clothWetness = 0, rain = 0, pouch = null;
+  let lookHatGroup = null, currentHat = 0, emoteState = null;
+  const headBone = gltf.scene.getObjectByName("Head");
+  const spine02 = gltf.scene.getObjectByName("spine_02");
+  const spine03 = gltf.scene.getObjectByName("spine_03");
+  const pelvisBone = gltf.scene.getObjectByName("pelvis");
+  const upperarmR = gltf.scene.getObjectByName("upperarm_r");
+  const lowerarmR = gltf.scene.getObjectByName("lowerarm_r");
+  const upperarmL = gltf.scene.getObjectByName("upperarm_l");
   body.add(gltf.scene);
   scene.add(reflectTreeInWater(body));
   const wrench = gltf.scene.getObjectByName("Swamp_Wrench");
@@ -248,6 +257,40 @@ export async function addCharacter(scene, pilotUrl, actionUrl, {
     },
     // 0..1 from the weather: how hard it rains on Klyop.
     setRain(value) { rain = Math.max(0, Math.min(1, value)); },
+    setLook(rawLook) {
+      const look = normalizeLook(rawLook);
+      const gear = GEARS[look.gear];
+      setAppearance({
+        coatRgb: COATS[look.coat].rgb,
+        skinRgb: SKINS[look.skin].rgb,
+        glassesMode: gear.glasses,
+        lanternHex: gear.lantern,
+      });
+      if (look.hat !== currentHat) {
+        if (lookHatGroup) {
+          headBone?.remove(lookHatGroup);
+          lookHatGroup.traverse(obj => {
+            obj.geometry?.dispose();
+            obj.material?.dispose?.();
+          });
+          lookHatGroup = null;
+        }
+        currentHat = look.hat;
+        if (look.hat > 0 && headBone) {
+          lookHatGroup = buildHatGroup(T, look.hat);
+          reflectTreeInWater(lookHatGroup);
+          headBone.add(lookHatGroup);
+        }
+      }
+    },
+    triggerEmote(index, style = "normal") {
+      emoteState = {
+        index,
+        style,
+        age: 0,
+        duration: style === "highfive" ? 1.25 : 1.55,
+      };
+    },
     // The pouch on the belt in the player's colour (a room shows each Klyop's own); the material is this Klyop's copy.
     setPouchColor(hex) {
       pouch ??= [];
@@ -377,6 +420,38 @@ export async function addCharacter(scene, pilotUrl, actionUrl, {
         action.time = time != null ? Math.min(time, end) : end;
       }
       mixer.update(dt);
+      if (emoteState) {
+        emoteState.age += dt;
+        const { index, style, age, duration } = emoteState;
+        if (age >= duration) {
+          emoteState = null;
+        } else {
+          const env = Math.sin(Math.PI * Math.min(1, age / duration));
+          if (index === 0 && style === "highfive") {
+            if (upperarmR) { upperarmR.rotation.z -= 1.52 * env; upperarmR.rotation.x -= 0.42 * env; }
+            if (lowerarmR) lowerarmR.rotation.z -= 0.34 * env;
+            if (spine03) spine03.rotation.x += 0.10 * env;
+            if (headBone) headBone.rotation.x -= 0.14 * env;
+          } else if (index === 0) {
+            if (upperarmR) upperarmR.rotation.z -= 1.40 * env;
+            if (lowerarmR) lowerarmR.rotation.z -= (0.40 + 0.38 * Math.sin(age * 13)) * env;
+            if (headBone) headBone.rotation.z += 0.13 * Math.sin(age * 6.5) * env;
+          } else if (index === 1) {
+            if (spine03) spine03.rotation.x -= 0.24 * env;
+            if (headBone) headBone.rotation.x -= 0.30 * Math.abs(Math.sin(age * 7.5)) * env;
+            body.position.y += 0.052 * Math.abs(Math.sin(age * 7.5)) * env;
+          } else if (index === 2) {
+            if (pelvisBone) pelvisBone.rotation.z += 0.16 * Math.sin(age * 9) * env;
+            if (spine02) spine02.rotation.y += 0.24 * Math.sin(age * 4.5) * env;
+            if (upperarmR) upperarmR.rotation.z -= (0.65 + 0.42 * Math.sin(age * 9)) * env;
+            if (upperarmL) upperarmL.rotation.z += (0.65 - 0.42 * Math.sin(age * 9)) * env;
+            body.position.y += 0.032 * Math.abs(Math.sin(age * 9)) * env;
+          } else if (index === 3) {
+            if (spine03) spine03.rotation.x += 0.14 * Math.abs(Math.sin(age * 14)) * env;
+            if (headBone) headBone.rotation.x -= (0.20 + 0.10 * Math.sin(age * 14)) * env;
+          }
+        }
+      }
       if (mantle) mantlePlacement?.update(mantle, actions[state].time, actions[state].getEffectiveWeight());
       if (snap) footPlacement.reset();
       if (floorAt && player.grounded && !player.swimming && !player.traversal && !player.shoreClimb

@@ -29,11 +29,11 @@ export function addNeighbourIslet(scene) {
       colors.push(c.r, c.g, c.b);
     }
   };
-  for (const [x, z] of corners) add(new T.CylinderGeometry(.035, .045, .62, 5), x, .3, z, 0x8a6f4b);
+  for (const [x, z] of corners) add(new T.CylinderGeometry(.032, .042, .48, 5), x, .22, z, 0x5d4932);
   for (let i = 0; i < 4; i++) {
     const [ax, az] = corners[i], [bx, bz] = corners[(i + 1) % 4];
-    add(new T.BoxGeometry(Math.abs(bx - ax) + .012, .012, Math.abs(bz - az) + .012), (ax + bx) / 2, .48, (az + bz) / 2,
-      0xd8c9a4);
+    add(new T.BoxGeometry(Math.abs(bx - ax) + .007, .007, Math.abs(bz - az) + .007), (ax + bx) / 2, .33, (az + bz) / 2,
+      0x6c593f);
   }
   const geometry = new T.BufferGeometry();
   geometry.setAttribute("position", new T.Float32BufferAttribute(positions, 3));

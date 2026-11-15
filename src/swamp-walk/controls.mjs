@@ -122,15 +122,15 @@ export function createControls(canvas, { stick, jump, interact, attack, dodge, i
   }
 
   function moveStick(event) {
-    const x = (event.clientX - touch.x) / 35, z = (event.clientY - touch.y) / 35;
+    const x = (event.clientX - touch.x) / 26, z = (event.clientY - touch.y) / 26;
     const scale = Math.max(1, Math.hypot(x, z));
     stickX = x / scale;
     stickZ = z / scale;
     const magnitude = Math.hypot(stickX, stickZ);
     stickSprinting = stickSprinting ? magnitude > 0.80 : magnitude >= 0.87;
     queue.push({ time: event.timeStamp, x: stickX, z: stickZ, sprint: stickSprinting });
-    stick.style.setProperty("--stick-x", `${stickX * 29}px`);
-    stick.style.setProperty("--stick-y", `${stickZ * 29}px`);
+    stick.style.setProperty("--stick-x", `${stickX * 22}px`);
+    stick.style.setProperty("--stick-y", `${stickZ * 22}px`);
   }
   stick.addEventListener("pointerdown", (event) => {
     if (touch || event.button !== 0) return;

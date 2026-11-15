@@ -16,6 +16,7 @@ import { addDamRunoff, addTeaSteam, makeShoreStoneGeometry, RADIO_YAW } from "./
 import { BRIDGE, FLYTRAP, LANDMARKS, PIER, RETURN_PASSAGE, TUSSOCK, WATER, WATER_EXITS, WORLD_LIMIT,
   LOOKOUTS, bridgeDistance, mix, random, sunVista, trailDistance } from "./land.mjs";
 import { FOG, HAZE, groundMist } from "./surface.mjs";
+import { beaverPoint } from "./beaver-site.mjs";
 
 const ART = "/swamp-walk/models/";
 const FACING = { stump: 2.28, beaver: -1.05, radio: RADIO_YAW, flytrap: -.50, tussock: .36 };
@@ -254,7 +255,7 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
     const far = pack.scene.getObjectByName(`${id}_lod1`);
     if (!near?.isMesh || !far?.isMesh) throw new Error(`Missing landing mesh or LOD: ${id}`);
     const yaw = dam?.yaw ?? FACING[id];
-    const y = dam?.y ?? land.heightAt(x, z) - .07;
+    const y = dam?.y ?? land.heightAt(x, z) - (id === "tussock" ? .11 : .07);
     const model = new T.LOD();
     model.name = `Landing-${id}`;
     model.position.set(x, y, z);
@@ -264,6 +265,33 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
     reflectInWater(near);
     reflectInWater(far);
     scene.add(model);
+    if (id === "tussock") {
+      // Anchor the mossy bank firmly into the wet shoreline slope so the mug & laptop never appear to hover.
+      const bank = new T.Mesh(
+        new T.CylinderGeometry(1.12, 1.54, .40, 12),
+        groundMist(new T.MeshStandardMaterial({ color: 0x4b552e, roughness: .94 })),
+      );
+      bank.name = "Landing-tussock-bank";
+      bank.position.set(x, land.heightAt(x, z) - .22, z);
+      scene.add(reflectInWater(bank));
+    }
+    if (dam) {
+      // Fill the hollow crisscross interior of the dam wings with dark peat earth so the forest doesn't show through.
+      const coreMat = groundMist(new T.MeshStandardMaterial({ color: 0x3c3021, roughness: .96 }));
+      const core = new T.Group();
+      core.name = "Beaver-dam-core";
+      for (const [lx, ly, lz, rt, rb, h] of [
+        [0, .62, -.45, 1.55, 2.25, 1.38],
+        [-1.18, .44, .32, .82, 1.24, 1.05],
+        [1.18, .44, .32, .82, 1.24, 1.05],
+      ]) {
+        const [cx, cy, cz] = beaverPoint(y, lx, ly, lz);
+        const mound = new T.Mesh(new T.CylinderGeometry(rt * .95, rb * .95, h * dam.scale * .42, 10), coreMat);
+        mound.position.set(cx, cy, cz);
+        core.add(mound);
+      }
+      scene.add(reflectInWater(core));
+    }
     if (id === "flytrap") hazard = addFlytrap(scene, land, [near, far]);
     if (id === "tussock") steam = addTeaSteam(T, model);
     if (dam) obstacles.push(...dam.obstacles);
@@ -350,17 +378,21 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
     beams.link([x, top - .18, z + .80], [x, top + .46, z + .80], .088, 0x52432d);
   }
   // Bogfall marks the same outer edge that the motor uses to bound the map.
+  // Keep boundary logs only in open low water so no brown zipper line cuts across coastal hills.
   for (const sign of [-1, 1]) {
     const b = sign * WORLD_LIMIT;
     const edge = { id: "bogfall", minY: -2.1, maxY: 1.22 };
     hardEdges.push({ ...edge, minX: -WORLD_LIMIT, maxX: WORLD_LIMIT, minZ: b - .40, maxZ: b + .40 });
     hardEdges.push({ ...edge, minX: b - .40, maxX: b + .40, minZ: -WORLD_LIMIT, maxZ: WORLD_LIMIT });
     for (let n = -WORLD_LIMIT; n < WORLD_LIMIT; n += 6.4) {
-      const offset = Math.sin(n * 1.12 + sign) * .24;
-      // In the sunset line the logs lie awash, so the far water reads open; the edge still stops the walk.
+      const offset = Math.sin(n * 1.12 + sign) * .16;
       const sinkX = sunVista(n + 3.3, b, .5, LOOKOUTS) > 0 ? .75 : 0, sinkZ = sunVista(b, n + 3.3, .5, LOOKOUTS) > 0 ? .75 : 0;
-      beams.link([n, .19 + offset - sinkX, b], [n + 6.65, .27 - offset - sinkX, b], .31 + Math.abs(offset), 0x4a4231);
-      beams.link([b, .27 - offset - sinkZ, n], [b, .19 + offset - sinkZ, n + 6.65], .33 + Math.abs(offset), 0x3d4430);
+      if (Math.max(land.heightAt(n, b), land.heightAt(n + 6.65, b)) < WATER + .24 && !sinkX) {
+        beams.link([n, .04 + offset, b], [n + 6.65, .07 - offset, b], .15 + Math.abs(offset) * .4, 0x423b2c);
+      }
+      if (Math.max(land.heightAt(b, n), land.heightAt(b, n + 6.65)) < WATER + .24 && !sinkZ) {
+        beams.link([b, .07 - offset, n], [b, .04 + offset, n + 6.65], .15 + Math.abs(offset) * .4, 0x383d2c);
+      }
     }
   }
 
@@ -377,7 +409,7 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
         const s = range(0.17, 0.67);
         const tint = pick(rockColors), yaw = range(0, 6.28);
         const slope = Math.hypot(land.heightAt(x + .49, z) - y, land.heightAt(x, z + .49) - y);
-        if (slope < .44) stones.put(x, y - s * .16, z, s * 1.35, s * .68, s, tint, yaw);
+        if (slope < .34) stones.put(x, y - s * .28, z, s * 1.42, s * .52, s * 1.08, tint, yaw);
       }
     }
   }
@@ -426,7 +458,7 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
     setEconomy: pondLife.setEconomy,
     updateGate(eye, player, dt, snap) {
       sight.origin.copy(eye);
-      const blocked = [.24, .70, 1.22].some(height => {
+      const blocked = [.24, .75, 1.28, 1.82].some(height => {
         sight.direction.set(player.x, player.y + height, player.z).sub(eye);
         const distance = sight.direction.length();
         sight.direction.normalize();
@@ -444,20 +476,23 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
         }
       }
     },
+    addCameraSolid(box) {
+      cameraSolids.push(box);
+    },
     addRail(rail) {
       const mesh = new T.Mesh(new T.BoxGeometry(rail.width, rail.height, rail.depth), timberMaterial);
       mesh.position.set(rail.x, rail.y + rail.height / 2, rail.z);
       mesh.rotation.y = rail.yaw ?? 0;
       scene.add(mesh);
     },
-    update(time, eye, radioFound, dark = 0) {
+    update(time, eye, radioFound, dark = 0, player = null) {
       fxTime.value = time;
       pondLife.update(time);
       farShore.update(time, dark);
       // Fireflies are faint golden specks at sunset and bright at night.
       swarm.material.opacity = .42 + .5 * dark;
       steam?.update(time, eye);
-      forest.update(time, eye);
+      forest.update(time, eye, player);
       curios.update(time, eye);
       updateGrass(time, eye);
       if (land.deck.isShortcutOpen() !== Boolean(radioFound)) setRadio(radioFound);

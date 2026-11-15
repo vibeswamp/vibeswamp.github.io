@@ -12,7 +12,7 @@ export function addDayLedges(scene, land) {
   const wood = groundMist(new T.MeshStandardMaterial({
     color: 0x6f5335, roughness: .90,
   }));
-  const bands = [0x4b4330, 0x595138, 0x65603c, 0x5a6531].map(color => new T.Color(color));
+  const bands = [0x4c4c2f, 0x565a34, 0x606638, 0x646c38].map(color => new T.Color(color));
   const tint = new T.Color();
   function bank(ledge, name, outline, { keepInner = false, beam = false } = {}) {
     const count = outline.length;
@@ -20,18 +20,18 @@ export function addDayLedges(scene, land) {
     const midFwd = outline.reduce((s, p) => s + p[1], 0) / count;
     const positions = [], colors = [], faces = [];
     for (let ring = 0; ring < bands.length; ring++) {
-      const flare = (1 - ring / (bands.length - 1)) ** 1.15;
+      const flare = (1 - ring / (bands.length - 1)) ** 1.05;
       for (const [i, [side, forward, top]] of outline.entries()) {
         const ds = side - midSide, df = forward - midFwd;
         const len = Math.hypot(ds, df) || 1;
         const wear = Math.sin(i * 3.63 + ledge.x * .8);
         const frontFace = !keepInner && forward <= .08;
-        const spread = keepInner ? (side > midSide ? .68 * flare : 0)
-          : (frontFace ? .24 * flare : (.82 + wear * .08) * flare);
+        const spread = keepInner ? (side > midSide ? .95 * flare : .18 * flare)
+          : (frontFace ? .46 * flare : (1.28 + wear * .12) * flare);
         const [x, z] = ledgePoint(ledge, side + (ds / len) * spread, forward + (df / len) * spread);
-        const bottom = Math.min(top - .30, land.heightAt(x, z) - .20);
-        const y = ring === 0 ? bottom : ring === 1 ? top * .38 + bottom * .62
-          : ring === 2 ? top - .10 - wear * .02 : top;
+        const bottom = Math.min(top - .34, land.heightAt(x, z) - .28);
+        const y = ring === 0 ? bottom : ring === 1 ? top * .42 + bottom * .58
+          : ring === 2 ? top - .06 - wear * .02 : top;
         positions.push(x, y, z);
         colors.push(...tint.copy(bands[ring]).multiplyScalar(.95 + wear * .07).toArray());
       }

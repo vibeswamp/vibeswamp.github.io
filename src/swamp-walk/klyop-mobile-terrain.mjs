@@ -19,13 +19,15 @@ export function gradeLedgeApproaches(heights, cells, radius, heightAt, ledges) {
       const dx = ix * spacing - radius - x, dz = iz * spacing - radius - z;
       const side = dx * cos - dz * sin;
       const along = dx * sin + dz * cos;
-      // The jump crosses south of the reed lip. Keep its wet cell row in place.
-      const left = id === "reed-ledge" ? smooth(-.60, -.37, side) : smooth(-1.26, -.83, side);
-      const right = 1 - smooth(.83, 1.26, side);
-      const fore = smooth(-2.35, -1.65, along) * (1 - smooth(.29, .77, along));
+      // The jump crosses south of the reed lip. Keep its wet cell row in place,
+      // and never gouge a crater into an adjacent steep hill slope.
+      const left = id === "reed-ledge" ? smooth(-.60, -.37, side) : smooth(-1.08, -.70, side);
+      const right = 1 - smooth(.70, 1.08, side);
+      const fore = smooth(-2.10, -1.45, along) * (1 - smooth(.25, .66, along));
       const weight = left * right * fore;
       const i = iz * stride + ix;
-      heights[i] += (floor - heights[i]) * weight;
+      const target = id === "reed-ledge" ? floor : Math.max(floor, heights[i] - .05);
+      heights[i] += (target - heights[i]) * weight;
     }
   }
 }
