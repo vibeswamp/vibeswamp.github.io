@@ -343,6 +343,31 @@
 .swalk[data-hud] .walk-nameplate[data-ghost] { opacity: .55; }
 .swalk[data-hud] .walk-room-toggle[data-room] { border-color: var(--hud-moss); }
 
+/* Emotes: a speech bubble over the head, and a small bar at the right edge while in a room. */
+.swalk[data-hud] .walk-bubble {
+  position: absolute;
+  padding: 3px 9px;
+  border: 1px solid var(--hud-edge-soft);
+  border-radius: 9px 9px 9px 2px;
+  background: var(--hud-ink);
+  color: #1d2517;
+  font: 700 .84rem/1.2 var(--hud-label);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  animation: walk-bubble-in 180ms ease-out;
+}
+@keyframes walk-bubble-in { from { opacity: 0; transform: translate(-50%, -80%) scale(.85); } }
+.swalk[data-hud] .walk-emotes { position: absolute; z-index: 3; right: max(12px, env(safe-area-inset-right)); top: 44%; display: grid; justify-items: end; gap: 6px; }
+.swalk[data-hud] .walk-emotes[hidden], .swalk[data-hud] .walk-emote-list[hidden] { display: none; }
+.swalk[data-hud] .walk-emote-toggle, .swalk[data-hud] .walk-emote-list button {
+  min-height: 40px; padding: 6px 12px; border: 1px solid var(--hud-edge-soft); border-radius: 6px;
+  background: var(--hud-board); color: var(--hud-ink); font: 600 .78rem/1.2 var(--hud-label); cursor: pointer;
+}
+.swalk[data-hud] .walk-emote-toggle[aria-expanded="true"] { border-color: var(--hud-moss); }
+.swalk[data-hud] .walk-emote-list { display: grid; gap: 5px; }
+@media (pointer: coarse) { .swalk[data-hud] .walk-emotes { top: 27%; } .swalk[data-hud] .walk-emote-list button { min-height: 44px; } }
+@media (prefers-reduced-motion: reduce) { .swalk[data-hud] .walk-bubble { animation: none; } }
+
 /* The room window: the nickname and the pouch colour on the decisions' plank. */
 .swalk[data-hud] .walk-room-form { display: grid; gap: 10px; margin-top: 11px; }
 .swalk[data-hud] .walk-room-form[hidden], .swalk[data-hud] .walk-room-link[hidden] { display: none; }

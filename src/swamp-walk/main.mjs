@@ -12,7 +12,7 @@ import { createLand, LANDMARKS, PIER, smooth, WATER } from "./land.mjs";
 import * as worldRules from "./land.mjs";
 import { advancePlayer, spawnPlayer } from "./motion.mjs";
 import { railDirection, railFloor } from "./rail.mjs";
-import { addScenery } from "./scenery.mjs";
+import { addNeighbourHome, addScenery } from "./scenery.mjs";
 import { readShelter } from "./shelter-save.mjs";
 import { findBankExit } from "./shore.mjs";
 import { addTerrain, createSky } from "./surface.mjs";
@@ -118,7 +118,13 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   if (parkour?.rail) {
     parkour.rail.y = land.floorAt(parkour.rail.x, parkour.rail.z);
     scenery.addRail(parkour.rail);
-    for (const hint of $("help").children) hint.append(` · ${text.vaultHint}`);
+    for (const hint of $("help").children) {
+      hint.append(" ");
+      const vault = document.createElement("span");
+      vault.className = "walk-help-vault";
+      vault.textContent = `\u00b7\u00a0${text.vaultHint}`;
+      hint.append(vault);
+    }
   }
   // The water reflects the real scene (candidate C): a small camera under the waterline, 192 px every 0.2 s
   // on phones, 384 px every 0.1 s on computers, only after the view has moved.
@@ -179,7 +185,7 @@ async function assemble(world, text, hud, setResetFacts, assets) {
   });
   // Neighbours in a room (stage 2 of docs/design/multiplayer.md): «Позвать соседа» on the map panel or a #room= link.
   const room = createWalkRoom({ world, scene, camera, character, floorAt: land.floorAt, storage, text, shelter,
-    button: $("room") });
+    button: $("room"), placeHome: house => addNeighbourHome({ scene, ...house, data: text.economyData }) });
   const target = new T.Vector3(), offset = new T.Vector3(), goal = new T.Vector3(), focusLook = new T.Vector3();
   const sight = new T.Ray(), sightHit = new T.Vector3();
   const pier = { x: PIER.x, z: PIER.z, heading: Math.PI };

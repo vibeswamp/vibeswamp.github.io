@@ -10,10 +10,19 @@ const WALL = 0.15, EAVE = 2.18, DOOR_HALF = 0.69;
 const PLANKS = "/swamp-walk/models/landing-planks.webp";
 export const onCabinPlot = (x, z) => x >= X - HX && x <= X + HX && z >= Z - HZ && z <= Z + HZ;
 
-export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, projects = new Set(), labels, manager }) {
+// The planks picture is loaded once and shared by our shack and a neighbour's (neighbour-home.mjs).
+let planks = null;
+
+// `at` places a second shack (the neighbour's): { x, z, floor, turn } with turn a three.js yaw; the solids stay
+// axis-aligned boxes around the turned pieces (exact for quarter turns). `prefix` names its layers; `lights: false`
+// leaves out the lamp's point light (adding a light later would rebuild every shader in the scene).
+export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, projects = new Set(), labels, manager,
+  at = { x: X, z: Z, floor: FLOOR, turn: 0 }, prefix = "Cabin", lights = true }) {
   const root = new THREE.Group();
-  root.name = "MVP Cabin";
-  root.position.set(X, FLOOR, Z);
+  root.name = prefix === "Cabin" ? "MVP Cabin" : `${prefix} cabin`;
+  root.position.set(at.x, at.floor, at.z);
+  root.rotation.y = at.turn ?? 0;
+  const cos = Math.cos(at.turn ?? 0), sin = Math.sin(at.turn ?? 0);
   const solids = [];
   const has = (id) => stages.has(id);
   const bought = (id) => Number(owned?.[id]) > 0;
@@ -21,8 +30,11 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
   let texture = null;
   if (hasDeck || has("awning") || has("wall_l") || has("wall_r") || has("window_hole") || has("door")) {
     try {
-      texture = await new THREE.TextureLoader(manager).loadAsync(PLANKS);
-      texture.colorSpace = THREE.SRGBColorSpace;
+      planks ??= new THREE.TextureLoader(manager).loadAsync(PLANKS).then(map => {
+        map.colorSpace = THREE.SRGBColorSpace;
+        return map;
+      });
+      texture = await planks;
     } catch {
       // The solid timber palette is also the loading fallback.
     }
@@ -46,7 +58,7 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
 
   function layer(name) {
     const group = new THREE.Group();
-    group.name = name;
+    group.name = name.replace(/^Cabin\//, prefix + "/");
     root.add(group);
     return group;
   }
@@ -77,10 +89,13 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
   }
 
   function block(x, y, z, sx, sy, sz) {
+    // three.js yaw: local (x, z) -> world (x cos + z sin, -x sin + z cos); the box keeps axis-aligned bounds.
+    const wx = at.x + x * cos + z * sin, wz = at.z - x * sin + z * cos;
+    const hx = (Math.abs(cos) * sx + Math.abs(sin) * sz) / 2, hz = (Math.abs(sin) * sx + Math.abs(cos) * sz) / 2;
     solids.push({
-      minX: X + x - sx / 2, maxX: X + x + sx / 2,
-      minY: FLOOR + y - sy / 2, maxY: FLOOR + y + sy / 2,
-      minZ: Z + z - sz / 2, maxZ: Z + z + sz / 2,
+      minX: wx - hx, maxX: wx + hx,
+      minY: at.floor + y - sy / 2, maxY: at.floor + y + sy / 2,
+      minZ: wz - hz, maxZ: wz + hz,
     });
   }
 
@@ -109,11 +124,28 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
   }
 
   // The visual deck sits a few millimetres below the shared collision height
-  // where it overlaps the circular pier.
+  // where it overlaps the circular pier. Before the deck is built, seat the
+  // cabin plot on a battered peat mound edged with timber curbs and sunken
+  // corner pilings so it meets the shore slope naturally instead of hovering.
   const base = layer("Cabin/underlay");
-  box(base, colors.peat, 0, hasDeck ? -0.20 : -0.14, 0,
-    2 * HX, 0.228, 2 * HZ);
-  if (!hasDeck) box(base, colors.moss, 0, -0.027, 0, 2 * HX - 0.035, 0.04, 2 * HZ - 0.035);
+  const frustum = new THREE.CylinderGeometry(1, 1.26, 1, 4, 1).rotateY(Math.PI / 4);
+  piece(base, frustum, colors.peat,
+    0, hasDeck ? -0.45 : -0.46, 0,
+    (HX - (hasDeck ? 0.04 : 0.06)) * Math.SQRT2, 0.84, (HZ - (hasDeck ? 0.04 : 0.06)) * Math.SQRT2);
+  if (!hasDeck) {
+    box(base, colors.moss, 0.06, -0.032, 0, 2 * HX - 0.14, 0.036, 2 * HZ - 0.14);
+    for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
+      round(base, colors.end, sx * (HX - 0.05), -0.42, sz * (HZ - 0.05), 0.075, 0.88, 0.075);
+    }
+    box(base, colors.timber, 0, -0.052, -HZ + 0.05, 2 * HX - 0.06, 0.095, 0.12);
+    box(base, colors.timber, 0, -0.052, HZ - 0.05, 2 * HX - 0.06, 0.095, 0.12);
+    box(base, colors.timber, -HX + 0.05, -0.052, 0, 0.12, 0.095, 2 * HZ - 0.06);
+    for (const [tx, ty, tz, rx, ry, rz] of [
+      [-1.1, -0.06, -HZ - 0.08, 0.30, 0.09, 0.22],
+      [0.85, -0.06, -HZ - 0.07, 0.24, 0.08, 0.20],
+      [-HX - 0.08, -0.06, -0.45, 0.22, 0.09, 0.28],
+    ]) piece(base, rounded, colors.moss, tx, ty, tz, rx, ry, rz);
+  }
 
   if (has("pads")) {
     const g = layer("Cabin/pads");
@@ -230,9 +262,11 @@ export async function addCabin({ THREE, scene, stages = new Set(), owned = {}, p
     for (const dx of [-0.09, 0.09]) for (const dz of [-0.09, 0.09]) {
       box(g, colors.timber, x + dx, 1.49, z + dz, 0.021, 0.25, 0.021);
     }
-    const light = new THREE.PointLight(0xffad59, 7.2, 4.6, 2);
-    light.position.set(x + 0.08, 1.48, z - 0.06);
-    g.add(light);
+    if (lights) {
+      const light = new THREE.PointLight(0xffad59, 7.2, 4.6, 2);
+      light.position.set(x + 0.08, 1.48, z - 0.06);
+      g.add(light);
+    }
   }
 
   const desk = has("furniture") || has("tea_corner");

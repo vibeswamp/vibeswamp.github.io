@@ -29,7 +29,8 @@ export const toRoomPose = pose => (pose === "walk" ? "wade" : pose === "strafe" 
 export const fromRoomPose = pose => (pose === "wade" ? "walk" : pose);
 const roomInHash = () => /[#&]room=[^&]+/.test(location.hash);
 
-export function createWalkRoom({ world, scene, camera, character, floorAt, storage, text, shelter, button }) {
+// `placeHome(house)` (optional) builds the first neighbour's hut on the islet and resolves to { dispose }.
+export function createWalkRoom({ world, scene, camera, character, floorAt, storage, text, shelter, button, placeHome }) {
   const copy = text.room;
   if (!copy || !button) return { update() {}, get modal() { return false; } };
   let profile = null, client = null, room = null, opening = null, lastLabel = "";
@@ -46,12 +47,74 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     onLeave: leave,
   });
   button.textContent = copy.button;
+  // Emotes (stage 3): a small bar while in a room, keys 1-4 on a computer. A speech bubble over the head, nothing in the save.
+  const EMOTE_COOLDOWN = 900, BUBBLE_MS = 2200;
+  const emotes = Array.isArray(copy.emotes) ? copy.emotes : [];
+  const bubbles = new Map();   // "me" or a slot -> { el, until, x, y, z }
+  const bar = document.createElement("div");
+  bar.className = "walk-emotes";
+  bar.hidden = true;
+  const toggle = document.createElement("button");
+  toggle.type = "button";
+  toggle.className = "walk-emote-toggle";
+  toggle.textContent = copy.emote ?? "";
+  toggle.setAttribute("aria-expanded", "false");
+  const list = document.createElement("div");
+  list.className = "walk-emote-list";
+  list.hidden = true;
+  emotes.forEach(([name], index) => {
+    const choice = document.createElement("button");
+    choice.type = "button";
+    choice.textContent = name;
+    choice.title = String(index + 1);
+    choice.addEventListener("click", () => { sendEmote(index); setOpen(false); });
+    list.append(choice);
+  });
+  bar.append(toggle, list);
+  world.append(bar);
+  function setOpen(open) {
+    list.hidden = !open;
+    toggle.setAttribute("aria-expanded", String(open));
+  }
+  toggle.addEventListener("click", () => setOpen(list.hidden));
+  let lastEmote = 0;
+  function sendEmote(index) {
+    const now = performance.now();
+    if (!room || room.status !== "open" || !emotes[index] || now - lastEmote < EMOTE_COOLDOWN) return;
+    lastEmote = now;
+    room.emote(index);
+    showEmote("me", index);
+  }
+  function showEmote(key, index) {
+    const say = emotes[index]?.[1];
+    if (!say) return;
+    let bubble = bubbles.get(key);
+    if (!bubble) {
+      const el = document.createElement("span");
+      el.className = "walk-bubble";
+      el.hidden = true;
+      tags.append(el);
+      bubble = { el, until: 0, x: 0, y: 0, z: 0, seen: false };
+      bubbles.set(key, bubble);
+    }
+    bubble.el.textContent = say;
+    bubble.until = performance.now() + BUBBLE_MS;
+  }
+  addEventListener("keydown", event => {
+    if (!room || dialog.open || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName)) return;
+    const index = "1234".indexOf(event.key);
+    if (index >= 0) sendEmote(index);
+  });
+
   button.addEventListener("click", () => {
     if (room) dialog.show("room", { url: link(), state: statusText() });
     else dialog.show(roomInHash() ? "join" : "invite", { profile: profile ?? { nick: copy.defaultNick, color: "copper" } });
   });
   // an invite link: ask for the nickname and colour first, then come over
   if (roomInHash()) queueMicrotask(() => button.click());
+  // the link pasted into a tab that already shows the walk: only the #room= part changes, the page stays
+  addEventListener("hashchange", () => { if (!room && !dialog.open && roomInHash()) button.click(); });
   addEventListener("pagehide", () => room?.leave(), { once: true });
 
   function remember(next) {
@@ -86,7 +149,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     room = client.joinRoom({
       code, build: BUILD, house: house(),
       profile: { nick: next.nick, color: next.color, hat: null },
-      onEvent: refresh,
+      onEvent: event => { if (event.type === "emote") showEmote(event.slot, event.e); refresh(); },
     });
     if (dialog.open) dialog.show("room", { url: link(), state: statusText() });
     refresh();
@@ -115,10 +178,29 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     const label = room && names.length ? `${copy.inRoom}: ${names.join(", ")}` : copy.button;
     if (label !== lastLabel) button.textContent = lastLabel = label;
     button.toggleAttribute("data-room", Boolean(room));
+    bar.hidden = !(room && emotes.length && room.status === "open");
+    if (bar.hidden) setOpen(false);
     if (dialog.open && dialog.mode === "room") dialog.setStatus(statusText());
     if (room && ["full", "version", "closed"].includes(room.status)) {
       for (const slot of [...peers.keys()]) forget(slot);
     }
+    syncHome();
+  }
+
+  // The islet holds one hut: the first neighbour's, as far as their clicker has built it. A new stage rebuilds it.
+  let home = null, homeWanted = "";
+  function syncHome() {
+    if (!placeHome) return;
+    const first = room && room.status === "open" ? here().sort((a, b) => a.slot - b.slot)[0] : null;
+    const key = first ? `${first.slot}/${first.house?.stage ?? 0}/${(first.house?.items ?? []).join(",")}` : "";
+    if (key === homeWanted) return;
+    homeWanted = key;
+    if (!first) { home?.dispose(); home = null; return; }
+    Promise.resolve(placeHome({ stage: first.house?.stage ?? 0, items: first.house?.items ?? [] })).then(next => {
+      if (homeWanted !== key) { next?.dispose(); return; }
+      home?.dispose();
+      home = next;
+    }).catch(error => console.warn("Neighbour hut:", error));
   }
 
   function forget(slot) {
@@ -161,15 +243,34 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     tag.style.top = `${((1 - head.y) * 50).toFixed(2)}%`;
   }
 
+  // a bubble rides above the head of whoever spoke; a bubble of someone gone is dropped
+  function placeBubbles(now) {
+    for (const [key, bubble] of bubbles) {
+      const gone = key !== "me" && !room?.peers.has(key);
+      if (gone || now > bubble.until || !room) { bubble.el.remove(); bubbles.delete(key); continue; }
+      head.set(bubble.x, bubble.y + 2.05, bubble.z);
+      head.project(camera);
+      const hidden = !bubble.seen || Math.abs(head.x) > 1 || Math.abs(head.y) > 1 || head.z > 1;
+      bubble.el.hidden = hidden;
+      if (hidden) continue;
+      bubble.el.style.left = `clamp(2.6em, ${((head.x + 1) * 50).toFixed(2)}%, calc(100% - 2.6em))`;
+      bubble.el.style.top = `${((1 - head.y) * 50).toFixed(2)}%`;
+    }
+  }
+
   return {
     get modal() { return dialog.open; },
     get room() { return room; },
     // every frame: our pose out (the client sends at most 10 a second, nothing while standing), the others in
     update(player, dt) {
-      if (!room) return;
+      if (!room) { if (bubbles.size) placeBubbles(performance.now()); return; }
       room.setPose({ x: player.x, y: player.y, z: player.z, h: player.heading, a: toRoomPose(player.pose) });
+      const me = bubbles.get("me");
+      if (me) { me.x = player.x; me.y = player.y; me.z = player.z; me.seen = true; }
       for (const slot of [...peers.keys()]) if (!room.peers.has(slot)) forget(slot);
       for (const n of room.sample()) {
+        const spoke = bubbles.get(n.slot);
+        if (spoke) { spoke.x = n.x; spoke.y = n.y; spoke.z = n.z; spoke.seen = true; }
         const peer = neighbour(n.slot);
         if (!peer.actor) continue;
         if (peer.color !== n.color) {
@@ -189,6 +290,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
         peer.shown = { x: n.x, z: n.z };
         placeTag(peer, n);
       }
+      if (bubbles.size) placeBubbles(performance.now());
     },
   };
 }

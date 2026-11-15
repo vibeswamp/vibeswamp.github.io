@@ -3,6 +3,7 @@ import { createDeck } from "./deck.mjs";
 import { gradeLedgeApproaches } from "./klyop-mobile-terrain.mjs";
 import { createDayWorld, DAY_FORD_BANK, DAY_FORD_EXIT, DAY_STOPS } from "./day-world.mjs";
 import { createLakeSites, FISHING_PIER } from "./lake-layout.mjs";
+import { NEIGHBOR_ISLET } from "./world-places.mjs";
 
 export const RADIUS = 72;
 export const CELLS = 216;
@@ -198,6 +199,11 @@ export function createLand() {
       // Land left in the sun line stays low: reedy marsh with pools, nothing that rises over the far water.
       const vista = sunVista(x, z, .34) * smooth(9, 16, Math.hypot(x, z - 24));
       h = mix(h, Math.min(h, .16 + b * .42 + a * .22), vista);
+      // The neighbour's islet in the lagoon (world-places.mjs NEIGHBOR_ISLET): a low peat top with soft banks.
+      const islet = Math.hypot((x - NEIGHBOR_ISLET.x) / NEIGHBOR_ISLET.rx, (z - NEIGHBOR_ISLET.z) / NEIGHBOR_ISLET.rz);
+      h = Math.max(h, mix(h, NEIGHBOR_ISLET.floor - .06 + b * .08, 1 - smooth(.72, 1.18, islet + b * .12)));
+      // its middle is flat, so a shack stands level on it
+      h = mix(h, NEIGHBOR_ISLET.floor - .03, 1 - smooth(.5, .74, islet));
 
       for (const bluff of BLUFFS) {
         const d = Math.hypot((x - bluff.x + (z - bluff.z) * 0.21) / bluff.rx, (z - bluff.z) / bluff.rz);
@@ -235,7 +241,8 @@ export function createLand() {
   }
 
   gradeLedgeApproaches(heights, CELLS, RADIUS, heightAt, createDayWorld(heightAt).ledges);
-  const deck = createDeck(PIER, BRIDGE, BRIDGE_WIDTH, RETURN_PASSAGE, heightAt, FISHING_PIER);
+  const deck = createDeck(PIER, BRIDGE, BRIDGE_WIDTH, RETURN_PASSAGE, heightAt, FISHING_PIER, {
+    points: NEIGHBOR_ISLET.pier, width: NEIGHBOR_ISLET.pierWidth, endY: NEIGHBOR_ISLET.floor - .02 });
   const lakes = createLakeSites(deck, SWIM_FLOOR);
   const beaver = createBeaverSite(heightAt);
   const woodAt = (x, z) => Math.max(deck.heightAt(x, z), beaver.rampAt(x, z));

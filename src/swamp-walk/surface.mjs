@@ -251,7 +251,10 @@ export function addTerrain(scene, land, detail = null) {
         vec3 ground = mix(mudDetail, mossDetail, turf);
         diffuseColor.rgb *= mix(vec3(1.), ground, .85) * mix(vec3(grain.r), vec3(1.), .55);
       #else
-        diffuseColor.rgb *= mix(vec3(grain.r), matGrass * (.89 + grain.g * .19), turf);
+        vec3 grainFine = texture2D(map, vMapUv * 3.73 + vec2(.37, .61) + vec2(soil.y * steepness * .55, 0.)).rgb;
+        float clump = clamp((grainFine.r - .86) * 1.25, -.14, .14);
+        float mottle = sin(soil.x * .31 + sin(soil.z * .27) * 1.3) * sin(soil.z * .37 - soil.x * .19) * .065;
+        diffuseColor.rgb *= mix(vec3(grain.r), matGrass * (.89 + grain.g * .19), turf) * (1. + clump + mottle * (.5 + .5 * turf));
       #endif
     `).replace("#include <color_fragment>", `
       #include <color_fragment>

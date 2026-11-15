@@ -208,6 +208,7 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const bridge = deck.bridge.quads.flatMap(staggeredRows);
   const spans = [deck.pier.panels, bridge, deck.shortcut.quads.flatMap(staggeredRows)];
   if (deck.fishing) spans.push(deck.fishing.quads.flatMap(staggeredRows));
+  if (deck.footbridge) spans.push(deck.footbridge.quads.flatMap(staggeredRows));
   const bounds = new T.Box3().setFromPoints(spans.flat(2).map(p => new T.Vector3(...p)));
   const lightUV = (x, z) => [(x - bounds.min.x) / (bounds.max.x - bounds.min.x),
     (z - bounds.min.z) / (bounds.max.z - bounds.min.z)];
@@ -236,10 +237,11 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const pad = mesh(spans[0], "Round landing");
   const shortcut = mesh(spans[2], "Shortcut boards");
   const fishing = deck.fishing ? mesh(spans[3], "Fishing pier boards") : null;
+  const footbridge = deck.footbridge ? mesh(spans[4], "Footbridge to the neighbour's islet") : null;
   const reflectionMaterial = new T.MeshBasicMaterial({ color: 0x68503c, vertexColors: true });
   let shortcutProxy;
   if (reflection) {
-    for (const part of [main, pad, shortcut, fishing].filter(Boolean)) {
+    for (const part of [main, pad, shortcut, fishing, footbridge].filter(Boolean)) {
       const proxy = new T.Mesh(part.geometry, reflectionMaterial);
       reflection.add(proxy);
       if (part === shortcut) shortcutProxy = proxy;
@@ -248,7 +250,7 @@ export function addDeckArt(T, scene, land, { atlas, pier, water, reflection }) {
   const timber = new T.MeshStandardMaterial({ roughness: .87 });
   const solids = lamps.map(({ x, y, z, height }) =>
     ({ id: "lantern", x, z, radius: 0.10, minY: Math.min(land.heightAt(x, z), y), top: y + height + 0.24 }));
-  const supports = deck.fishing ? [...deck.bridge.quads, ...deck.fishing.quads] : deck.bridge.quads;
+  const supports = [...deck.bridge.quads, ...(deck.fishing?.quads ?? []), ...(deck.footbridge?.quads ?? [])];
   deckSupports(T, group, land, supports, pier, water, timber, solids);
   addLanterns(T, group, land, lamps, timber);
   scene.add(group);

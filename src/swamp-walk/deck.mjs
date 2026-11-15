@@ -87,7 +87,9 @@ function landing(pier) {
   };
 }
 
-export function createDeck(pier, bridge, bridgeWidth, shortcut, terrainHeight, fishingPier) {
+// `footbridge` (the neighbour's islet): { points: [[x, z] on the fishing pier, [x, z] at the islet], width, endY }.
+// A ribbon of its own, joined to the fishing pier, so the boardwalk's climbs from the water stay as they are.
+export function createDeck(pier, bridge, bridgeWidth, shortcut, terrainHeight, fishingPier, footbridge) {
   const pad = landing(pier);
   const main = ribbon(bridge, bridgeWidth);
   const returnPath = ribbon(shortcut.points.map(([x, z]) => [x, z, terrainHeight(x, z)]), shortcut.width);
@@ -95,13 +97,16 @@ export function createDeck(pier, bridge, bridgeWidth, shortcut, terrainHeight, f
     [-bridgeWidth / 2, fishingPier.z, 0],
     [fishingPier.endX, fishingPier.z, fishingPier.endY],
   ], fishingPier.width, main.heightAt) : null;
+  const foot = footbridge && fishing ? ribbon([[...footbridge.points[0], 0], [...footbridge.points[1], footbridge.endY]],
+    footbridge.width, fishing.heightAt) : null;
   let opened = false;
   return {
-    pier: pad, bridge: main, shortcut: returnPath, fishing, thickness: THICKNESS,
+    pier: pad, bridge: main, shortcut: returnPath, fishing, footbridge: foot, thickness: THICKNESS,
     isShortcutOpen: () => opened,
     setShortcutOpen(value) { opened = value === true; },
     heightAt(x, z) {
       return Math.max(pad.heightAt(x, z), main.heightAt(x, z), fishing?.heightAt(x, z) ?? -Infinity,
+        foot?.heightAt(x, z) ?? -Infinity,
         opened ? returnPath.heightAt(x, z) : -Infinity);
     },
   };

@@ -1,7 +1,7 @@
 import * as T from "./vendor/three.mjs";
 import { reflectInWater } from "./water-reflection.mjs";
 import { TREE_ANCHORS } from "./forest-layout.mjs";
-import { MANGROVE, SHORE_TREES } from "./forest-shore.mjs";
+import { MANGROVE, SHORE_TREES, shorePrototypes } from "./forest-shore.mjs";
 import { WATER, mix, onSunLine, random } from "./land.mjs";
 import { sunwardFogShader } from "./surface.mjs";
 
@@ -156,37 +156,7 @@ function forestMaterial(map, time, level) {
   return material;
 }
 
-// The Blender trees (forest-shore.mjs): GLB meshes -> the same attributes as the prototypes above, at unit height.
-// UVs go back to the atlas convention (the atlas is loaded with flipY), foliage sways, bark darkens toward the roots.
-export function shorePrototypes(gltf) {
-  const kinds = {};
-  for (const [kind, name] of [[3, "mangrove"], [4, "willow"]]) {
-    const levels = [0, 1, 2].map(level => gltf.getObjectByName(`${name}_${level}`)?.geometry);
-    if (levels.some(geometry => !geometry)) return null;
-    levels[0].computeBoundingBox();
-    const unit = 1 / levels[0].boundingBox.max.y;
-    kinds[kind] = levels.map(source => {
-      const geometry = source.clone();
-      geometry.scale(unit, unit, unit);
-      const uv = geometry.getAttribute("uv"), position = geometry.getAttribute("position");
-      const colors = new Float32Array(position.count * 3), sway = new Float32Array(position.count);
-      for (let i = 0; i < uv.count; i++) {
-        const u = uv.getX(i), v = 1 - uv.getY(i);
-        uv.setY(i, v);
-        const leaf = !(u < .5 && v > .5), height = Math.max(0, position.getY(i));
-        const shade = leaf ? .84 + .3 * height : .6 + .6 * Math.min(1, height * 1.6);
-        colors.set([shade, shade * (leaf ? 1.03 : .99), shade * (leaf ? .92 : .87)], i * 3);
-        sway[i] = leaf ? 1 : 0;
-      }
-      geometry.setAttribute("color", new T.BufferAttribute(colors, 3));
-      geometry.setAttribute("sway", new T.BufferAttribute(sway, 1));
-      return geometry;
-    });
-  }
-  return kinds;
-}
-
-export function addForest(scene, land, atlas, shore = null) {
+export function addForest(scene, land, atlas, shore = shorePrototypes()) {
   atlas.colorSpace = T.SRGBColorSpace;
   atlas.anisotropy = 2;
   const time = { value: 0 }, seed = random(69173);
@@ -233,7 +203,8 @@ export function addForest(scene, land, atlas, shore = null) {
       mesh.instanceColor?.setUsage(T.DynamicDrawUsage);
       mesh.frustumCulled = false;
       mesh.count = 0;
-      scene.add(reflectInWater(mesh));
+      // Far trees (LOD 2, beyond 44 m) stay out of the water reflection: tiny there, and a draw call less per kind.
+      scene.add(level < 2 ? reflectInWater(mesh) : mesh);
       return mesh;
     });
   });

@@ -378,9 +378,11 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
 .sw-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 4px 12px; margin: 0; padding: 4px 2px 0; font-size: 12px; color: var(--ink-2); }
 .sw-reset { min-height: 40px; padding: 0; border: 0; background: none; color: var(--ink-2); font-size: 12px; text-decoration: underline; cursor: pointer; }
 .sw-reset:hover { color: var(--ink); }
-.sw-save-status, .sw-toast { position: fixed; left: 50%; bottom: 72px; z-index: 60; transform: translateX(-50%); width: max-content; max-width: min(90vw, 440px); margin: 0; padding: 8px 12px;
-  border: 1px solid #b3975d; border-radius: 6px; background: #273322; color: #f0d8a2; font-size: 13px; pointer-events: none; box-shadow: 0 8px 20px #0007; }
-.sw-save-status { bottom: 116px; background: #553820; }
+.sw-save-status { position: fixed; left: 50%; top: max(12px, env(safe-area-inset-top)); z-index: 60; transform: translateX(-50%); width: max-content; max-width: min(92vw, 440px); margin: 0; padding: 7px 12px;
+  border: 1px solid #b3975d; border-radius: 6px; background: #553820f0; color: #f0d8a2; font-size: 13px; line-height: 1.3; pointer-events: none; box-shadow: 0 8px 20px #0007; }
+.sw-toast { position: absolute; left: 50%; top: 10px; z-index: 25; transform: translateX(-50%); width: max-content; max-width: min(92%, 420px); margin: 0; padding: 6px 12px;
+  border: 1px solid #b3975d; border-radius: 6px; background: #273322e8; color: #f0d8a2; font-size: 13px; line-height: 1.3; pointer-events: none; box-shadow: 0 8px 20px #0007; }
+@media (max-width: 640px) { .sw-toast { top: 72px; } }
 
 /* the slim bar for a phone once the scene has scrolled away */
 .sw-mini { display: none; }

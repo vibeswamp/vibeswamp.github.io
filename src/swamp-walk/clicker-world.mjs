@@ -1,5 +1,6 @@
 import * as T from "./vendor/three.mjs";
 import { CABIN } from "./cabin.mjs";
+import { addNeighbourIslet, NEIGHBOUR_SOLIDS } from "./neighbour-islet.mjs";
 import { frogShape } from "./pond-life.mjs";
 import { reflectInWater } from "./water-reflection.mjs";
 import { groundMist } from "./surface.mjs";
@@ -47,7 +48,7 @@ const at = (x, y, z, sx = 1, sy = 1, sz = 1, rx = 0, ry = 0, rz = 0) => new T.Ma
   new T.Vector3(x, y, z), new T.Quaternion().setFromEuler(new T.Euler(rx, ry, rz)), new T.Vector3(sx, sy, sz));
 
 // A reed antenna: three lashed reed poles, a crossbar with a little dish, a red light on top.
-function antennaGeometry(height) {
+export function antennaGeometry(height) {
   const reed = new T.CylinderGeometry(.5, 1, 1, 5), cone = new T.ConeGeometry(1, 1, 9, 1, true), ring = new T.TorusGeometry(1, .3, 3, 8);
   const parts = [];
   for (let i = 0; i < 3; i++) {
@@ -75,30 +76,10 @@ function peatServerGeometry() {
   return merge(parts);
 }
 
-export function addClickerWorld({ scene, pack, shelter, cabin, land }) {
-  const { stages = new Set(), owned = {} } = shelter;
+// What was bought stands inside a hut, in the hut's own coordinates; each prop is solid, so Klyop walks round it.
+// Used for our shack and for a neighbour's (neighbour-home.mjs). `scene` is where the landing models are found.
+export function furnishHut({ scene, pack = null, cabin, owned = {}, stages = new Set(), material }) {
   const bought = id => Number(owned?.[id]) > 0;
-  const era = hutEra(stages);
-  const obstacles = [];
-  const material = groundMist(new T.MeshStandardMaterial({ vertexColors: true, roughness: .82 }));
-  const glows = [];
-
-  if (bought("antenna")) {
-    const spot = ANTENNA[era >= 2 ? 1 : 0];
-    const ground = land.heightAt(spot.x, spot.z);
-    const mast = new T.Mesh(antennaGeometry(spot.height), material);
-    mast.name = "Clicker antenna";
-    mast.position.set(spot.x, ground - .05, spot.z);
-    mast.rotation.y = -.6;
-    scene.add(reflectInWater(mast));
-    const lamp = new T.Mesh(new T.SphereGeometry(.05, 8, 6), new T.MeshBasicMaterial({ color: 0xff6a45 }));
-    lamp.position.set(0, spot.height + .03, 0);
-    mast.add(lamp);
-    glows.push(lamp);
-    obstacles.push({ id: "antenna", x: spot.x, z: spot.z, radius: .12, minY: ground - .1, top: ground + spot.height });
-  }
-
-  // Inside the hut, in its own coordinates. Each prop is solid, so Klyop walks round it.
   const inside = [];
   const place = (object, x, y, z, yaw, footprint) => {
     object.position.set(x, y, z);
@@ -109,7 +90,7 @@ export function addClickerWorld({ scene, pack, shelter, cabin, land }) {
   };
   const mini = (id, scale) => {
     // scenery.mjs has already moved the landing meshes into their LOD objects: take the near level from there.
-    const source = scene.getObjectByName(`Landing-${id}`)?.levels?.[0]?.object ?? pack.getObjectByName(id);
+    const source = scene.getObjectByName(`Landing-${id}`)?.levels?.[0]?.object ?? pack?.getObjectByName(id);
     if (!source?.isMesh) return null;
     // The model keeps its own offset from the landing pack (it stands on y = 0 there); the holder shrinks it.
     const holder = new T.Group();
@@ -156,6 +137,36 @@ export function addClickerWorld({ scene, pack, shelter, cabin, land }) {
     server.name = "Clicker peat server";
     place(server, -1.72, 0, stages.has("server_room") ? .45 : 1.2, Math.PI / 2, [.4, .58, .46]);
   }
+  return inside;
+}
+
+export function addClickerWorld({ scene, pack, shelter, cabin, land }) {
+  const { stages = new Set(), owned = {} } = shelter;
+  const bought = id => Number(owned?.[id]) > 0;
+  const era = hutEra(stages);
+  const obstacles = [];
+  const material = groundMist(new T.MeshStandardMaterial({ vertexColors: true, roughness: .82 }));
+  const glows = [];
+
+  if (bought("antenna")) {
+    const spot = ANTENNA[era >= 2 ? 1 : 0];
+    const ground = land.heightAt(spot.x, spot.z);
+    const mast = new T.Mesh(antennaGeometry(spot.height), material);
+    mast.name = "Clicker antenna";
+    mast.position.set(spot.x, ground - .05, spot.z);
+    mast.rotation.y = -.6;
+    scene.add(reflectInWater(mast));
+    const lamp = new T.Mesh(new T.SphereGeometry(.05, 8, 6), new T.MeshBasicMaterial({ color: 0xff6a45 }));
+    lamp.position.set(0, spot.height + .03, 0);
+    mast.add(lamp);
+    glows.push(lamp);
+    obstacles.push({ id: "antenna", x: spot.x, z: spot.z, radius: .12, minY: ground - .1, top: ground + spot.height });
+  }
+
+  const inside = furnishHut({ scene, pack, cabin, owned, stages, material });
+  // The neighbour's islet: stakes on the empty plot, collision slots for a neighbour's shack (neighbour-home.mjs).
+  addNeighbourIslet(scene);
+  obstacles.push(...NEIGHBOUR_SOLIDS);
   for (const object of inside) object.traverse(child => { if (child.isMesh) reflectInWater(child); });
 
   return {

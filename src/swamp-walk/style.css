@@ -105,6 +105,7 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
   text-shadow: 0 1px 6px #000, 0 1px 12px #000;
 }
 .walk-help-touch { display: none; }
+.walk-help-vault { display: inline-block; max-width: 100%; }
 .swalk:not([data-ready]) .walk-help { visibility: hidden; }
 .walk-status {
   bottom: max(48px, calc(env(safe-area-inset-bottom) + 34px));

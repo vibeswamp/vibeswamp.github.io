@@ -7,6 +7,8 @@ import { addForest, FOREST_ATLAS } from "./forest.mjs";
 import { addForestCurios } from "./forest-curios.mjs";
 import { addDeckArt } from "./deck-art.mjs";
 import { addFarShore } from "./far-shore.mjs";
+// The room (walk-room.mjs) places a neighbour's shack with this; re-exported so the module ships with the world.
+export { addNeighbourHome } from "./neighbour-home.mjs";
 import { PROFILE } from "./quality.mjs";
 import { addFishingRest } from "./lake-art.mjs";
 import { addPondLife, clearLakeAccess, lilyGroups } from "./pond-life.mjs";
@@ -339,7 +341,7 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
       const clump = Math.sin(x * .41 + z * .23) * .5 + Math.sin(x * .17 - z * .37 + 1.3) * .5;
       if (clump < -.1 || reedsRng() > .7) continue;
       if (bridgeDistance(x, z) < 1.7 || trailDistance(x, z) < 1.6 || Math.hypot(x - PIER.x, z - PIER.z) < PIER.radius + 1.2) continue;
-      if (land.noGroundCover?.(x, z) || !clearLakeAccess(land, x, z, .45)) continue;
+      if (land.noGroundCover?.(x, z) || !clearLakeAccess(land, x, z, .45) || land.deck.heightAt(x, z) > -9) continue;
       cattail(x, z, y, .7 + reedsRng() * .85);
     }
   }
@@ -367,7 +369,7 @@ export async function addScenery(scene, land, manager, { sky, shows = () => true
     if (bridgeDistance(x, z) < 1.60 || Math.hypot(x, z - PIER.z) < 3 || trailDistance(x, z) < 1.23) continue;
     if (y > WATER - 0.29) {
       const tall = y < WATER + 0.22;
-      if (tall && rng() < 0.67 && clearLakeAccess(land, x, z, .32)) {
+      if (tall && rng() < 0.67 && clearLakeAccess(land, x, z, .32) && !(land.deck.heightAt(x, z) > -9)) {
         const scale = range(.63, 1.36);
         cattail(x, z, y, scale);
       }

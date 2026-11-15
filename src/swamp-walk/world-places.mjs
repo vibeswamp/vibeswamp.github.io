@@ -17,6 +17,16 @@ export const HOME_TREES = [
   { x: -3.4, z: 30.2 },
 ];
 
+// The neighbour's islet (multiplayer, docs/design/multiplayer.md): a peat islet about 6 x 5 m in the lagoon, in sight of
+// the porch (16 m away, to the right of the sunset), joined to the fishing pier by a footbridge that lands at the
+// neighbour's door. land.mjs raises the islet and its flat top (`floor`), deck.mjs lays the footbridge,
+// neighbour-home.mjs builds the neighbour's shack on it, door to the south toward our home (`turn`, three.js yaw).
+export const NEIGHBOR_ISLET = {
+  x: -3.4, z: 8.0, rx: 3.6, rz: 3.1, radius: 3.0, floor: .42, turn: -Math.PI / 2,
+  // the footbridge: from the fishing pier's north edge to the neighbour's doorstep, 1.25 m wide
+  pier: [[-3.4, 18.75], [-3.35, 10.45]], pierWidth: 1.25,
+};
+
 // Three places a little way off, each with its own face; they are the landmarks of land.mjs LANDMARKS:
 // the stump glade on the west bank by the sound (sunset side), the beaver dam and the ford to the east (running water),
 // the radio hut on the hill to the north (the lookout over the forest).
