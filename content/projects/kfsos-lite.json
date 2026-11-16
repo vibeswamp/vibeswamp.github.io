@@ -9,6 +9,11 @@
     "ru": "Minecraft 1.20.1, Forge"
   },
   "status": "inprogress",
+  "version": {
+    "en": "pre-alpha (build ~40% ready)",
+    "uk": "преальфа (орієнтир ~40%)",
+    "ru": "пре-альфа (готовность ~40%)"
+  },
   "spotlight": true,
   "tint": "#262B30",
   "page": true,
@@ -21,40 +26,46 @@
   "details": {
     "en": [
       "Survival in a world after a catastrophe: ruined cities, zombies, wounds and medicine, weapons, a shelter and layered crafting. The story is led by Chronos. It starts with water, a dressing, a radio panel and the first cargo at a radio tower; then the road leads to the city and to expeditions.",
-      "A PDA opens the Network: signals, operations, district intelligence, supplies and a squad. Recovered materials go into the workshop, the equipment and implants.",
-      "294 mods, 315 with bundled libraries, and 12 of them are our own: the campaign and the PDA, the authored map, weather, rechargeable lights, combat with stuns and shield parries, creatures and bosses, worn gear with effects, illustrated guides, video and music on the loading screen, and fixes for speed and compatibility. Among the big third-party mods are TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat and First Aid. Minecraft 1.20.1, Forge 47.4.23."
+      "A PDA opens the Network: signals, operations, district intelligence, supplies and a squad. Recovered materials go into the workshop, equipment and implants.",
+      "The modpack has 295 mods (316 with bundled libraries), 14 of them our own: the campaign and the PDA, the authored map, weather, rechargeable lights, combat with stuns and shield parries, creatures and bosses, worn gear with effects, illustrated guides, video and music on the loading screen, and speed and compatibility fixes. It holds 80 quest chapters, 339 guide entries, 18 TACZ weapon packs and 15 loading-screen tracks. Minecraft 1.20.1, Forge 47.4.23.",
+      "As of mid-November it is a pre-alpha, about 40% done. The starting district, lighter hordes, searching bodies and the first weapon and repair loops already work. Ahead are a full playthrough of chapters 1 to 3 and getting ready for an open test."
     ],
     "uk": [
       "Виживання у світі після катастрофи: зруйновані міста, зомбі, поранення й медицина, зброя, притулок і багатоступеневе ремесло. Історію веде Хронос. Усе починається з води, перев'язки, радіопанелі й першого вантажу біля радіовежі, а далі дорога веде до міста й на вилазки.",
       "КПК відкриває «Мережу»: сигнали, операції, відомості про райони, постачання й загін. Знайдені матеріали йдуть у майстерню, спорядження й імпланти.",
-      "294 моди, а з вкладеними бібліотеками 315, і 12 із них наші: кампанія та КПК, авторська мапа, погода, фонарі з підзарядкою, бій з оглушенням і парируванням щитом, істоти й боси, одяг з ефектами, ілюстровані довідки, відео й музика на екрані завантаження та виправлення швидкодії й сумісності. Серед великих сторонніх модів TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat і First Aid. Minecraft 1.20.1, Forge 47.4.23."
+      "У збірці 295 модів (316 із вкладеними бібліотеками), із них 14 наші: кампанія та КПК, авторська мапа, погода, ліхтарі з підзарядкою, бій з оглушенням і парируванням щитом, істоти й боси, одяг з ефектами, ілюстровані довідки, відео й музика на екрані завантаження, виправлення швидкодії та сумісності. У ній 80 розділів квестів, 339 статей довідника, 18 пакетів зброї TACZ і 15 треків на завантаженні. Minecraft 1.20.1, Forge 47.4.23.",
+      "На середину листопада це преальфа, готово приблизно 40%. Уже працюють стартовий район, полегшені орди, обшук тіл і перші цикли зброї та ремонту. Попереду повне проходження розділів 1–3 і підготовка до відкритого тесту."
     ],
     "ru": [
       "Выживание в мире после катастрофы: разрушенные города, зомби, ранения и медицина, оружие, убежище и многоступенчатое ремесло. Историю ведёт Хронос. Всё начинается с воды, перевязки, радиопанели и первого груза у радиовышки, а дальше дорога ведёт к городу и на вылазки.",
       "КПК открывает «Сеть»: сигналы, операции, сведения о районах, снабжение и отряд. Найденные материалы идут в мастерскую, снаряжение и импланты.",
-      "294 мода, а с вложенными библиотеками 315, и 12 из них наши: кампания и КПК, авторская карта, погода, фонари с подзарядкой, бой с оглушением и парированием щитом, существа и боссы, одежда с эффектами, иллюстрированные справки, видео и музыка на экране загрузки и исправления скорости и совместимости. Среди крупных сторонних модов TACZ, Create, Immersive Engineering, Lost Cities, Cold Sweat и First Aid. Minecraft 1.20.1, Forge 47.4.23."
+      "В сборке 295 модов (316 с вложенными библиотеками), из них 14 наши: кампания и КПК, авторская карта, погода, фонари с подзарядкой, бой с оглушением и парированием щитом, существа и боссы, одежда с эффектами, иллюстрированные справки, видео и музыка на экране загрузки, исправления скорости и совместимости. В ней 80 глав квестов, 339 статей справочника, 18 оружейных пакетов TACZ и 15 треков на загрузке. Minecraft 1.20.1, Forge 47.4.23.",
+      "На середину ноября это пре-альфа, готово примерно 40%. Уже работают стартовый район, облегчённые орды, обыск тел и первые циклы оружия и ремонта. Впереди полное прохождение глав 1–3 и подготовка к открытому тесту."
     ]
   },
   "plans": {
     "en": [
-      "Next: checking the story in the game chapter by chapter.",
-      "The PDA interface and the menus in one style.",
-      "Cars and wrecks on the roads, and big hordes without frame drops.",
-      "Screenshots and video for this page are being prepared.",
-      "There is no release date or platform yet."
+      "Run a full in-game playthrough of story chapters 1 to 3, boss combat, and weak-GPU memory checks (lowering the texture atlas limit for 16K caps).",
+      "Move the remaining four patched third-party mods into separate KFSOS add-on code so the release manifest uses official CurseForge and Modrinth links only.",
+      "Resolve weapon pack duplicates, shader/asset licences, and a dark zombie silhouette rendering bug in the starting world before test import in CurseForge.",
+      "Unify the PDA screens, station menus, and vehicle wrecks once gameplay routes are verified in a fresh run.",
+      "Capture real screenshots and gameplay video for this page after the current visual look is tested.",
+      "No release date or public platform yet."
     ],
     "uk": [
-      "Далі перевірка сюжету в грі глава за главою.",
-      "Інтерфейс КПК і меню в одному стилі.",
-      "Машини й остови на дорогах і великі орди без просідання кадрів.",
-      "Скриншоти й відео для цієї сторінки готуються.",
+      "Пройти наживо сюжетні глави 1–3, перевірити боївку босів і витрати пам'яті на слабких відеокартах (ліміт текстурного атласу для 16K).",
+      "Винести правки з чотирьох сторонніх модів у власний шар коду, щоб маніфест випуску посилався тільки на офіційні сторінки.",
+      "Закрити дублі у збройових пакетах, ліцензії шейдера й асетів та причину темних силуетів зомбі в стартовому світі до тестового імпорту в CurseForge.",
+      "Довести до єдиного вигляду екрани КПК, станції, транспорт і дорожні остови після живої перевірки маршруту.",
+      "Зняти реальні скріншоти й відео для цієї сторінки, коли поточний вигляд пройде перевірку.",
       "Дати й майданчика виходу поки немає."
     ],
     "ru": [
-      "Дальше проверка сюжета в игре глава за главой.",
-      "Интерфейс КПК и меню в одном стиле.",
-      "Машины и остовы на дорогах и большие орды без просадки кадров.",
-      "Скриншоты и видео для этой страницы готовятся.",
+      "Пройти вживую сюжетные главы 1–3, проверить боёвку боссов и потребление памяти на слабых видеокартах (ограничение атласа 16K).",
+      "Вынести правки из четырёх чужих модов в свой слой кода, чтобы релизный манифест ссылался только на официальные страницы.",
+      "Разобрать дубли в оружейных пакетах, лицензии шейдера и ассетов, а также причину тёмных силуэтов зомби в стартовом районе до пробного импорта в CurseForge.",
+      "Привести к единому виду экраны КПК, станции, транспорт и остовы на дорогах после живого прогона.",
+      "Снять настоящие скриншоты и видео для этой страницы, когда текущий облик будет проверен.",
       "Даты и площадки выхода пока нет."
     ]
   },

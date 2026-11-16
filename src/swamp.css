@@ -382,7 +382,8 @@ html.js body.page-swamp, body.page-swamp { padding-bottom: 0; }
   border: 1px solid #b3975d; border-radius: 6px; background: #553820f0; color: #f0d8a2; font-size: 13px; line-height: 1.3; pointer-events: none; box-shadow: 0 8px 20px #0007; }
 .sw-toast { position: absolute; left: 50%; top: 10px; z-index: 25; transform: translateX(-50%); width: max-content; max-width: min(92%, 420px); margin: 0; padding: 6px 12px;
   border: 1px solid #b3975d; border-radius: 6px; background: #273322e8; color: #f0d8a2; font-size: 13px; line-height: 1.3; pointer-events: none; box-shadow: 0 8px 20px #0007; }
-@media (max-width: 640px) { .sw-toast { top: 72px; } }
+/* a phone has the toast under the counter, where Klyop speaks too: while a toast shows, his line moves below it */
+@media (max-width: 640px) { .sw-toast { top: 72px; } .sw-toast:not([hidden]) + .sw-say { top: 114px; } }
 
 /* the slim bar for a phone once the scene has scrolled away */
 .sw-mini { display: none; }

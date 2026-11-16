@@ -215,18 +215,19 @@
 .swalk[data-hud][data-moved] .walk-help { opacity: 0; }
 
 @media (pointer: coarse) {
-  /* Compact bottom-left stick zone so center-screen drags turn the camera instead of walking. */
+  /* The stick starts wherever the thumb lands in the lower left; the centre and the right of the screen stay for the
+     camera. 158x168 px at the very bottom (15.11) missed a thumb resting at a usual height on a tall phone. */
   .swalk[data-hud] .walk-touch:not([hidden]) { display: block; inset: var(--walk-bar) 0 0 0; }
   .swalk[data-hud] .walk-stick {
     position: absolute;
-    left: max(8px, env(safe-area-inset-left, 0px));
-    bottom: max(18px, calc(env(safe-area-inset-bottom, 0px) + 14px));
-    width: min(158px, 39%);
-    height: min(168px, 31%);
+    left: 0;
+    bottom: 0;
+    width: min(210px, 48%);
+    height: min(360px, 42%);
   }
   .swalk[data-hud] .walk-stick-ring {
-    left: var(--stick-origin-x, 62px);
-    top: var(--stick-origin-y, calc(100% - 66px));
+    left: var(--stick-origin-x, max(78px, calc(env(safe-area-inset-left, 0px) + 78px)));
+    top: var(--stick-origin-y, calc(100% - max(112px, calc(env(safe-area-inset-bottom, 0px) + 104px))));
     border-color: var(--hud-edge);
     background: rgb(35 28 18 / .42);
     opacity: .3;
@@ -345,6 +346,7 @@
   white-space: nowrap;
   transform: translate(-50%, -100%);
 }
+.swalk[data-hud] .walk-nameplate[hidden] { display: none; }
 .swalk[data-hud] .walk-nameplate::before { content: ""; flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--pouch); }
 .swalk[data-hud] .walk-nameplate[data-ghost] { opacity: .55; }
 .swalk[data-hud] .walk-room-toggle[data-room] { border-color: var(--hud-moss); }
@@ -452,7 +454,10 @@
   background: rgb(33 26 17 / .92);
   color: #ffe3b0;
   font: 600 .8rem/1.2 var(--hud-label);
-  white-space: nowrap;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  text-align: center;
+  overflow-wrap: anywhere;
   pointer-events: none;
   box-shadow: 0 8px 24px rgb(0 0 0 / .45);
 }
@@ -532,7 +537,7 @@
   border-color: #ffe3b0;
   box-shadow: 0 0 0 2px #211a11, 0 0 0 4px var(--hud-lamp);
 }
-.swalk[data-look-open] :is(.walk-touch, .walk-emotes, .walk-sortie, .walk-status) { visibility: hidden; }
+.swalk[data-look-open] :is(.walk-touch, .walk-emotes, .walk-nameplates, .walk-sortie, .walk-status) { visibility: hidden; }
 @media (max-width: 640px) {
   .swalk[data-hud] .walk-look {
     left: 10px;

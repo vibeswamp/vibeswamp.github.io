@@ -76,6 +76,9 @@ export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin,
 
   let mode = "invite";
   const chosen = () => radios.find(radio => radio.checked)?.value;
+  function setColor(color) {
+    for (const radio of radios) radio.checked = radio.value === color;
+  }
   function read() {
     const profile = parse({ nick: nick.value, color: chosen() });
     error.textContent = profile ? "" : copy.badNick;
@@ -90,7 +93,7 @@ export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin,
     form.hidden = inRoom;
     if (profile) {
       nick.value = profile.nick;
-      for (const radio of radios) radio.checked = radio.value === profile.color;
+      setColor(profile.color);
     }
     error.textContent = "";
     primary.hidden = inRoom;
@@ -144,7 +147,19 @@ export function createRoomDialog(world, copy, colors, parse, { onInvite, onJoin,
     navigator.share?.({ title: document.title, url: link.value }).catch(() => {});
   });
   // back to the scene after the window, so the canvas keeps the keys and no button keeps a focus ring
-  dialog.addEventListener("close", () => document.getElementById("swalk-view")?.focus({ preventScroll: true }));
+  dialog.addEventListener("close", () => {
+    if (!dialog.open && !world.hasAttribute("data-look-open")) {
+      document.getElementById("swalk-view")?.focus({ preventScroll: true });
+    }
+  });
 
-  return { show, setLink, setStatus, get open() { return dialog.open; }, get mode() { return mode; } };
+  return {
+    show, setLink, setStatus, setColor,
+    resume() {
+      if (!dialog.open) dialog.showModal();
+      openLook?.focus({ preventScroll: true });
+    },
+    get open() { return dialog.open; },
+    get mode() { return mode; },
+  };
 }

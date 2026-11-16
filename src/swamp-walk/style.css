@@ -142,8 +142,8 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .walk-stick {
   position: relative;
   flex: none;
-  width: min(36vw, 134px);
-  height: 116px;
+  width: min(42vw, 154px);
+  height: 130px;
   touch-action: none;
   pointer-events: auto;
 }
@@ -151,11 +151,11 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
   position: absolute;
   display: grid;
   place-items: center;
-  left: var(--stick-origin-x, 38px);
-  top: var(--stick-origin-y, calc(100% - 38px));
+  left: var(--stick-origin-x, 46px);
+  top: var(--stick-origin-y, calc(100% - 46px));
   transform: translate(-50%, -50%);
-  width: 72px;
-  height: 72px;
+  width: 92px;
+  height: 92px;
   border-radius: 50%;
   background: #13271a99;
   border: 1px solid #f9dfa879;
@@ -165,8 +165,8 @@ a:focus-visible, button:focus-visible, canvas:focus-visible { outline: 2px solid
 .walk-stick[data-active] .walk-stick-ring { opacity: 1; }
 .walk-stick-knob {
   transform: translate(var(--stick-x, 0px), var(--stick-y, 0px));
-  width: 26px;
-  height: 26px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   background: #ffe1a7b3;
   pointer-events: none;

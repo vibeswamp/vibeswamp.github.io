@@ -137,8 +137,8 @@ function startClicker(host, textEl, lockedStorage) {
 <div class="sw-fireflies" aria-hidden="true">${Array.from({ length: 7 }, (_, i) => `<i style="--i:${i}"></i>`).join("")}</div>
 <div class="sw-flies"></div>
 <div class="sw-pops" aria-hidden="true"></div>
-<p class="sw-say" aria-live="polite"></p>
 <p class="sw-toast" role="status" hidden></p>
+<p class="sw-say" aria-live="polite"></p>
 <div class="sw-hud">
 <div class="sw-gauge"><p class="sw-count"><span class="sw-num num">0</span> <span class="sw-unit">${T.flies}</span></p><p class="sw-rate"><span class="num sw-rate-n">0</span> ${T.perSec}<span class="sw-income-detail"></span></p></div>
 <div class="sw-rank" title="${U.rankBonus}"><img class="sw-rank-img" src="${outfitPic(0)}" alt="" draggable="false" decoding="async"><div class="sw-rank-txt"><p class="sw-rank-t">${T.rank} <span class="num sw-rank-no">1</span><span class="sw-rank-name"></span></p><progress class="sw-rank-bar" max="100" value="0" aria-label="${T.rank}"></progress><p class="sw-rank-next"></p><p class="sw-rank-bonus">${U.rankBonus}</p></div></div>

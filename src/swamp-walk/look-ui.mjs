@@ -92,8 +92,9 @@ export function createLookPanel({ world, button, copy, colors, initialLook, init
     panel.hidden = !open;
     world.toggleAttribute("data-look-open", open);
     button?.setAttribute("aria-expanded", String(open));
+    const focusTarget = open ? done : document.getElementById("swalk-view");
+    focusTarget?.focus({ preventScroll: true });
     onToggle?.(open);
-    if (!open) document.getElementById("swalk-view")?.focus({ preventScroll: true });
   }
 
   if (button) {

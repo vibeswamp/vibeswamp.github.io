@@ -13,25 +13,30 @@ export function applyKlyopPresentation(T, rig) {
 
   const { position, skinIndex, skinWeight } = body.geometry.attributes;
   const mask = new Float32Array(position.count * 4);
+  const coatCoverage = new Float32Array(position.count);
   const handNames = new Set(["hand_r", "hand_l"]);
   const forearmNames = new Set(["lowerarm_r", "lowerarm_l"]);
   const boneNames = body.skeleton.bones.map(bone => bone.name);
   const smooth = T.MathUtils.smoothstep;
   for (let i = 0; i < position.count; i++) {
     const x = Math.abs(position.getX(i)), y = position.getY(i), z = position.getZ(i);
-    let wrist = 0, arm = 0;
+    let wrist = 0, arm = 0, head = 0;
     for (let slot = 0; slot < 4; slot++) {
       const bone = boneNames[skinIndex.getComponent(i, slot)];
       const weight = skinWeight.getComponent(i, slot);
       if (handNames.has(bone)) wrist += weight;
       if (forearmNames.has(bone)) arm += weight;
+      if (bone === "Head") head += weight;
     }
     mask[4 * i] = smooth(y, .875, .96) * (1 - smooth(y, 1.087, 1.18)) * smooth(z, .025, .12);
     mask[4 * i + 1] = smooth(wrist + .62 * arm * smooth(x, .28, .41), .25, .86);
     mask[4 * i + 2] = 1 - smooth(y, .065, .128);
     mask[4 * i + 3] = y;
+    // The face and hair share the body mesh and texture, but follow the head bone.
+    coatCoverage[i] = 1 - smooth(head, .2, .85);
   }
   body.geometry.setAttribute("walkSkinFinish", new T.BufferAttribute(mask, 4));
+  body.geometry.setAttribute("walkCoatCoverage", new T.BufferAttribute(coatCoverage, 1));
   const clothWetness = { value: 0 };
   const coatTint = { value: new T.Vector3(1, 1, 1) };
   const skinTint = { value: new T.Vector3(1, 1, 1) };
@@ -42,12 +47,13 @@ export function applyKlyopPresentation(T, rig) {
     shader.uniforms.klyopClothWetness = clothWetness;
     shader.uniforms.klyopCoatTint = coatTint;
     shader.uniforms.klyopSkinTint = skinTint;
-    shader.vertexShader = "attribute vec4 walkSkinFinish; varying vec4 vWalkSkinFinish;\n" +
+    shader.vertexShader = "attribute vec4 walkSkinFinish; attribute float walkCoatCoverage; varying vec4 vWalkSkinFinish; varying float vWalkCoatCoverage;\n" +
       shader.vertexShader.replace("#include <begin_vertex>", `
         #include <begin_vertex>
         vWalkSkinFinish = walkSkinFinish;
+        vWalkCoatCoverage = walkCoatCoverage;
       `);
-    shader.fragmentShader = "uniform float klyopClothWetness; uniform vec3 klyopCoatTint, klyopSkinTint; varying vec4 vWalkSkinFinish;\n" + shader.fragmentShader
+    shader.fragmentShader = "uniform float klyopClothWetness; uniform vec3 klyopCoatTint, klyopSkinTint; varying vec4 vWalkSkinFinish; varying float vWalkCoatCoverage;\n" + shader.fragmentShader
       .replace("#include <color_fragment>", `
         #include <color_fragment>
         float skinCoverage = clamp(max(vWalkSkinFinish.x, max(vWalkSkinFinish.y, vWalkSkinFinish.z)), 0.0, 1.0);
@@ -57,7 +63,7 @@ export function applyKlyopPresentation(T, rig) {
           + vec3(-.20, .27, -.03) * vWalkSkinFinish.z;
         diffuseColor.rgb *= 1.0 + skinBalance * warmTexel;
         diffuseColor.rgb *= mix(vec3(1.0), klyopSkinTint, skinCoverage);
-        float coatMask = (1.0 - skinCoverage) * (1.0 - smoothstep(1.03, 1.12, vWalkSkinFinish.w));
+        float coatMask = (1.0 - skinCoverage) * vWalkCoatCoverage;
         float coatActive = clamp(length(klyopCoatTint - vec3(1.0)) * 4.0, 0.0, 1.0);
         float clothLuma = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114));
         vec3 dyedCloth = klyopCoatTint * (0.05 + 2.8 * clothLuma);
@@ -91,7 +97,7 @@ export function applyKlyopPresentation(T, rig) {
         #include <opaque_fragment>
       `);
   };
-  finish.customProgramCacheKey = () => "vibeswamp-klyop-dusk-v5";
+  finish.customProgramCacheKey = () => "vibeswamp-klyop-dusk-v6";
   body.material = finish;
 
   belt.traverse(object => {

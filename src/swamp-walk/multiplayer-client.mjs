@@ -6,7 +6,7 @@
 //   const room = joinRoom({ code, profile: { nick, color, hat }, house: { stage, items }, build, onEvent });
 //   every frame:   room.setPose({ x, y, z, h, a });            // sends at most 10 a second, nothing while standing still
 //                  for (const n of room.sample()) drawNeighbour(n);   // smoothed positions of the others
-//   room.emote(0..3); room.leave();
+//   room.emote(0..3); room.setAppearance({ color, hat }); room.leave();
 //
 // Events (onEvent({ type, ... }) or room.on(type, fn)):
 //   status  { status: "connecting" | "open" | "reconnecting" | "full" | "version" | "error" | "closed" }
@@ -30,8 +30,6 @@ export const DEFAULT_SERVER = "wss://vibeswamp-rooms.vibeswamp-rooms.workers.dev
 export const SEND_HZ = 10;          // poses a second at most
 export const RENDER_DELAY = 120;    // ms: neighbours are drawn this far in the past, so there is always a next point
 export const EXTRAPOLATE = 300;     // ms: after the last point they glide on by their speed at most this long
-export const GHOST_AFTER = 6000;    // ms without news: the neighbour turns half transparent
-export const FORGET_AFTER = 60000;  // ms without news and without a «lost»: gone
 
 export function makeRoomCode(random = Math.random) {
   let s = "";
@@ -66,7 +64,7 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
     try { onEvent?.(ev); } catch (e) { console.error(e); }
     for (const fn of handlers.get(type) ?? []) { try { fn(ev); } catch (e) { console.error(e); } }
   };
-  const peers = new Map();   // slot -> { slot, nick, color, hat, house, lost, seen, points: [{ t, x, y, z, h, a }] }
+  const peers = new Map();   // slot -> { slot, nick, color, hat, house, lost, points: [{ t, x, y, z, h, a }] }
   const room = { code, url, status: "connecting", you: null, peers };
   const setStatus = (s) => { if (room.status !== s) { room.status = s; emit("status", { status: s }); } };
 
@@ -74,12 +72,14 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
   room.rtt = null;   // ms to the server and back, measured with the keep-alive ping
   let last = null, lastSent = 0, pending = null, idleSent = true, later = 0;
 
-  const hello = () => ({ t: "hello", v: PROTOCOL, pid: tabId(), build, nick: profile?.nick, color: profile?.color, hat: profile?.hat ?? null,
+  const pid = tabId();
+  let { color, hat = null } = profile ?? {};
+  const hello = () => ({ t: "hello", v: PROTOCOL, pid, build, nick: profile?.nick, color, hat,
     house: { stage: house?.stage ?? 0, items: (house?.items ?? []).slice(0, MAX_ITEMS) } });
   const send = (msg) => { if (ws?.readyState === 1) { ws.send(typeof msg === "string" ? msg : JSON.stringify(msg)); return true; } return false; };
   const upsert = (p, extra = {}) => {
     const cur = peers.get(p.s) ?? { slot: p.s, points: [] };
-    Object.assign(cur, { nick: p.nick, color: p.color, hat: p.hat, house: p.house, lost: !!p.lost, seen: performance.now(), ...extra });
+    Object.assign(cur, { nick: p.nick, color: p.color, hat: p.hat, house: p.house, lost: !!p.lost, ...extra });
     peers.set(p.s, cur);
     return cur;
   };
@@ -102,7 +102,7 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
         for (const p of m.peers ?? []) upsert(p);
         setStatus("open");
         emit("room", { you: m.you, peers: [...peers.values()] });
-        if (last) { idleSent = false; flush(true); }   // tell the others where we are right away
+        if (last) { pending = last; flush(true); }   // also send a stationary pose after reconnecting
         clearInterval(pingTimer);
         pingTimer = setInterval(ping, 25000);   // keeps phone networks from dropping a quiet socket
         ping();
@@ -112,7 +112,7 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
       } else if (m.t === "pose") {
         const p = peers.get(m.s);
         if (!p) return;
-        p.seen = now; p.lost = false;
+        if (p.lost) return;
         p.points.push({ t: now, ...m.p });
         if (p.points.length > 24) p.points.splice(0, p.points.length - 24);
       } else if (m.t === "emote") {
@@ -150,7 +150,7 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
 
   const flush = (force = false) => {
     const now = performance.now();
-    if (!pending) return;
+    if (!pending || room.status !== "open") return;
     if (!force && now - lastSent < 1000 / SEND_HZ) {
       // the last pose (he stopped) must go out even if no frame comes after it: a paused game, a tab put away
       if (!later) later = setTimeout(() => { later = 0; flush(); }, 1000 / SEND_HZ - (now - lastSent) + 1);
@@ -174,12 +174,21 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
   const ping = () => { if (send("ping")) { pingAt = performance.now(); clearTimeout(watch); watch = setTimeout(dead, 10000); } };
   room.measure = ping;
   room.emote = (e) => { if (Number.isInteger(e) && e >= 0 && e < EMOTES) send({ t: "emote", e }); };
+  room.setAppearance = ({ color: nextColor, hat: nextHat }) => {
+    if (left || (color === nextColor && hat === nextHat)) return;
+    color = nextColor;
+    hat = nextHat;
+    if (ws?.readyState === 1) {
+      // Appearance is sent in hello. Closing without bye lets the same tab reclaim its room slot.
+      setStatus("reconnecting");
+      ws.close(1000, "appearance changed");
+    }
+  };
 
   // where to draw each neighbour now: RENDER_DELAY in the past, between two received points, or a short glide after
   room.sample = (now = performance.now()) => {
     const out = [];
     for (const p of peers.values()) {
-      if (!p.lost && now - p.seen > FORGET_AFTER) { peers.delete(p.slot); emit("leave", { slot: p.slot }); continue; }
       const pts = p.points;
       if (!pts.length) continue;
       const t = now - RENDER_DELAY;
@@ -199,8 +208,8 @@ export function joinRoom({ code, server, profile, house = { stage: 0, items: [] 
           } else s = B;
         }
       }
-      const quiet = now - p.seen;
-      out.push({ slot: p.slot, nick: p.nick, color: p.color, hat: p.hat, house: p.house, ...s, ghost: p.lost || quiet > GHOST_AFTER, alpha: p.lost || quiet > GHOST_AFTER ? 0.45 : 1 });
+      // A stationary player stops sending poses. Only the room server reports a lost or expired slot.
+      out.push({ slot: p.slot, nick: p.nick, color: p.color, hat: p.hat, house: p.house, ...s, ghost: p.lost, alpha: p.lost ? 0.45 : 1 });
     }
     return out;
   };

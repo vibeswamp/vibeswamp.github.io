@@ -43,9 +43,8 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
   const peers = new Map();
   const tags = document.createElement("div");
   tags.className = "walk-nameplates";
-  tags.setAttribute("aria-hidden", "true");
   world.append(tags);
-  let dirtyLookInRoom = false;
+  let lookFromRoom = false;
   let nearestPeer = null;
   let lastPlayer = { x: 0, y: 0, z: 0 };
   let lastMyEmoteAt = -1e9;
@@ -124,27 +123,20 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     onChange(next) {
       look = writeLook(storage, next);
       character.setLook(look);
-      if (room?.status === "open") dirtyLookInRoom = true;
     },
     onColorChange(color) {
       character.setPouchColor(POUCH_COLORS[color]);
-      if (profile) {
-        profile = { ...profile, color };
-        try { storage?.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch {}
-      } else {
-        profile = { nick: copy.defaultNick, color };
-      }
-      if (room?.status === "open") dirtyLookInRoom = true;
+      profile = { nick: profile?.nick ?? copy.defaultNick, color };
+      try { storage?.setItem(PROFILE_KEY, JSON.stringify(profile)); } catch {}
+      if (lookFromRoom) dialog.setColor(color);
     },
-    onToggle(open) {
-      if (!open && dirtyLookInRoom && room?.status === "open") {
-        dirtyLookInRoom = false;
-        const code = room.code;
-        const active = profile ?? { nick: copy.defaultNick, color: "copper" };
-        room.leave();
-        room = null;
-        for (const slot of [...peers.keys()]) forget(slot);
-        open(active, `#room=${code}`);
+    onToggle(isOpen) {
+      if (isOpen) return;
+      room?.setAppearance({ color: profile?.color ?? "copper", hat: encodeLook(look) });
+      if (lookFromRoom) {
+        lookFromRoom = false;
+        dialog.resume();
+        refresh();
       }
     },
   });
@@ -153,7 +145,10 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     onInvite(next) { remember(next); open(next, null); },
     onJoin(next) { remember(next); open(next, location.hash); },
     onLeave: leave,
-    onOpenLook: () => lookUi.show(),
+    onOpenLook() {
+      lookFromRoom = true;
+      lookUi.show();
+    },
   });
   button.textContent = copy.button;
   // Emotes (stage 3) + nearby high-five interaction
@@ -236,6 +231,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
       const el = document.createElement("span");
       el.className = "walk-bubble";
       el.hidden = true;
+      el.setAttribute("aria-hidden", "true");
       tags.append(el);
       bubble = { el, until: 0, x: 0, y: 0, z: 0, seen: false };
       bubbles.set(key, bubble);
@@ -244,7 +240,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     bubble.until = performance.now() + BUBBLE_MS;
   }
   addEventListener("keydown", event => {
-    if (!room || dialog.open || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
+    if (!room || dialog.open || lookUi.open || event.repeat || event.ctrlKey || event.metaKey || event.altKey) return;
     if (/^(INPUT|TEXTAREA|SELECT)$/.test(event.target?.tagName)) return;
     const index = "1234".indexOf(event.key);
     if (index >= 0) sendEmote(index);
@@ -363,6 +359,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
   }
 
   function forget(slot) {
+    lastPeerEmoteAt.delete(slot);
     const peer = peers.get(slot);
     if (!peer) return;
     peer.actor?.dispose();
@@ -380,7 +377,7 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     tag.addEventListener("click", () => {
       if (!tag.hasAttribute("data-near")) return;
       const info = room?.peers.get(slot);
-      if (info && peer.shown) triggerMutualInteraction({ slot, nick: info.nick, x: peer.shown.x, y: peer.shown.y ?? lastPlayer.y, z: peer.shown.z });
+      if (info && !info.lost && peer.shown) triggerMutualInteraction({ slot, nick: info.nick, ...peer.shown });
     });
     tags.append(tag);
     peer = { actor: null, tag, shown: null, color: null, hat: null };
@@ -400,12 +397,13 @@ export function createWalkRoom({ world, scene, camera, character, floorAt, stora
     head.project(camera);
     tag.hidden = Math.abs(head.x) > 1 || Math.abs(head.y) > 1 || head.z > 1;
     if (tag.hidden) return;
-    const near = dist < NEAR_RANGE;
+    const near = !n.ghost && dist < NEAR_RANGE && room?.status === "open";
     const label = dist >= 4 ? `${n.nick} · ${Math.round(dist)} м` : n.nick;
     if (tag.textContent !== label) tag.textContent = label;
     tag.style.setProperty("--pouch", POUCH_COLORS[n.color] ?? POUCH_COLORS.copper);
     tag.toggleAttribute("data-ghost", Boolean(n.ghost));
     tag.toggleAttribute("data-near", near);
+    tag.disabled = !near;
     // at the screen's edge the tag stays whole instead of being cut in half
     tag.style.left = `clamp(3.4em, ${((head.x + 1) * 50).toFixed(2)}%, calc(100% - 3.4em))`;
     tag.style.top = `${((1 - head.y) * 50).toFixed(2)}%`;
