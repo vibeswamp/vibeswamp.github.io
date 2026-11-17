@@ -1,50 +1,50 @@
 {
-  "fetchedAt": "2026-11-16",
+  "fetchedAt": "2026-11-17",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 292,
-      "lifetimeSubscriptions": 362,
-      "favorited": 44,
-      "views": 1457,
+      "subscriptions": 300,
+      "lifetimeSubscriptions": 373,
+      "favorited": 45,
+      "views": 1478,
       "created": "2026-10-18",
-      "updated": "2026-11-12"
+      "updated": "2026-11-17"
     },
     "seamless-world": {
-      "subscriptions": 223,
-      "lifetimeSubscriptions": 308,
-      "favorited": 93,
-      "views": 1675,
+      "subscriptions": 226,
+      "lifetimeSubscriptions": 311,
+      "favorited": 95,
+      "views": 1697,
       "created": "2026-10-19",
       "updated": "2026-11-12"
     },
     "trodden-trails": {
-      "subscriptions": 148,
-      "lifetimeSubscriptions": 163,
+      "subscriptions": 154,
+      "lifetimeSubscriptions": 169,
       "favorited": 20,
-      "views": 516,
+      "views": 526,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "belt-lantern": {
-      "downloads": 907,
+      "downloads": 910,
       "versions": 4,
       "created": "2026-04-03",
       "updated": "2026-04-03",
-      "counted": "2026-11-16"
+      "counted": "2026-11-17"
     },
     "ancestral-ruins": {
       "subscriptions": 23,
       "lifetimeSubscriptions": 27,
       "favorited": 9,
-      "views": 197,
+      "views": 206,
       "created": "2026-10-31",
-      "updated": "2026-11-13"
+      "updated": "2026-11-17"
     },
     "ancient-obsession": {
-      "subscriptions": 15,
-      "lifetimeSubscriptions": 20,
+      "subscriptions": 16,
+      "lifetimeSubscriptions": 21,
       "favorited": 2,
-      "views": 255,
+      "views": 261,
       "created": "2026-10-31",
       "updated": "2026-11-12"
     },
@@ -52,25 +52,33 @@
       "subscriptions": 5,
       "lifetimeSubscriptions": 6,
       "favorited": 2,
-      "views": 140,
+      "views": 143,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "told-twice": {
-      "subscriptions": 29,
-      "lifetimeSubscriptions": 31,
+      "subscriptions": 32,
+      "lifetimeSubscriptions": 34,
       "favorited": 7,
-      "views": 209,
+      "views": 222,
       "created": "2026-10-31",
-      "updated": "2026-11-07"
+      "updated": "2026-11-17"
     },
     "shelf-life": {
-      "subscriptions": 42,
-      "lifetimeSubscriptions": 55,
-      "favorited": 5,
-      "views": 265,
+      "subscriptions": 45,
+      "lifetimeSubscriptions": 59,
+      "favorited": 6,
+      "views": 290,
       "created": "2026-11-08",
-      "updated": "2026-11-08"
+      "updated": "2026-11-17"
+    },
+    "rinse-repeat": {
+      "subscriptions": 20,
+      "lifetimeSubscriptions": 20,
+      "favorited": 3,
+      "views": 99,
+      "created": "2026-11-12",
+      "updated": "2026-11-16"
     }
   }
 }

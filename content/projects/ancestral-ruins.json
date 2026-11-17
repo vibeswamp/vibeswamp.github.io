@@ -4,15 +4,15 @@
   "name": "Ancestral Ruins",
   "kind": "mod",
   "game": {
-    "en": "RimWorld 1.7",
-    "uk": "RimWorld 1.7",
-    "ru": "RimWorld 1.7"
+    "en": "RimWorld 1.7 and 1.6",
+    "uk": "RimWorld 1.7 і 1.6",
+    "ru": "RimWorld 1.7 и 1.6"
   },
   "status": "released",
   "version": {
-    "en": "0.5.0, beta",
-    "uk": "0.5.0, бета",
-    "ru": "0.5.0, бета"
+    "en": "0.6.0, beta",
+    "uk": "0.6.0, бета",
+    "ru": "0.6.0, бета"
   },
   "workshopId": "3831032590",
   "page": true,
@@ -31,7 +31,7 @@
   "details": {
     "en": [
       "A colony is recorded when you leave it, when everyone has died, when you press the button on your settlement on the world map, and also when you save the game, once it is older than 15 days. Records stay on your computer: nothing is sent or downloaded.",
-      "Ruins settle on land like the one where the colony stood, 5–25 tiles from your new colony: a desert colony will not end up near the pole. With \"Ask at start\" on, you choose how many past colonies come back.",
+      "Ruins settle on land like the one where the colony stood, 5–25 tiles from your new colony: a desert colony will not end up near the pole. With \"Ask at start\" on, you choose how many past colonies come back. A separate setting puts the ruin at the same latitude and longitude where the colony stood, in a world with any seed.",
       "A strong past colony may leave descendants nearby: a poor faction with its old colour and ideology that grows angry or warm depending on how you treat the ruins and graves.",
       "The ruins hold walls, doors, floors and roofs aged 50 to 300 years, broken devices, graves of your old colonists with their names and stories, and sculptures with their old titles.",
       "Your fallen colonists lie in the ruins where they fell, with their weapons. Any resurrection brings them back into your colony.",
@@ -39,7 +39,7 @@
     ],
     "uk": [
       "Колонія записується, коли ви її покидаєте, коли всі загинули, коли ви натискаєте кнопку на своєму поселенні на мапі світу, а ще під час збереження гри, якщо їй більше 15 днів. Записи лишаються на вашому комп'ютері: нічого не надсилається й не завантажується.",
-      "Руїни стають на землю, схожу на ту, де стояла колонія, за 5–25 клітинок від нової: колонія з пустелі не опиниться біля полюса. З пунктом «Питати на старті» ви самі обираєте, скільки минулих колоній повернути.",
+      "Руїни стають на землю, схожу на ту, де стояла колонія, за 5–25 клітинок від нової: колонія з пустелі не опиниться біля полюса. З пунктом «Питати на старті» ви самі обираєте, скільки минулих колоній повернути. Окреме налаштування ставить руїну на ту саму широту й довготу, де стояла колонія, у світі з будь-яким сидом.",
       "У сильної минулої колонії поруч можуть жити нащадки: бідна фракція з її кольором та ідеологією, яка злиться чи теплішає залежно від того, як ви поводитеся з руїнами й могилами.",
       "У руїнах стіни, двері, підлоги й дахи віком від 50 до 300 років, зламані пристрої, могили ваших старих колоністів з іменами й історіями та скульптури зі старими назвами.",
       "Загиблі колоністи лежать у руїнах там, де впали, зі своєю зброєю. Будь-яке воскресіння повертає їх у вашу колонію.",
@@ -47,7 +47,7 @@
     ],
     "ru": [
       "Колония записывается, когда вы её покидаете, когда все погибли, когда вы нажимаете кнопку на своём поселении на карте мира, а ещё при сохранении игры, если ей больше 15 дней. Записи остаются на вашем компьютере: ничего не отправляется и не скачивается.",
-      "Руины встают на землю, похожую на ту, где стояла колония, в 5–25 клетках от новой: колония из пустыни не окажется у полюса. С пунктом «Спрашивать при старте» вы сами выбираете, сколько прошлых колоний вернуть.",
+      "Руины встают на землю, похожую на ту, где стояла колония, в 5–25 клетках от новой: колония из пустыни не окажется у полюса. С пунктом «Спрашивать при старте» вы сами выбираете, сколько прошлых колоний вернуть. Отдельная настройка ставит руину на ту же широту и долготу, где стояла колония, в мире с любым сидом.",
       "У сильной прошлой колонии рядом могут жить потомки: бедная фракция с её цветом и идеологией, которая злится или теплеет в зависимости от того, как вы обходитесь с руинами и могилами.",
       "В руинах стены, двери, полы и крыши возрастом от 50 до 300 лет, сломанные устройства, могилы ваших старых колонистов с именами и историями и скульптуры со старыми названиями.",
       "Погибшие колонисты лежат в руинах там, где упали, со своим оружием. Любое воскрешение возвращает их в вашу колонию.",

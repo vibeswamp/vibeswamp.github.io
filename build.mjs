@@ -416,7 +416,7 @@ ${site.languages.map((l) => `<link rel="alternate" hreflang="${l}" href="${site.
 <meta property="og:title" content="${esc(title)}">
 <meta property="og:description" content="${esc(description)}">
 <meta property="og:url" content="${site.baseUrl}${path}">
-${image ? `<meta property="og:image" content="${site.baseUrl}/${esc(String(image).replace(/^\/+/, ""))}">\n` : ""}<link rel="icon" href="/favicon.png" type="image/png">
+${image ? `<meta property="og:image" content="${site.baseUrl}/${esc(String(image).replace(/^\/+/, ""))}">\n` : ""}${String(image ?? "").startsWith("brand/share/") ? `<meta property="og:image:width" content="1200">\n<meta property="og:image:height" content="630">\n<meta name="twitter:card" content="summary_large_image">\n` : ""}<link rel="icon" href="/favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 ${["overpass", "bitter"].map((f) => `<link rel="preload" href="/fonts/${f}-${lang === "en" ? "latin" : "cyrillic"}.woff2" as="font" type="font/woff2" crossorigin>`).join("\n")}
 <link rel="stylesheet" href="${siteStyles}">
@@ -1073,7 +1073,8 @@ ${postList(lang, recent)}
     title: t.title,
     description: t.description,
     page: "home",
-    image: released[0] ? gallery(released[0])[0]?.info.src : null,
+    // Link previews (Telegram, Discord, Facebook) show this card: the swamp at sunset, Klyop and the site title in the page language.
+    image: existsSync(join(root, "public", "brand", "share", `home-${lang}.jpg`)) ? `brand/share/home-${lang}.jpg` : released[0] ? gallery(released[0])[0]?.info.src : null,
     current: "",
     body,
     jsonld: {

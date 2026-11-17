@@ -12,13 +12,13 @@
     "uk": "RimWorld 1.7 і 1.6",
     "ru": "RimWorld 1.7 и 1.6"
   },
-  "status": "preparing",
+  "status": "released",
   "page": true,
   "ludeon": true,
   "platforms": [
     {
       "name": "Steam Workshop",
-      "url": null
+      "url": "https://steamcommunity.com/sharedfiles/filedetails/?id=3838433828"
     }
   ],
   "summary": {
@@ -30,31 +30,77 @@
     "en": [
       "Colonists carry clothes worn by a corpse to any water, a river, a lake, a marsh or a hot spring, and wash the mark off: the colour and the price come back.",
       "Water alone is slow and rough on the cloth. Soap is twice as fast, and scented soap also lifts the mood of whoever washes their own clothes. Soap is boiled from tallow and wood ash; tallow is rendered from meat, human meat included, and people have opinions about that soap. With no water on the map, soap alone still works, only slower.",
+      "A washboard with a tub lets you wash indoors; the tub is filled with buckets, by rain or from Dubs Bad Hygiene plumbing. And a new mental break: a laundry frenzy.",
       "A Laundry work column, and a personal habit: colonists wash what they wear in their free time. It works next to Dubs Bad Hygiene and Simple Washing Machine. It can be added to a running save."
     ],
     "uk": [
       "Колоністи несуть одяг, знятий із трупа, до будь-якої води — річки, озера, болота чи гарячого джерела — і відпирають позначку: колір і ціна повертаються.",
       "Сама вода пере повільно й шарпає тканину. З милом удвічі швидше, а ароматне мило ще й піднімає настрій тому, хто пере свій одяг. Мило варять із лою та деревного попелу; лій витоплюють із м'яса, людського теж, і про таке мило в людей є думка. Якщо води на мапі немає, мило працює й саме, тільки повільніше.",
+      "Пральна дошка з тазом, щоб прати вдома; таз наповнюють відрами, дощем або з водогону Dubs Bad Hygiene. І новий зрив: «манія чистоти».",
       "Окремий стовпчик роботи «Прання» і звичка: колоністи у вільний час перуть те, що носять. Працює поряд із Dubs Bad Hygiene і Simple Washing Machine. Можна додати в уже почату гру."
     ],
     "ru": [
       "Колонисты несут одежду, снятую с трупа, к любой воде — реке, озеру, болоту или горячему источнику — и отстирывают пометку: цвет и цена возвращаются.",
       "Одна вода стирает медленно и треплет ткань. С мылом вдвое быстрее, а душистое мыло ещё и поднимает настроение тому, кто стирает свою одежду. Мыло варят из сала и древесной золы; сало вытапливают из мяса, человеческого тоже, и об этом мыле у людей есть мнение. Если воды на карте нет, мыло работает и само, только медленнее.",
+      "Стиральная доска с тазом, чтобы стирать в доме; таз наполняют вёдрами, дождём или из водопровода Dubs Bad Hygiene. И новый срыв: «мания чистоты».",
       "Отдельный столбец работы «Стирка» и привычка: колонисты в свободное время стирают то, что носят. Работает рядом с Dubs Bad Hygiene и Simple Washing Machine. Можно добавить в уже начатую игру."
     ]
   },
-  "plans": {
-    "en": [
-      "Version 0.5.1 is built.",
-      "Next: the first run in the game, then the release on the Steam Workshop. There is no date yet."
-    ],
-    "uk": [
-      "Версія 0.5.1 зібрана.",
-      "Далі перший прогін у грі, потім вихід у майстерні Steam. Дати поки немає."
-    ],
-    "ru": [
-      "Версия 0.5.1 собрана.",
-      "Дальше первый прогон в игре, потом выход в мастерской Steam. Даты пока нет."
-    ]
-  }
+  "version": {
+    "en": "0.5.2",
+    "uk": "0.5.2",
+    "ru": "0.5.2"
+  },
+  "workshopId": "3838433828",
+  "image": "assets/rinse-repeat/01-poster.jpg",
+  "gallery": [
+    {
+      "file": "assets/rinse-repeat/01-poster.jpg",
+      "caption": {
+        "en": "The mod's cover, drawn by a neural network.",
+        "uk": "Обкладинка мода, намальована нейромережею.",
+        "ru": "Обложка мода, нарисована нейросетью."
+      }
+    },
+    {
+      "file": "assets/rinse-repeat/02-washing-river.jpg",
+      "caption": {
+        "en": "Washing at the river: \"Washing clothes.\"",
+        "uk": "Прання біля річки: «Пере речі».",
+        "ru": "Стирка у речки: «Стирает вещи»."
+      }
+    },
+    {
+      "file": "assets/rinse-repeat/03-washing-board.jpg",
+      "caption": {
+        "en": "Washing on a washboard with a tub.",
+        "uk": "Прання на пральній дошці з тазом.",
+        "ru": "Стирка на стиральной доске с тазом."
+      }
+    },
+    {
+      "file": "assets/rinse-repeat/04-tainted-before-after.jpg",
+      "caption": {
+        "en": "Before: both items are marked as taken from a corpse and the mood shows a tainted shirt. After washing: 95% durability, no mark, and clean clothes instead of the minus.",
+        "uk": "До: обидві речі з позначкою «знято з трупа», у настрої мінус за таку сорочку. Після прання: міцність 95 %, позначки немає, а замість мінуса — чистий одяг.",
+        "ru": "До: обе вещи с пометкой «снято с трупа», в настроении минус за такую рубашку. После стирки: прочность 95 %, пометки нет, а вместо минуса — чистая одежда."
+      }
+    },
+    {
+      "file": "assets/rinse-repeat/05-thoughts.jpg",
+      "caption": {
+        "en": "The mood after washing with scented soap and conditioner.",
+        "uk": "Настрій після прання запашним милом із кондиціонером.",
+        "ru": "Настроение после стирки душистым мылом с кондиционером."
+      }
+    },
+    {
+      "file": "assets/rinse-repeat/06-frenzy.jpg",
+      "caption": {
+        "en": "A laundry frenzy: everything gets washed.",
+        "uk": "Манія чистоти: переться все підряд.",
+        "ru": "Мания чистоты: стирается всё подряд."
+      }
+    }
+  ]
 }
