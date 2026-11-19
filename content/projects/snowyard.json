@@ -18,97 +18,97 @@
   },
   "details": {
     "en": [
-      "First person, Jolt physics, Godot 4.7. Snow is one mass: you scoop it off the ground, pack it and throw it, and a miss falls back as a lump you can pick up again. Holding a snowball is cold, a full bag drags you down, and you warm up by something warm.",
-      "Snowman mode: each team builds its own snowman from a limited amount of snow, and when \"mums call everyone home\", the bigger snowman wins. It works best as a chain of three: one digs, one packs, one throws.",
-      "Already in: snow cover with depth and footprints, trodden paths and drifts by the walls; throwing and hits, a rolling ball that grows, an avalanche, falls; parkour over fences and ledges; walls of snow blocks that break; a rough Yard map with a warm wooden fort below, an ice fort above and a frozen pond with bridges, where the evening darkens over 10 minutes."
+      "First-person view, Godot 4.7. An evening in a yard between panel blocks, four against four; bots take any free places. Snow is one mass: you scoop it from the ground, pack it and throw it, and a miss lands back as a lump you can pick up.",
+      "Each team builds its own snowman, and it grows in stages up to a giant with a barrel and a flag. When the mums call everyone home, the team with the bigger snowman wins. There are roles and gear: a shovel, a bucket, a thermos, a sled, a snowball launcher and a catapult.",
+      "The yard has two forts, a warm wooden one and an ice one, cover on the approaches, ramps with a drag lift, a log slide with lights, a fir tree and garlands. The evening goes from sunset to night, and the windows light up. An avalanche can come down the hill. The kids are modelled in Blender, and each has its own moves: push, stagger from a hit, dig, trudge, dry off at home or by the fire."
     ],
     "uk": [
-      "Вигляд від першої особи, фізика Jolt, Godot 4.7. Сніг — одна маса: його гребеш із землі, ліпиш і кидаєш, а промах лягає назад грудкою, яку можна підібрати. Тримати сніжку холодно, повна сумка тягне донизу, грітися треба біля теплого.",
-      "Режим «Сніговик»: кожна команда ліпить свого сніговика з обмеженого снігу, і коли «мами кличуть» додому, перемагає той, у кого він більший. Найзручніше втрьох: один копає, другий ліпить, третій кидає.",
-      "Уже є: сніговий покрив із глибиною й слідами, протоптані стежки й замети біля стін; кидок і влучання, грудка, що котиться й росте, лавина, падіння; паркур через огорожі й уступи; стіни зі сніжних блоків, які руйнуються; чорнова мапа «Двір» із теплою дерев'яною фортецею внизу, крижаною вгорі й замерзлим ставком із містками, де вечір темнішає 10 хвилин."
+      "Вид від першої особи, Godot 4.7. Вечір у дворі між панельками, четверо на четверо, вільні місця займають боти. Сніг — одна маса: його згрібаєш із землі, ліпиш і кидаєш, а промах лягає назад грудкою, яку можна підібрати.",
+      "Кожна команда ліпить свого сніговика: він росте стадіями аж до велетня з бочкою й прапором. Коли мами кличуть додому, перемагає той, чий сніговик більший. Є ролі й спорядження: лопата, відро, термос, крижанка, сніжкомет і катапульта.",
+      "У дворі дві фортеці, тепла дерев'яна й крижана, укриття на підходах, трампліни з бугелем, гірка-серпантин із вогнями, ялинка й гірлянди. Вечір іде від заходу сонця до ночі, у вікнах загоряється світло. З гірки може зійти лавина. Дітей зроблено в Blender, у кожного свої рухи: штовхнути, хитатися від влучання, копати, плентатися, сушитися вдома чи біля багаття."
     ],
     "ru": [
-      "Вид от первого лица, физика Jolt, Godot 4.7. Снег — одна масса: его гребёшь с земли, лепишь и бросаешь, а промах ложится обратно комом, который можно подобрать. Держать снежок холодно, полная сумка тянет вниз, греться надо у тёплого.",
-      "Режим «Снеговик»: каждая команда лепит своего снеговика из конечного снега, и когда «мамы зовут» домой, побеждает тот, у кого он больше. Удобнее всего втроём: один копает, второй лепит, третий бросает.",
-      "Уже есть: снежный покров с глубиной и следами, утоптанные тропы и сугробы у стен; бросок и попадание, ком, который катится и растёт, лавина, падения; паркур через заборы и уступы; разрушаемые стены из снежных блоков; черновая карта «Двор» с тёплой деревянной крепостью внизу, ледяной наверху и замёрзшим прудом с мостами, где вечер темнеет 10 минут."
+      "Вид от первого лица, Godot 4.7. Вечер во дворе панелек, четверо на четверо, свободные места занимают боты. Снег — одна масса: его гребёшь с земли, лепишь и бросаешь, а промах ложится обратно комом, который можно подобрать.",
+      "Каждая команда лепит своего снеговика: он растёт по стадиям вплоть до великана с бочкой и флагом. Когда мамы зовут домой, побеждает тот, чей снеговик больше. Есть роли и снаряжение: лопата, ведро, термос, ледянка, снежкомёт и катапульта.",
+      "Во дворе две крепости, тёплая деревянная и ледяная, укрытия на подходах, трамплины с бугелем, горка-серпантин с огнями, ёлка и гирлянды. Вечер идёт от заката к ночи, в окнах зажигается свет. С горки может сойти лавина. Дети сделаны в Blender, у каждого свои движения: толкнуть, шататься от попадания, копать, плестись, сушиться дома или у костра."
     ]
   },
-  "image": "assets/snowyard/01-evening.jpg",
+  "image": "assets/snowyard/11-team-snowman.jpg",
   "gallery": [
     {
-      "file": "assets/snowyard/01-evening.jpg",
+      "file": "assets/snowyard/10-main-menu.jpg",
       "caption": {
-        "en": "In-game: evening in the Yard.",
-        "uk": "Кадр із гри: вечір у Дворі.",
-        "ru": "Кадр из игры: вечер во Дворе."
+        "en": "The main menu: signposts on a pole by the sledding hill. The menu background is drawn by a neural network.",
+        "uk": "Головне меню: дороговкази на стовпі біля гірки. Фон меню намальований нейромережею.",
+        "ru": "Главное меню: указатели на столбе у горки. Фон меню нарисован нейросетью."
       }
     },
     {
-      "file": "assets/snowyard/02-top.jpg",
+      "file": "assets/snowyard/11-team-snowman.jpg",
       "caption": {
-        "en": "In-game: the Yard map from above.",
-        "uk": "Кадр із гри: мапа Двору згори.",
-        "ru": "Кадр из игры: карта Двора сверху."
+        "en": "In-game: a team's snowman and the kids at dusk under the street lights.",
+        "uk": "Кадр із гри: сніговик команди й діти в сутінках під ліхтарями.",
+        "ru": "Кадр из игры: снеговик команды и дети в сумерках под фонарями."
       }
     },
     {
-      "file": "assets/snowyard/03-playground.jpg",
+      "file": "assets/snowyard/12-giant-snowman.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: a lively yard with a seesaw catapult, garages and a heating pipe.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: живий двір з балансиром-катапультою, гаражами й тепломагістраллю.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: живой двор с балансиром-катапультой, гаражами и теплотрассой."
+        "en": "A giant snowman with a barrel and a flag at dusk.",
+        "uk": "Сніговик-велетень із бочкою й прапором у сутінках.",
+        "ru": "Снеговик-великан с бочкой и флагом в сумерках."
       }
     },
     {
-      "file": "assets/snowyard/04-gorge.jpg",
+      "file": "assets/snowyard/13-ramp-flight.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: the Gorge map in the Carpathians.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: мапа «Ущелина» в Карпатах.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: карта «Ущелье» в Карпатах."
+        "en": "A jump off a ramp at sunset, with the drag lift and the platform nearby.",
+        "uk": "Політ із трампліна на заході сонця, поруч бугель і поміст.",
+        "ru": "Полёт с трамплина на закате, рядом бугель и помост."
       }
     },
     {
-      "file": "assets/snowyard/05-start-screen.jpg",
+      "file": "assets/snowyard/14-ice-fort.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: the start screen.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: стартовий екран.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: стартовый экран."
+        "en": "The ice fort at sunset.",
+        "uk": "Крижана фортеця на заході сонця.",
+        "ru": "Ледяная крепость на закате."
       }
     },
     {
-      "file": "assets/snowyard/06-slide.jpg",
+      "file": "assets/snowyard/15-yard-night.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: a slide worn into the ice.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: розкатка на льоду.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: раскатка на льду."
+        "en": "The yard at night: windows, garlands and street lights.",
+        "uk": "Двір уночі: вікна, гірлянди й ліхтарі.",
+        "ru": "Двор ночью: окна, гирлянды и фонари."
       }
     },
     {
-      "file": "assets/snowyard/07-cornice.jpg",
+      "file": "assets/snowyard/16-snowman-stages.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: a cornice and an avalanche.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: карниз і лавина.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: карниз и лавина."
+        "en": "Four stages of a snowman and the log slide with lights.",
+        "uk": "Чотири стадії сніговика й гірка-серпантин із вогнями.",
+        "ru": "Четыре стадии снеговика и горка-серпантин с огнями."
       }
     },
     {
-      "file": "assets/snowyard/08-cars.jpg",
+      "file": "assets/snowyard/17-serpentine.jpg",
       "caption": {
-        "en": "Concept, not an in-game frame, drawn by a neural network: cars under snow in a corner of the yard.",
-        "uk": "Концепт, не кадр гри, намальований нейромережею: машини під снігом у кутку двору.",
-        "ru": "Концепт, не кадр игры, нарисован нейросетью: машины под снегом в углу двора."
+        "en": "The log slide at dusk.",
+        "uk": "Гірка-серпантин зі зрубу в сутінках.",
+        "ru": "Горка-серпантин из сруба в сумерках."
       }
     }
   ],
   "plans": {
     "en": [
-      "In progress: slides on the ice (you ride them on your soles and can wear one down to the asphalt), falls on ice, throws that carry your body's momentum, and boosting a friend up a wall. No release date yet."
+      "Now we are polishing the fights, the bots and the smoothness of movement. There is no release date yet."
     ],
     "uk": [
-      "У роботі: розкатки на льоду (їдеш на підошвах, а розкатку можна протерти до асфальту), падіння на льоду, кидок з інерцією тіла й підсадка товариша на стіну. Дати виходу поки немає."
+      "Зараз доводимо бій, ботів і плавність руху. Дати виходу поки немає."
     ],
     "ru": [
-      "В работе: раскатки на льду (едешь на подошвах, а раскатку можно протереть до асфальта), падения на льду, бросок с инерцией тела и подсадка товарища на стену. Даты выхода пока нет."
+      "Сейчас доводим бой, ботов и плавность движения. Даты выхода пока нет."
     ]
   }
 }
