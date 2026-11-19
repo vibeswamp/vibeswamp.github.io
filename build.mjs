@@ -986,6 +986,24 @@ function supportPage(lang) {
   });
 }
 
+// «Voice a character»: how to share a voice sample for VibeSwamp projects (content/voice.json). Not in the menu yet.
+const voiceData = existsSync(join(root, "content", "voice.json")) ? JSON.parse(readFileSync(join(root, "content", "voice.json"), "utf8")) : null;
+function voicePage(lang) {
+  const v = voiceData[lang];
+  const md = v.md.replaceAll("{discord}", voiceData.discord);
+  return layout({
+    lang,
+    paths: allPaths((l) => sectionUrl(l, "voice")),
+    title: `${v.title}: VibeSwamp`,
+    description: v.lead,
+    current: "support",
+    body: `${pageHead(lang, v.title, v.lead, "klyop/streamer")}
+<div class="wrap"><div class="prose voice">${markdown(md, "voice")}</div></div>
+<div class="page-end"></div>`,
+    jsonld: { "@context": "https://schema.org", "@type": "WebPage", name: v.title, url: `${site.baseUrl}${sectionUrl(lang, "voice")}`, inLanguage: lang },
+  });
+}
+
 // The doors on the home page: one line per section.
 function doors(lang) {
   const t = site.strings[lang];
@@ -1357,6 +1375,10 @@ if (existsSync(join(root, "src", "pet.js"))) await cp(join(root, "src", "pet.js"
 
 for (const [name, source] of emittedModules) await writeFile(join(dist, name), source);
 
+// Portfolio and one-page CV for paid work (src/portfolio-build.mjs, data in content/portfolio.json); not in the menu.
+const { portfolioPages } = await import("./src/portfolio-build.mjs");
+const portfolioData = existsSync(join(root, "content", "portfolio.json")) ? JSON.parse(readFileSync(join(root, "content", "portfolio.json"), "utf8")) : null;
+
 const pages = [];
 const write = async (path, html) => {
   const file = join(dist, ...path.split("/").filter(Boolean), "index.html");
@@ -1376,6 +1398,8 @@ for (const lang of site.languages) {
     await write(walkUrl(lang), walkPage(lang));
   }
   await write(sectionUrl(lang, "support"), supportPage(lang));
+  if (voiceData?.[lang]) await write(sectionUrl(lang, "voice"), voicePage(lang));
+  if (portfolioData) for (const pg of portfolioPages({ lang, site, stats, data: portfolioData, picture })) await write(pg.path, pg.html);
   for (const p of postsIn(lang)) await write(postUrl(lang, p.slug), postPage(lang, p));
   await mkdir(join(dist, ...prefix(lang).split("/").filter(Boolean)), { recursive: true });
   await writeFile(join(dist, ...feedUrl(lang).split("/").filter(Boolean)), feed(lang));

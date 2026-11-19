@@ -1,0 +1,551 @@
+{
+  "_about": "Portfolio page and one-page CV (/uk/portfolio/, /portfolio/, /ru/portfolio/ and .../cv/). Plan: portfolio/PLAN.md. {mods}, {subs}, {views}, {date} and {belt} are filled from content/stats.json at build time, so the page and the letter quote the same numbers. name and contact stay empty until the owner gives them; the page then shows only EGYS1N. experience goes first in the CV; oldWorks (image + caption per language) shows a gallery only when the owner sends old print work. Each case has a short cv line for the one-page CV.",
+  "name": "",
+  "contact": "",
+  "links": {
+    "site": "https://vibeswamp.github.io",
+    "github": "https://github.com/EGYS1N",
+    "steam": "https://steamcommunity.com/profiles/76561198017122982/myworkshopfiles/",
+    "discord": "https://discord.gg/6K3gXm94SG",
+    "thunderstore": "https://thunderstore.io/c/darkwater/p/EGYS1N/Belt_Lantern/"
+  },
+  "strings": {
+    "uk": {
+      "title": "Портфоліо: продукти з ШІ-агентами",
+      "description": "EGYS1N: збираю продукти з ШІ-агентами, від задачі до випуску. Моди, ігри в браузері, сайт, озвучка й відео.",
+      "lead": "Збираю продукти з ШІ-агентами: ставлю задачу, перевіряю результат і випускаю.",
+      "sub": "Там, де зазвичай потрібна команда з кількох людей, працюю сам із командою агентів: Claude Code, Codex, Gemini в Antigravity і Hermes. Моди, ігри в браузері, сайт, програма на замовлення.",
+      "nums": [
+        "Моди RimWorld у Steam Workshop: {mods}",
+        "Підписки: {subs}, перегляди: {views} (станом на {date})",
+        "Сайт трьома мовами, понад 200 сторінок",
+        "Завантаження Belt Lantern на Thunderstore: {belt}"
+      ],
+      "casesTitle": "Що зроблено",
+      "task": "Задача",
+      "done": "Що зроблено",
+      "how": "Як",
+      "proof": "Доказ",
+      "role": "Моя роль",
+      "stepsTitle": "Як я працюю",
+      "toolsTitle": "Інструменти",
+      "contactsTitle": "Зв'язатися",
+      "cvLink": "Резюме на один аркуш (для друку й PDF)",
+      "backLink": "Портфоліо повністю",
+      "cvTitle": "Резюме",
+      "cvSummary": "Збираю продукти з ШІ-агентами як основним інструментом: сам ставлю задачу, роздаю її агентам, перевіряю результат і випускаю. У поліграфії вів замовлення від клієнта до видачі; тепер так само веду роботу команди агентів.",
+      "cvProjects": "Проєкти",
+      "cvSkills": "Що вмію",
+      "cvLanguages": "Мови",
+      "langs": "Українська, російська. Англійська: читаю й пишу впевнено, розмовну відновлюю.",
+      "print": "Надрукувати або зберегти в PDF",
+      "updated": "Оновлено {date}",
+      "aboutTitle": "Про мене",
+      "about": "Якщо мені чогось не вистачає, я це додаю, знаходжу або створюю. Так було ще з перших версій Minecraft. Руками, без ШІ, я збирав збірки модів для S.T.A.L.K.E.R., Terraria, Cyberpunk 2077, GTA 5 і Skyrim VR: читав документацію, шукав конфлікти й правив конфіги, доки все не запрацює. Тепер роблю те саме з командою ШІ-агентів, і виходить уже не збірка для себе, а продукт для інших: {mods} модів у Steam Workshop, сайт трьома мовами, програма на замовлення.",
+      "expTitle": "Досвід",
+      "oldWorksTitle": "Старі роботи з поліграфії",
+      "stepsLead": "Цикл той самий, що в поліграфії: прийняти клієнта, скласти технічне завдання, виготовити, перевірити якість, видати. Тільки виготовляє тепер команда ШІ-агентів.",
+      "station": "Сам зібрав робочу станцію під ШІ (Ryzen 9 9950X3D, 64 ГБ DDR5, RTX 4070 SUPER 12 ГБ, SSD NVMe PCIe 5.0) і запускаю моделі локально: картинки, клон голосу, 3D. Важкі задачі на одну відеокарту йдуть по черзі.",
+      "vr": "Цікавить VR: маю Meta Quest 2, у VR мені комфортно, і це напрям, у якому хочу робити проєкти. Власних VR-проєктів поки немає.",
+      "cvVr": "Цікавить VR (Meta Quest 2): напрям для майбутніх проєктів."
+    },
+    "en": {
+      "title": "Portfolio: products built with AI agents",
+      "description": "EGYS1N: I build products with AI agents, from the task to the release. Mods, browser games, a website, voice and video pipelines.",
+      "lead": "I build products with AI agents: I set the task, check the result and ship it.",
+      "sub": "Where a job usually needs a team of several people, I work alone with a team of agents: Claude Code, Codex, Gemini in Antigravity and Hermes. Mods, browser games, a website, software built for a client.",
+      "nums": [
+        "RimWorld mods on the Steam Workshop: {mods}",
+        "Subscriptions: {subs}, views: {views} (as of {date})",
+        "A website in three languages, over 200 pages",
+        "Belt Lantern downloads on Thunderstore: {belt}"
+      ],
+      "casesTitle": "What I have built",
+      "task": "Task",
+      "done": "What was done",
+      "how": "How",
+      "proof": "Proof",
+      "role": "My role",
+      "stepsTitle": "How I work",
+      "toolsTitle": "Tools",
+      "contactsTitle": "Contact",
+      "cvLink": "One-page CV (to print or save as PDF)",
+      "backLink": "Full portfolio",
+      "cvTitle": "CV",
+      "cvSummary": "I build products with AI agents as my main tool: I set the task, hand it to the agents, check the result and ship it. In print production I ran orders from the client to hand-over; now I run a team of agents the same way.",
+      "cvProjects": "Projects",
+      "cvSkills": "What I can do",
+      "cvLanguages": "Languages",
+      "langs": "Ukrainian, Russian. English: I read and write it confidently and am getting my spoken English back.",
+      "print": "Print or save as PDF",
+      "updated": "Updated {date}",
+      "aboutTitle": "About me",
+      "about": "If something is missing, I add it, find it or make it. It has been that way since the first versions of Minecraft. By hand, without AI, I put together mod packs for S.T.A.L.K.E.R., Terraria, Cyberpunk 2077, GTA 5 and Skyrim VR: I read the documentation, tracked down conflicts and edited config files until everything worked. Now I do the same with a team of AI agents, and the result is no longer a pack for myself but a product for other people: {mods} mods on the Steam Workshop, a website in three languages, a program built for a client.",
+      "expTitle": "Experience",
+      "oldWorksTitle": "Older print work",
+      "stepsLead": "The cycle is the same as in print production: take the client's request, write the brief, produce, check the quality, hand it over. Only now a team of AI agents does the production.",
+      "station": "I built my own AI workstation (Ryzen 9 9950X3D, 64 GB DDR5, RTX 4070 SUPER 12 GB, PCIe 5.0 NVMe SSD) and run models locally: images, a voice clone, 3D. Heavy jobs for the single GPU run in a queue.",
+      "vr": "I am interested in VR: I have a Meta Quest 2, I am comfortable in VR, and it is a direction I want to build projects in. I have no VR projects of my own yet.",
+      "cvVr": "Interested in VR (Meta Quest 2): a direction for future projects."
+    },
+    "ru": {
+      "title": "Портфолио: продукты с ИИ-агентами",
+      "description": "EGYS1N: собираю продукты с ИИ-агентами, от задачи до выпуска. Моды, игры в браузере, сайт, озвучка и видео.",
+      "lead": "Собираю продукты с ИИ-агентами: ставлю задачу, проверяю результат и выпускаю.",
+      "sub": "Там, где обычно нужна команда из нескольких человек, работаю один с командой агентов: Claude Code, Codex, Gemini в Antigravity и Hermes. Моды, игры в браузере, сайт, программа на заказ.",
+      "nums": [
+        "Моды RimWorld в Steam Workshop: {mods}",
+        "Подписки: {subs}, просмотры: {views} (на {date})",
+        "Сайт на трёх языках, больше 200 страниц",
+        "Загрузки Belt Lantern на Thunderstore: {belt}"
+      ],
+      "casesTitle": "Что сделано",
+      "task": "Задача",
+      "done": "Что сделано",
+      "how": "Как",
+      "proof": "Доказательство",
+      "role": "Моя роль",
+      "stepsTitle": "Как я работаю",
+      "toolsTitle": "Инструменты",
+      "contactsTitle": "Связаться",
+      "cvLink": "Резюме на один лист (для печати и PDF)",
+      "backLink": "Портфолио полностью",
+      "cvTitle": "Резюме",
+      "cvSummary": "Собираю продукты с ИИ-агентами как основным инструментом: сам ставлю задачу, раздаю её агентам, проверяю результат и выпускаю. В полиграфии вёл заказы от клиента до выдачи; теперь так же веду работу команды агентов.",
+      "cvProjects": "Проекты",
+      "cvSkills": "Что умею",
+      "cvLanguages": "Языки",
+      "langs": "Украинский, русский. Английский: читаю и пишу уверенно, разговорный восстанавливаю.",
+      "print": "Распечатать или сохранить в PDF",
+      "updated": "Обновлено {date}",
+      "aboutTitle": "Обо мне",
+      "about": "Если мне чего-то не хватает, я это добавляю, нахожу или создаю. Так было ещё с первых версий Minecraft. Руками, без ИИ, я собирал сборки модов для S.T.A.L.K.E.R., Terraria, Cyberpunk 2077, GTA 5 и Skyrim VR: читал документацию, искал конфликты и правил конфиги, пока всё не заработает. Теперь делаю то же самое с командой ИИ-агентов, и выходит уже не сборка для себя, а продукт для других: {mods} модов в Steam Workshop, сайт на трёх языках, программа на заказ.",
+      "expTitle": "Опыт",
+      "oldWorksTitle": "Старые работы из полиграфии",
+      "stepsLead": "Цикл тот же, что в полиграфии: принять клиента, составить техническое задание, изготовить, проверить качество, выдать. Только изготавливает теперь команда ИИ-агентов.",
+      "station": "Сам собрал рабочую станцию под ИИ (Ryzen 9 9950X3D, 64 ГБ DDR5, RTX 4070 SUPER 12 ГБ, SSD NVMe PCIe 5.0) и запускаю модели локально: картинки, клон голоса, 3D. Тяжёлые задачи на одну видеокарту идут по очереди.",
+      "vr": "Интересует VR: есть Meta Quest 2, в VR мне комфортно, и это направление, в котором хочу делать проекты. Своих VR-проектов пока нет.",
+      "cvVr": "Интересует VR (Meta Quest 2): направление для будущих проектов."
+    }
+  },
+  "cases": [
+    {
+      "id": "coop",
+      "image": "",
+      "link": "",
+      "title": {
+        "uk": "Програма на замовлення для дачного кооперативу",
+        "en": "A program built for a garden cooperative",
+        "ru": "Программа на заказ для дачного кооператива"
+      },
+      "task": {
+        "uk": "Голові кооперативу треба бачити всі ділянки на карті: межі, борги, суперечки й самовільно зайняту землю, і друкувати акти. Користувач нетехнічний, працює зі старого ноутбука й телефона.",
+        "en": "The head of the cooperative needs to see every plot on a map: borders, debts, disputes and land taken without permission, and to print reports. The user is not technical and works from an old laptop and a phone.",
+        "ru": "Председателю кооператива нужно видеть все участки на карте: границы, долги, споры и самовольно занятую землю, и печатать акты. Пользователь нетехнический, работает со старого ноутбука и телефона."
+      },
+      "done": {
+        "uk": "Застосунок для Windows і телефона, дані зберігаються на самому пристрої: карта ділянок, межі малюються поверх супутникового знімка, площа рахується сама й підсвічується, якщо фактична більша за офіційну. Картка ділянки, пошук, статуси кольором, акт ділянки й реєстр у PDF, резервні копії. Версія 1.1.",
+        "en": "An app for Windows and phones that keeps the data on the device: a map of the plots, borders drawn over a satellite image, the area counted automatically and highlighted when the real plot is bigger than the official one. A plot card, search, colour statuses, a plot report and a register in PDF, backups. Version 1.1.",
+        "ru": "Приложение для Windows и телефона, данные хранятся на самом устройстве: карта участков, границы рисуются поверх спутникового снимка, площадь считается сама и подсвечивается, если фактическая больше официальной. Карточка участка, поиск, статусы цветом, акт участка и реестр в PDF, резервные копии. Версия 1.1."
+      },
+      "how": {
+        "uk": "React, Leaflet, PWA, Electron. Великі кнопки, високий контраст і режим перегляду за замовчуванням, щоб нічого не зламати випадково.",
+        "en": "React, Leaflet, PWA, Electron. Big buttons, high contrast and view-only mode by default, so nothing breaks by accident.",
+        "ru": "React, Leaflet, PWA, Electron. Крупные кнопки, высокий контраст и режим просмотра по умолчанию, чтобы ничего не сломать случайно."
+      },
+      "proof": {
+        "uk": "Від розмови із замовником до готового застосунку. Дані замовника не публікую, на співбесіді показую на демо-ділянках.",
+        "en": "From the first talk with the client to a finished app. I do not publish the client's data; at an interview I show it on demo plots.",
+        "ru": "От разговора с заказчиком до готового приложения. Данные заказчика не публикую, на собеседовании показываю на демо-участках."
+      },
+      "role": {
+        "uk": "Розмова із замовником, задача, приймання.",
+        "en": "Talking to the client, the task, acceptance.",
+        "ru": "Разговор с заказчиком, задача, приёмка."
+      },
+      "cv": {
+        "uk": "Програма на замовлення для дачного кооперативу: карта ділянок, межі й площа, статуси, акти й реєстр у PDF; Windows і телефон.",
+        "en": "A program built for a garden cooperative: a map of the plots, borders and area, statuses, reports and a register in PDF; Windows and phones.",
+        "ru": "Программа на заказ для дачного кооператива: карта участков, границы и площадь, статусы, акты и реестр в PDF; Windows и телефон."
+      }
+    },
+    {
+      "id": "agents",
+      "image": "",
+      "link": "https://github.com/EGYS1N",
+      "title": {
+        "uk": "Команда з двох десятків ШІ-агентів",
+        "en": "A team of about twenty AI agents",
+        "ru": "Команда из двух десятков ИИ-агентов"
+      },
+      "task": {
+        "uk": "Вести кілька проєктів одночасно (сайт, ігри, моди, відео) і не загубити якість.",
+        "en": "Run several projects at once (a website, games, mods, video) without losing quality.",
+        "ru": "Вести несколько проектов сразу (сайт, игры, моды, видео) и не потерять качество."
+      },
+      "done": {
+        "uk": "Близько двадцяти паралельних сесій Claude Code, у кожної своя зона файлів. Рутину беруть Codex, Gemini в Antigravity і Hermes. Гілка викладки, куди потрапляє лише перевірене, черга важких задач на одну відеокарту, щоденне зведення.",
+        "en": "About twenty parallel Claude Code sessions, each with its own set of files. Codex, Gemini in Antigravity and Hermes take the routine work. A release branch that only takes checked work, a queue for heavy jobs on one GPU, a daily digest.",
+        "ru": "Около двадцати параллельных сессий Claude Code, у каждой своя зона файлов. Рутину берут Codex, Gemini в Antigravity и Hermes. Ветка выкладки, куда попадает только проверенное, очередь тяжёлых задач на одну видеокарту, ежедневная сводка."
+      },
+      "how": {
+        "uk": "Власні навички якості: перевірка текстів на штампи, перевірка голосу, правила «готово = перевірено на телефоні й ПК». Помітив, що агенти вміють передавати задачі один одному, і зробив із цього власну навичку: задача йде тій моделі, у якої зараз є квота і яка дешевша для цієї роботи. Claude ставить задачу й приймає результат, Codex та інші роблять реалізацію, тож робота не стоїть, коли ліміт однієї моделі скінчився. Це в мене звичка: побічну поведінку інструмента перетворюю на робочий прийом.",
+        "en": "My own quality skills: a check for stock phrases in texts, a voice check, and a rule that done means checked on a phone and a PC. I noticed that agents can hand tasks to each other and turned it into a skill of my own: a task goes to the model that has quota right now and is cheaper for that job. Claude sets the task and accepts the result, Codex and others do the implementation, so the work does not stop when one model runs out of quota. It is a habit of mine: I turn a tool's side behaviour into a working technique.",
+        "ru": "Свои навыки качества: проверка текстов на штампы, проверка голоса, правило «готово = проверено на телефоне и ПК». Заметил, что агенты умеют передавать задачи друг другу, и сделал из этого свой навык: задача уходит той модели, у которой сейчас есть квота и которая дешевле для этой работы. Claude ставит задачу и принимает результат, Codex и другие делают реализацию, так что работа не встаёт, когда лимит одной модели кончился. Это у меня привычка: побочное поведение инструмента превращаю в рабочий приём."
+      },
+      "proof": {
+        "uk": "15.11 один агент виклав сайт в обхід гілки. Система знайшла це за журналами, решта агентів розібрала й перевірила його зміни, а скрипт викладки тепер відмовляє, якщо в гілці є неперевірене.",
+        "en": "On 15 November one agent published the site around the release branch. The system found it in the logs, the other agents reviewed and checked its changes, and the publish script now refuses to run with unchecked work in the branch.",
+        "ru": "15.11 один агент выложил сайт в обход ветки. Система нашла это по журналам, остальные агенты разобрали и проверили его правки, а скрипт выкладки теперь отказывает, если в ветке есть непроверенное."
+      },
+      "role": {
+        "uk": "Архітектура, задачі, приймання.",
+        "en": "Architecture, tasks, acceptance.",
+        "ru": "Архитектура, задачи, приёмка."
+      },
+      "cv": {
+        "uk": "Близько двадцяти паралельних сесій Claude Code разом із Codex, Gemini і Hermes: гілка викладки, черга задач на одну відеокарту, щоденне зведення.",
+        "en": "About twenty parallel Claude Code sessions together with Codex, Gemini and Hermes: a release branch, a queue for one GPU, a daily digest.",
+        "ru": "Около двадцати параллельных сессий Claude Code вместе с Codex, Gemini и Hermes: ветка выкладки, очередь задач на одну видеокарту, ежедневная сводка."
+      }
+    },
+    {
+      "id": "mods",
+      "image": "assets/ancient-restoration/07-keyart.jpg",
+      "link": "https://steamcommunity.com/profiles/76561198017122982/myworkshopfiles/",
+      "title": {
+        "uk": "Моди для RimWorld у Steam Workshop",
+        "en": "RimWorld mods on the Steam Workshop",
+        "ru": "Моды для RimWorld в Steam Workshop"
+      },
+      "task": {
+        "uk": "Робити моди, які люди справді ставлять.",
+        "en": "Make mods that people actually install.",
+        "ru": "Делать моды, которые люди действительно ставят."
+      },
+      "done": {
+        "uk": "Моди: Ancient Restoration, Seamless World, Trodden Trails, Ancestral Ruins та інші. Версії під RimWorld 1.6 і 1.7, описи трьома мовами, новини в Discord.",
+        "en": "Mods: Ancient Restoration, Seamless World, Trodden Trails, Ancestral Ruins and more. Builds for RimWorld 1.6 and 1.7, descriptions in three languages, news on Discord.",
+        "ru": "Моды: Ancient Restoration, Seamless World, Trodden Trails, Ancestral Ruins и другие. Версии под RimWorld 1.6 и 1.7, описания на трёх языках, новости в Discord."
+      },
+      "how": {
+        "uk": "Код (C#, Harmony) і тести пишуть агенти. Я придумую, перевіряю в грі й вирішую, що виходить.",
+        "en": "Agents write the code (C#, Harmony) and the tests. I come up with the idea, test it in the game and decide what ships.",
+        "ru": "Код (C#, Harmony) и тесты пишут агенты. Я придумываю, проверяю в игре и решаю, что выходит."
+      },
+      "proof": {
+        "uk": "Підписки: {subs}, перегляди: {views} (станом на {date}); усі сторінки відкриті.",
+        "en": "Subscriptions: {subs}, views: {views} (as of {date}); every page is public.",
+        "ru": "Подписки: {subs}, просмотры: {views} (на {date}); все страницы открыты."
+      },
+      "role": {
+        "uk": "Ідея, тести, випуск.",
+        "en": "Idea, testing, release.",
+        "ru": "Идея, тесты, выпуск."
+      },
+      "cv": {
+        "uk": "Моди RimWorld у Steam Workshop: {mods}; підписки: {subs}, перегляди: {views} (станом на {date}). Код пишуть агенти, ідея, тести й випуск мої.",
+        "en": "RimWorld mods on the Steam Workshop: {mods}; subscriptions: {subs}, views: {views} (as of {date}). Agents write the code; the idea, testing and release are mine.",
+        "ru": "Моды RimWorld в Steam Workshop: {mods}; подписки: {subs}, просмотры: {views} (на {date}). Код пишут агенты, идея, тесты и выпуск мои."
+      }
+    },
+    {
+      "id": "site",
+      "image": "brand/swamp/v2-stage-3-960.webp",
+      "link": "https://vibeswamp.github.io",
+      "title": {
+        "uk": "Сайт з іграми в браузері й грою вдвох",
+        "en": "A website with browser games and two-player play",
+        "ru": "Сайт с играми в браузере и игрой вдвоём"
+      },
+      "task": {
+        "uk": "Вітрина модів і ігор, яка сама оновлюється і в яку можна пограти з телефона.",
+        "en": "A showcase for mods and games that updates itself and can be played on a phone.",
+        "ru": "Витрина модов и игр, которая сама обновляется и в которую можно поиграть с телефона."
+      },
+      "done": {
+        "uk": "Статичний сайт трьома мовами без залежностей: збірка на Node, статистика зі Steam Web API, викладка через GitHub Actions. Клікер і 3D-гра на three.js: на телефоні вхід у 3D важить близько 3 МБ замість 18,5.",
+        "en": "A static site in three languages with no dependencies: a Node build, stats from the Steam Web API, publishing through GitHub Actions. A clicker and a three.js 3D game: on a phone the 3D entry now weighs about 3 MB instead of 18.5.",
+        "ru": "Статичный сайт на трёх языках без зависимостей: сборка на Node, статистика из Steam Web API, выкладка через GitHub Actions. Кликер и 3D-игра на three.js: на телефоне вход в 3D весит около 3 МБ вместо 18,5."
+      },
+      "how": {
+        "uk": "Гра вдвох: сервер кімнат на Cloudflare Workers із Durable Objects і WebSocket, викладений у хмару через wrangler. Працює вживу.",
+        "en": "Two-player play: a room server on Cloudflare Workers with Durable Objects and WebSocket, deployed to the cloud with wrangler. It is live.",
+        "ru": "Игра вдвоём: сервер комнат на Cloudflare Workers с Durable Objects и WebSocket, выложенный в облако через wrangler. Работает вживую."
+      },
+      "proof": {
+        "uk": "Сам сайт; зустріч двох гравців на живому сервері перевірена у двох браузерах.",
+        "en": "The site itself; two players meeting on the live server was checked in two browsers.",
+        "ru": "Сам сайт; встреча двух игроков на живом сервере проверена в двух браузерах."
+      },
+      "role": {
+        "uk": "Постановка, приймання на телефоні й ПК.",
+        "en": "Specs, acceptance on phone and PC.",
+        "ru": "Постановка, приёмка на телефоне и ПК."
+      },
+      "cv": {
+        "uk": "Сайт vibeswamp.github.io: три мови, понад 200 сторінок, статистика зі Steam оновлюється сама, клікер, 3D-гра й гра вдвох на Cloudflare Workers.",
+        "en": "The vibeswamp.github.io website: three languages, over 200 pages, Steam stats that update themselves, a clicker, a 3D game and two-player play on Cloudflare Workers.",
+        "ru": "Сайт vibeswamp.github.io: три языка, больше 200 страниц, статистика из Steam обновляется сама, кликер, 3D-игра и игра вдвоём на Cloudflare Workers."
+      }
+    },
+    {
+      "id": "design",
+      "image": "assets/portfolio/site-home.jpg",
+      "link": "https://github.com/vibeswamp/vibeswamp.github.io/blob/main/DESIGN.md",
+      "title": {
+        "uk": "Дизайн сайту: власні правила й редизайн",
+        "en": "Site design: my own rules and a redesign",
+        "ru": "Дизайн сайта: свои правила и редизайн"
+      },
+      "task": {
+        "uk": "Сайт має спокійно читатися на телефоні й ПК і не виглядати як шаблон, зібраний нейромережею.",
+        "en": "The site has to read calmly on a phone and a PC and not look like a template an AI put together.",
+        "ru": "Сайт должен спокойно читаться на телефоне и ПК и не выглядеть шаблоном, собранным нейросетью."
+      },
+      "done": {
+        "uk": "Правила оформлення в одному файлі: кольори з перевіреним контрастом тексту, два шрифти з кирилицею, шкала відступів 4/8/16/24/48/80. Після мого відгуку «немає акцентів, немає краси» сайт перебудовано: замість прев'ю 160×90 великі скриншоти модів, ієрархія контрастом, відгук на кожну кнопку, текст 18 px і рядок до 66 знаків.",
+        "en": "The design rules live in one file: colours with checked text contrast, two typefaces with Cyrillic, a spacing scale of 4/8/16/24/48/80. After my feedback (no accents, no beauty) the site was rebuilt: large mod screenshots instead of 160×90 previews, hierarchy through contrast, a response on every button, 18 px text and lines up to 66 characters.",
+        "ru": "Правила оформления в одном файле: цвета с проверенным контрастом текста, два шрифта с кириллицей, шкала отступов 4/8/16/24/48/80. После моего отзыва «нет акцентов, нет красоты» сайт перестроен: вместо превью 160×90 крупные скриншоты модов, иерархия контрастом, отклик на каждую кнопку, текст 18 px и строка до 66 знаков."
+      },
+      "how": {
+        "uk": "Проєктую в коді з агентом: описую, дивлюся результат на телефоні 412×892 і на ПК, правлю, доки не стане як треба. Власна навичка перевіряє код і тексти на шаблонні кольори, шрифти й рекламні штампи.",
+        "en": "I design in code with an agent: I describe it, look at the result on a 412×892 phone and on a PC, and refine it until it is right. My own skill checks the code and the texts for template colours, fonts and ad clichés.",
+        "ru": "Проектирую в коде с агентом: описываю, смотрю результат на телефоне 412×892 и на ПК, правлю, пока не станет как надо. Свой навык проверяет код и тексты на шаблонные цвета, шрифты и рекламные штампы."
+      },
+      "proof": {
+        "uk": "Сам сайт; правила оформлення відкриті на GitHub.",
+        "en": "The site itself; the design rules are public on GitHub.",
+        "ru": "Сам сайт; правила оформления открыты на GitHub."
+      },
+      "role": {
+        "uk": "Смак і приймання: що лишається, а що переробити.",
+        "en": "Taste and acceptance: what stays and what gets redone.",
+        "ru": "Вкус и приёмка: что остаётся, а что переделать."
+      },
+      "cv": {
+        "uk": "Дизайн сайту: власні правила оформлення, редизайн після мого відгуку, перевірка на телефоні й ПК, навичка проти шаблонного вигляду.",
+        "en": "Site design: my own design rules, a redesign after my feedback, checks on a phone and a PC, a skill against the template look.",
+        "ru": "Дизайн сайта: свои правила оформления, редизайн после моего отзыва, проверка на телефоне и ПК, навык против шаблонного вида."
+      },
+      "linkText": {
+        "uk": "Правила оформлення на GitHub",
+        "en": "Design rules on GitHub",
+        "ru": "Правила оформления на GitHub"
+      }
+    },
+    {
+      "id": "video",
+      "image": "",
+      "link": "",
+      "title": {
+        "uk": "Конвеєр коротких відео й озвучки",
+        "en": "A short-video and voice pipeline",
+        "ru": "Конвейер коротких видео и озвучки"
+      },
+      "task": {
+        "uk": "Робити шортси про моди швидко, однаково якісно й моїм голосом без години в студії на кожен.",
+        "en": "Make shorts about the mods quickly, at the same quality every time and in my own voice, without an hour in the studio for each one.",
+        "ru": "Делать шортсы о модах быстро, одинаково качественно и моим голосом без часа в студии на каждый."
+      },
+      "done": {
+        "uk": "Стандарт шортсу і скрипти, які перевіряють звук і монтаж до того, як ролик побачить людина. Чистка запису, локальний клон мого голосу, розбір дубля по словах. Перші ролики зібрано, зараз доводжу їх за моїми зауваженнями: живіший голос, сюжет, живі кадри з гри.",
+        "en": "A shorts standard and scripts that check the sound and the edit before a person sees the video. Recording clean-up, a local clone of my voice, a word-by-word review of each take. The first videos are built; I am now reworking them after my own review: a livelier voice, a story, live game footage.",
+        "ru": "Стандарт шортса и скрипты, которые проверяют звук и монтаж до того, как ролик увидит человек. Чистка записи, локальный клон моего голоса, разбор дубля по словам. Первые ролики собраны, сейчас довожу их по моим замечаниям: живее голос, сюжет, живые кадры из игры."
+      },
+      "how": {
+        "uk": "FFmpeg, Python, музика з Suno. Еталон мого голосу заміряно (138 Гц, 5,8 складу за секунду), і клон підганяється під ці числа, а не «на слух».",
+        "en": "FFmpeg, Python, music from Suno. My real voice is measured (138 Hz, 5.8 syllables a second), and the clone is tuned to those numbers rather than by ear.",
+        "ru": "FFmpeg, Python, музыка из Suno. Эталон моего голоса замерен (138 Гц, 5,8 слога в секунду), и клон подгоняется под эти числа, а не «на слух»."
+      },
+      "proof": {
+        "uk": "Стандарт шортсу й скрипти, які перевіряють звук і монтаж. Ролик з'явиться тут, коли я його прийму.",
+        "en": "The shorts standard and the scripts that check the sound and the edit. The video goes here once I accept it.",
+        "ru": "Стандарт шортса и скрипты, которые проверяют звук и монтаж. Ролик появится здесь, когда я его приму."
+      },
+      "role": {
+        "uk": "Сценарій, голос, режисура, приймання.",
+        "en": "Script, voice, direction, acceptance.",
+        "ru": "Сценарий, голос, режиссура, приёмка."
+      },
+      "cv": {
+        "uk": "Конвеєр шортсів і озвучки: локальний клон мого голосу, скрипти перевіряють звук і монтаж до того, як ролик побачить людина.",
+        "en": "A shorts and voice pipeline: a local clone of my voice, scripts that check the sound and the edit before a person sees the video.",
+        "ru": "Конвейер шортсов и озвучки: локальный клон моего голоса, скрипты проверяют звук и монтаж до того, как ролик увидит человек."
+      }
+    },
+    {
+      "id": "belt",
+      "image": "assets/belt-lantern/icon.jpg",
+      "link": "https://thunderstore.io/c/darkwater/p/EGYS1N/Belt_Lantern/",
+      "title": {
+        "uk": "Belt Lantern для Darkwater",
+        "en": "Belt Lantern for Darkwater",
+        "ru": "Belt Lantern для Darkwater"
+      },
+      "task": {
+        "uk": "Мод для кооперативної гри: вільні руки в темряві.",
+        "en": "A mod for a co-op game: free hands in the dark.",
+        "ru": "Мод для кооперативной игры: свободные руки в темноте."
+      },
+      "done": {
+        "uk": "Ліхтар на поясі, видно іншим гравцям, працює в мультиплеєрі.",
+        "en": "A lantern on the belt that other players see; it works in multiplayer.",
+        "ru": "Фонарь на поясе, его видят другие игроки, работает в мультиплеере."
+      },
+      "how": {
+        "uk": "Код (BepInEx, C#) пишуть агенти, я тестую й випускаю.",
+        "en": "Agents write the code (BepInEx, C#); I test and release it.",
+        "ru": "Код (BepInEx, C#) пишут агенты, я тестирую и выпускаю."
+      },
+      "proof": {
+        "uk": "Завантаження на Thunderstore: {belt}.",
+        "en": "Downloads on Thunderstore: {belt}.",
+        "ru": "Загрузки на Thunderstore: {belt}."
+      },
+      "role": {
+        "uk": "Ідея, тести, випуск.",
+        "en": "Idea, testing, release.",
+        "ru": "Идея, тесты, выпуск."
+      },
+      "cv": {
+        "uk": "Belt Lantern для Darkwater: ліхтар на поясі в мультиплеєрі; завантаження на Thunderstore: {belt}.",
+        "en": "Belt Lantern for Darkwater: a lantern on the belt in multiplayer; downloads on Thunderstore: {belt}.",
+        "ru": "Belt Lantern для Darkwater: фонарь на поясе в мультиплеере; загрузки на Thunderstore: {belt}."
+      }
+    }
+  ],
+  "steps": {
+    "uk": [
+      [
+        "Клієнт і задача",
+        "Як технічне завдання в друкарні: пишу задачу так, щоб агент не вгадував. Мета, що не чіпати, як перевірити."
+      ],
+      [
+        "Виробництво",
+        "Роздаю агентам зони, щоб двоє не правили один файл. Рутину віддаю дешевшим агентам, а коли в однієї моделі кінчається ліміт, задача переходить до іншої."
+      ],
+      [
+        "Контроль якості",
+        "«Готово» — це перевірено на телефоні й ПК, зі скриншотами й числами. Слово агента «готово» ще не доказ."
+      ],
+      [
+        "Видача",
+        "Як тираж із друкарні: у світ іде лише перевірене й лише з моєї згоди."
+      ],
+      [
+        "Звіт",
+        "Коротко, простими словами, і чесно, що не зроблено."
+      ]
+    ],
+    "en": [
+      [
+        "Client and brief",
+        "Like a brief in a print shop: I write the task so the agent does not have to guess. The goal, what not to touch, how to check it."
+      ],
+      [
+        "Production",
+        "I give each agent its own area so two never edit the same file. Routine work goes to cheaper agents, and when one model runs out of quota the task moves to another."
+      ],
+      [
+        "Quality control",
+        "Done means checked on a phone and a PC, with screenshots and numbers. An agent saying done is not proof yet."
+      ],
+      [
+        "Hand-over",
+        "Like a print run leaving the shop: only checked work goes out, and only with my yes."
+      ],
+      [
+        "Report",
+        "Short, plain words, and honest about what is not done."
+      ]
+    ],
+    "ru": [
+      [
+        "Клиент и задача",
+        "Как техническое задание в типографии: пишу задачу так, чтобы агент не гадал. Цель, что не трогать, как проверить."
+      ],
+      [
+        "Производство",
+        "Раздаю агентам зоны, чтобы двое не правили один файл. Рутину отдаю более дешёвым агентам, а когда у одной модели кончается лимит, задача переходит к другой."
+      ],
+      [
+        "Контроль качества",
+        "«Готово» — это проверено на телефоне и ПК, со скриншотами и числами. Слово агента «готово» ещё не доказательство."
+      ],
+      [
+        "Выдача",
+        "Как тираж из типографии: в мир уходит только проверенное и только с моего согласия."
+      ],
+      [
+        "Отчёт",
+        "Коротко, простыми словами и честно о том, что не сделано."
+      ]
+    ]
+  },
+  "why": {
+    "uk": "Агенти пишуть швидко, але впевнено помиляються. Моя робота — щоб помилка не дійшла до людей.",
+    "en": "Agents write fast but are confidently wrong now and then. My job is to keep the mistake from reaching people.",
+    "ru": "Агенты пишут быстро, но уверенно ошибаются. Моя работа — чтобы ошибка не дошла до людей."
+  },
+  "tools": [
+    "Claude Code",
+    "OpenAI Codex",
+    "Gemini (Antigravity)",
+    "Hermes",
+    "GitHub Actions",
+    "Cloudflare Workers",
+    "Steam Web API",
+    "Discord API",
+    "Node.js",
+    "three.js",
+    "Electron",
+    "Leaflet",
+    "React",
+    "Godot",
+    "Unreal Engine",
+    "Blender",
+    "ComfyUI",
+    "FFmpeg",
+    "Python"
+  ],
+  "experience": [
+    {
+      "title": {
+        "uk": "Поліграфія: менеджер повного циклу",
+        "en": "Print production: full-cycle manager",
+        "ru": "Полиграфия: менеджер полного цикла"
+      },
+      "text": {
+        "uk": "Приймав клієнта, складав технічне завдання, організовував доставку матеріалів і логістику, контролював якість і видавав замовлення.",
+        "en": "I took in the client, wrote the brief, organised materials delivery and logistics, controlled the quality and handed over the order.",
+        "ru": "Принимал клиента, составлял техническое задание, организовывал доставку материалов и логистику, контролировал качество и выдавал заказ."
+      }
+    },
+    {
+      "title": {
+        "uk": "Дизайн, додатково до основної роботи",
+        "en": "Design, on top of the main job",
+        "ru": "Дизайн, в дополнение к основной работе"
+      },
+      "text": {
+        "uk": "Візитки й флаєри в CorelDRAW, близько року брав власні замовлення на дизайн. Навчився в дизайнера, з яким два роки працював поруч. Макети сайтів збирав у конструкторах.",
+        "en": "Business cards and flyers in CorelDRAW; for about a year I took my own design orders. I learned from a designer I worked next to for two years. I put website layouts together in site builders.",
+        "ru": "Визитки и флаеры в CorelDRAW, около года брал свои заказы на дизайн. Научился у дизайнера, с которым два года работал рядом. Макеты сайтов собирал в конструкторах."
+      }
+    },
+    {
+      "title": {
+        "uk": "Фриланс",
+        "en": "Freelance",
+        "ru": "Фриланс"
+      },
+      "text": {
+        "uk": "Пробував автоматизувати пошук замовлень на фриланс-біржі.",
+        "en": "I tried automating the search for orders on a freelance marketplace.",
+        "ru": "Пробовал автоматизировать поиск заказов на фриланс-бирже."
+      }
+    }
+  ],
+  "oldWorks": []
+}

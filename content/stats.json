@@ -1,42 +1,42 @@
 {
-  "fetchedAt": "2026-11-17",
+  "fetchedAt": "2026-11-20",
   "items": {
     "ancient-restoration": {
-      "subscriptions": 300,
-      "lifetimeSubscriptions": 373,
-      "favorited": 45,
-      "views": 1478,
+      "subscriptions": 309,
+      "lifetimeSubscriptions": 389,
+      "favorited": 48,
+      "views": 1523,
       "created": "2026-10-18",
       "updated": "2026-11-17"
     },
     "seamless-world": {
-      "subscriptions": 226,
-      "lifetimeSubscriptions": 311,
+      "subscriptions": 229,
+      "lifetimeSubscriptions": 317,
       "favorited": 95,
-      "views": 1697,
+      "views": 1744,
       "created": "2026-10-19",
-      "updated": "2026-11-12"
+      "updated": "2026-11-19"
     },
     "trodden-trails": {
       "subscriptions": 154,
-      "lifetimeSubscriptions": 169,
-      "favorited": 20,
-      "views": 526,
+      "lifetimeSubscriptions": 171,
+      "favorited": 21,
+      "views": 544,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "belt-lantern": {
-      "downloads": 910,
+      "downloads": 913,
       "versions": 4,
       "created": "2026-04-03",
       "updated": "2026-04-03",
-      "counted": "2026-11-17"
+      "counted": "2026-11-20"
     },
     "ancestral-ruins": {
-      "subscriptions": 23,
-      "lifetimeSubscriptions": 27,
-      "favorited": 9,
-      "views": 206,
+      "subscriptions": 26,
+      "lifetimeSubscriptions": 30,
+      "favorited": 11,
+      "views": 227,
       "created": "2026-10-31",
       "updated": "2026-11-17"
     },
@@ -44,7 +44,7 @@
       "subscriptions": 16,
       "lifetimeSubscriptions": 21,
       "favorited": 2,
-      "views": 261,
+      "views": 265,
       "created": "2026-10-31",
       "updated": "2026-11-12"
     },
@@ -52,31 +52,31 @@
       "subscriptions": 5,
       "lifetimeSubscriptions": 6,
       "favorited": 2,
-      "views": 143,
+      "views": 148,
       "created": "2026-11-06",
       "updated": "2026-11-12"
     },
     "told-twice": {
-      "subscriptions": 32,
-      "lifetimeSubscriptions": 34,
+      "subscriptions": 41,
+      "lifetimeSubscriptions": 46,
       "favorited": 7,
-      "views": 222,
+      "views": 287,
       "created": "2026-10-31",
       "updated": "2026-11-17"
     },
     "shelf-life": {
-      "subscriptions": 45,
-      "lifetimeSubscriptions": 59,
+      "subscriptions": 51,
+      "lifetimeSubscriptions": 66,
       "favorited": 6,
-      "views": 290,
+      "views": 320,
       "created": "2026-11-08",
       "updated": "2026-11-17"
     },
     "rinse-repeat": {
-      "subscriptions": 20,
-      "lifetimeSubscriptions": 20,
+      "subscriptions": 29,
+      "lifetimeSubscriptions": 31,
       "favorited": 3,
-      "views": 99,
+      "views": 129,
       "created": "2026-11-12",
       "updated": "2026-11-16"
     }
